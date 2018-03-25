@@ -2,6 +2,7 @@ package com.mr.modules.api.site.instance;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Created by feng on 18-3-16
@@ -24,6 +27,49 @@ import java.util.ArrayList;
 @Component("site2")
 @Scope("prototype")
 public class SiteTaskImpl_2 extends SiteTaskExtend {
+
+	LinkedHashMap<String, String> cityMap = Maps.newLinkedHashMap();
+
+	public LinkedHashMap<String, String> getCityMap() {
+		cityMap.put("beijing", "http://www.csrc.gov.cn/pub/beijing/bjxzcf/");
+		cityMap.put("tianjin", "http://www.csrc.gov.cn/pub/tianjin/xzcf/");
+		cityMap.put("hebei", "");
+		cityMap.put("shanxi", "http://www.csrc.gov.cn/pub/shanxi/xzcf/");
+		cityMap.put("neimenggu", "http://www.csrc.gov.cn/pub/neimenggu/nmgxzcf/");
+		cityMap.put("liaoning", "http://www.csrc.gov.cn/pub/liaoning/lnjxzcf/");
+		cityMap.put("jilin", "http://www.csrc.gov.cn/pub/jilin/jlxzcf/");
+		cityMap.put("heilongjiang", "http://www.csrc.gov.cn/pub/heilongjiang/hljjxzcf/");
+		cityMap.put("shanghai", "http://www.csrc.gov.cn/pub/shanghai/xzcf/");
+		cityMap.put("jiangsu", "http://www.csrc.gov.cn/pub/jiangsu/jsxzcf/");
+		cityMap.put("zhejiang", "http://www.csrc.gov.cn/pub/zhejiang/zjxzcf/");
+		cityMap.put("anhui", "http://www.csrc.gov.cn/pub/anhui/ahxzcf/");
+		cityMap.put("fujian", "http://www.csrc.gov.cn/pub/fujian/fjjxzcf/");
+		cityMap.put("jiangxi", "http://www.csrc.gov.cn/pub/jiangxi/jxxzcf/");
+		cityMap.put("shandong", "http://www.csrc.gov.cn/pub/shandong/sdxzcf/");
+		cityMap.put("henan", "http://www.csrc.gov.cn/pub/henan/hnxzcf/");
+		cityMap.put("hubei", "http://www.csrc.gov.cn/pub/hubei/hbxzcf/");
+		cityMap.put("hunan", "http://www.csrc.gov.cn/pub/hunan/hnxzcf/");
+		cityMap.put("guangdong", "http://www.csrc.gov.cn/pub/guangdong/xzcf/");
+		cityMap.put("guangxi", "");
+		cityMap.put("hainan", "http://www.csrc.gov.cn/pub/hainan/hnjxzcf/");
+		cityMap.put("chongqing", "http://www.csrc.gov.cn/pub/chongqing/cqjxzcf/");
+		cityMap.put("sichuan", "http://www.csrc.gov.cn/pub/sichuan/scxzcf/");
+		cityMap.put("guizhou", "http://www.csrc.gov.cn/pub/guizhou/gzxzcf/");
+		cityMap.put("yunnan", "");
+		cityMap.put("xizang", "http://www.csrc.gov.cn/pub/xizang/xzxzcf/");
+		cityMap.put("shanxidong", "");
+		cityMap.put("gansu", "");
+		cityMap.put("qinghai", "http://www.csrc.gov.cn/pub/qinghai/qhxzcf/");
+		cityMap.put("ningxia", "");
+		cityMap.put("xinjiang", "http://www.csrc.gov.cn/pub/xinjiang/xjxzcf/");
+		cityMap.put("shenzhen", "http://www.csrc.gov.cn/pub/shenzhen/xzcf/");
+		cityMap.put("dalian", "http://www.csrc.gov.cn/pub/dalian/dlxzcf/");
+		cityMap.put("ningbo", "http://www.csrc.gov.cn/pub/ningbo/nbxzcf/");
+		cityMap.put("xiamen", "http://www.csrc.gov.cn/pub/xiamen/xmxzcf/");
+		cityMap.put("qingdao", "http://www.csrc.gov.cn/pub/qingdao/xzcf/");
+
+		return cityMap;
+	}
 
 	/**
 	 * @return ""或者null为成功， 其它为失败

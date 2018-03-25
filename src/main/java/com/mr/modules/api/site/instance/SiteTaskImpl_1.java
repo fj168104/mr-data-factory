@@ -1,11 +1,27 @@
 package com.mr.modules.api.site.instance;
 
+import com.feilong.core.date.DateUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.sun.tools.corba.se.idl.constExpr.ShiftRight;
+import com.xiaoleilu.hutool.date.DatePattern;
+import com.xiaoleilu.hutool.json.JSONArray;
+import com.xiaoleilu.hutool.json.JSONObject;
+import com.xiaoleilu.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by feng on 18-3-16
@@ -27,14 +43,9 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	@Override
 	protected String execute() throws Throwable {
 		log.info("*******************call site1 task**************");
-		String targetUri = "http://www.neeq.com.cn/uploads/1/file/public/201802/20180226182405_lc6vjyqntd.pdf";
-		String fileName = downLoadFile(targetUri);
-		//fullTxt 正文详细文本信息
-		String fullTxt = ocrUtil.getTextFromPdf(fileName);
-		log.info(fullTxt);
-		extract(fullTxt);
-
-
+//		String targetUri = "http://www.neeq.com.cn/uploads/1/file/public/201802/20180226182405_lc6vjyqntd.pdf";
+		List<LinkedHashMap<String, String>> lists = extractPage();
+		exportToXls("Site1.xlsx", lists);
 		return null;
 	}
 
@@ -42,17 +53,90 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	 * 提取所需要的信息
 	 * 当事人、公司、住所地、法定代表人、一码通代码（当事人为个人）、当事人补充情况、违规情况、相关法规、处罚结果、处罚结果补充情况
 	 */
-	private void extract(String fullTxt) {
-		//当事人 从链接中提取
-		String person = "河南牧宝车居股份有限公司";
+	private List<LinkedHashMap<String, String>> extractPage() throws Exception {
+		List<LinkedHashMap<String, String>> lists = Lists.newLinkedList();
 
-		//公司 从链接中提取
-		String company = "河南牧宝车居股份有限公司";
+		String url = "http://www.neeq.com.cn/disclosureInfoController/infoResult.do";
+		java.util.Map<String, String> requestParams = Maps.newHashMap();
+		requestParams.put("callback", "jQuery18305898860958323444_1521941846680");
+		requestParams.put("disclosureType", "8");
+		requestParams.put("companyCd", "公司名称/拼音/代码");
+		requestParams.put("keyword", "关键字");
+//		requestParams.put("startTime", DateUtil.toString(new java.util.Date(), DatePattern.NORM_DATE_PATTERN));
+//		requestParams.put("endTime", DateUtil.toString(new java.util.Date(), DatePattern.NORM_DATE_PATTERN));
+
+		Integer pageCount = Integer.MAX_VALUE;
+		for (int pageNo = 0; pageNo <= pageCount; pageNo++) {
+			requestParams.put("page", String.valueOf(pageNo));
+			String bodyStr = postData(url, requestParams)
+					.replace("jQuery18305898860958323444_1521941846680([", "");
+			bodyStr = bodyStr.substring(0, bodyStr.length() - 2);
+			JSONObject jsonObject = JSONUtil.parseObj(bodyStr);
+			JSONObject listInfoObj = jsonObject.getJSONObject("listInfo");
+			pageCount = Integer.parseInt(listInfoObj.getStr("totalPages"));
+			JSONArray contentArray = listInfoObj.getJSONArray("content");
+			for (int i = 0; i < contentArray.size(); i++) {
+				LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
+
+				JSONObject contentObj = contentArray.getJSONObject(i);
+				//公司
+				String company = contentObj.getStr("companyName");
+				//当事人 从链接中提取
+				String person = "";
+				String disclosureTitle = contentObj.getStr("disclosureTitle");
+				if (disclosureTitle.contains("关于对") && disclosureTitle.contains("采取")) {
+					person = disclosureTitle.substring(3, disclosureTitle.indexOf("采取"));
+				}
+				String destFilePath = "http://www.neeq.com.cn" + contentObj.getStr("destFilePath");
+				String fileName = downLoadFile(destFilePath);
+				String content = "";
+				if (fileName.toLowerCase().endsWith("doc")) {
+					content = ocrUtil.getTextFromDoc(fileName);
+				} else if (fileName.toLowerCase().endsWith("pdf")) {
+					content = ocrUtil.getTextFromPdf(fileName);
+				} else {
+					content = destFilePath;
+				}
+				map.put("company", company);
+				map.put("person", person);
+				map.put("destFilePath", destFilePath);
+				try {
+					log.info(map.toString());
+					extract(content, map);
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.error(e.getMessage());
+				}
+
+
+				lists.add(map);
+			}
+
+		}
+		return lists;
+	}
+
+	/**
+	 * 提取所需要的信息 PDF
+	 * 当事人、公司、住所地、法定代表人、一码通代码（当事人为个人）、当事人补充情况、违规情况、相关法规、处罚结果、处罚结果补充情况
+	 */
+	private void extract(String fullTxt, LinkedHashMap<String, String> map) {
+		//初始化，针对异常出现
+		map.put("address", "");
+		map.put("holder", "");
+		map.put("commonCode", "");
+		map.put("holderAddition", "");
+		map.put("violation", "");
+		map.put("rule", "");
+		map.put("result", "");
+		map.put("resultAddition", "");
 
 		//住所地
 		String address = "";
 		//法定代表人
 		String holder = "";
+		//一码通代码（当事人为个人）
+		String commonCode = "";
 		//当事人补充情况
 		String holderAddition = "";
 		//违规情况
@@ -64,37 +148,107 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		//处罚结果补充情况
 		String resultAddition = "";
 
-
-		int indx = fullTxt.indexOf("法定代表人：");
+		Boolean isCompany = StringUtils.isNotEmpty(map.get("company"));    //当事人是否为公司
 		//当事人为公司，格式规则
-		if (indx > -1) {
+		if (isCompany) {
 			int sIndx = 0;
-			address = fullTxt.substring(fullTxt.indexOf("住所地："), indx).replace("住所地：", "").trim();
-			address = address.substring(0, address.length() - 1).replace("\n", "");
+			if (fullTxt.indexOf("法定代表人：") > -1) {
+				if(fullTxt.indexOf("住所地：") > -1){
+					address = fullTxt.substring(fullTxt.indexOf("住所地："), fullTxt.indexOf("法定代表人："))
+							.replace("住所地：", "").trim();
+					address = address.substring(0, address.length() - 1).replace("\n", "");
+				}
+				holder = fullTxt.substring(fullTxt.indexOf("法定代表人："), fullTxt.indexOf("经查明"))
+						.replace("法定代表人：", "")
+						.trim().replace("\n", "");
+			} else {
+				if (fullTxt.indexOf("住所地：") > -1 && fullTxt.indexOf("经查明：") > -1) {
+					String sTmp = fullTxt.substring(fullTxt.indexOf("住所地："), fullTxt.indexOf("经查明"));
+					if (sTmp.indexOf("；") > -1 && sTmp.indexOf("。") > -1) {
+						address = sTmp.substring(0, sTmp.indexOf("；"));
+						holder = sTmp.substring(sTmp.indexOf("；"), sTmp.lastIndexOf("。"));
+					} else if (sTmp.indexOf("。") > -1) {
+						address = sTmp.substring(0, sTmp.indexOf("。"));
+						holder = sTmp.substring(sTmp.indexOf("。"));
+					} else {
+						address = "";
+						holder = "";
+					}
+				}
 
-			holder = fullTxt.substring(indx, fullTxt.indexOf("经查明")).replace("法定代表人：", "").trim().replace("\n", "");
+			}
 
 			sIndx = fullTxt.indexOf("当事人：");
-			holderAddition = fullTxt.substring(sIndx, fullTxt.indexOf("，住所地")).replace("当事人：", "").trim().replace("\n", "");
+			if (fullTxt.indexOf("住所地") > -1) {
+				holderAddition = fullTxt.substring(sIndx, fullTxt.indexOf("住所地"))
+						.replace("当事人：", "").trim().replace("\n", "");
+			}
 
-			sIndx = fullTxt.indexOf("经查明，");
-			violation = fullTxt.substring(sIndx, fullTxt.indexOf("你公司的上述行为违反了")).replace("经查明，", "").trim().replace("\n", "");
+			sIndx = fullTxt.indexOf("经查明");
+			if (sIndx > -1 && fullTxt.indexOf("违反了") > -1) {
+				String sTmp = fullTxt.substring(sIndx, fullTxt.indexOf("违反了"));
+				violation = sTmp.substring(0, sTmp.lastIndexOf("\n")).replace("经查明", "")
+						.trim().replace("\n", "");
+			}
 
-			sIndx = fullTxt.indexOf("鉴于上述违规事实和情节，");
-			result = fullTxt.substring(sIndx, fullTxt.indexOf("你公司应自收到本决定书之日起")).replace("鉴于上述违规事实和情节，", "").trim().replace("\n", "");
+			sIndx = fullTxt.indexOf("违反了");
+			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("违反了") > -1) {
+				rule = fullTxt.substring(fullTxt.indexOf("违反了"), fullTxt.indexOf("鉴于"));
+			}
+
+			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("全国股转公司") > -1) {
+				result = fullTxt.substring(fullTxt.indexOf("鉴于"), fullTxt.lastIndexOf("全国股转公司"));
+			}
 
 			sIndx = fullTxt.indexOf("你公司应自收到本决定书之");
-			String tmpStr = fullTxt.substring(fullTxt.indexOf("你公司应自收到本决定书之")).trim();
-			resultAddition = tmpStr.substring(0, tmpStr.trim().indexOf("\n \n")).trim().replace("\n", "");
+			if (fullTxt.indexOf("你公司应自收到本决定书之") > -1 && fullTxt.indexOf("全国股转公司") > -1) {
+				resultAddition = fullTxt.substring(sIndx, fullTxt.indexOf("全国股转公司"));
+			}
 
 		} else {
-			//当事人为公司，格式规则
+			//当事人为个人
+			address = "";
+			holder = "";
+			int sIndx = fullTxt.indexOf("当事人：");
 
+			if (fullTxt.indexOf("一码通代码：") > -1) {
+				String sTmp = fullTxt.substring(fullTxt.indexOf("一码通代码："))
+						.replace("一码通代码：", "").trim();
+				commonCode = sTmp.substring(0, sTmp.indexOf("）"));
+			}
+
+			if (fullTxt.indexOf("经查明") > -1) {
+				holderAddition = fullTxt.substring(sIndx, fullTxt.indexOf("经查明"))
+						.replace("当事人：", "").trim().replace("\n", "");
+			}
+
+			sIndx = fullTxt.indexOf("经查明");
+			if (fullTxt.indexOf("违反了") > -1) {
+				String sTmp = fullTxt.substring(sIndx, fullTxt.indexOf("违反了"));
+				violation = sTmp.substring(0, sTmp.lastIndexOf("\n")).replace("经查明，", "")
+						.trim().replace("\n", "");
+			}
+
+			sIndx = fullTxt.indexOf("违反了");
+			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("违反了") > -1) {
+				rule = fullTxt.substring(fullTxt.indexOf("违反了"), fullTxt.indexOf("鉴于"));
+			}
+
+			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("全国股转公司") > -1) {
+				result = fullTxt.substring(fullTxt.indexOf("鉴于"), fullTxt.indexOf("全国股转公司"));
+			}
+
+			resultAddition = "";
 		}
 
-		//当事人为个人
-
-
+		map.put("address", address);
+		map.put("holder", holder);
+		map.put("commonCode", commonCode);
+		map.put("holderAddition", holderAddition);
+		map.put("violation", violation);
+		map.put("rule", rule);
+		map.put("result", result);
+		map.put("resultAddition", resultAddition);
 
 	}
 

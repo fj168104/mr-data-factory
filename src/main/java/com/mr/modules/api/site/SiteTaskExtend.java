@@ -119,7 +119,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * @return
 	 */
 	protected String postData(String url, Map<String, String> requestParams) {
-		return postData(url, requestParams, null);
+		return postData(url, requestParams, Maps.newHashMap());
 	}
 
 

@@ -7,6 +7,7 @@ ZT 数据抓取与结构化
 直接双击安装即可。  
 如果是IDE，编译器会提示安装，非常简单。    
 lombok安装完成后，导入mr-data-factory，编译通过即可。  
+打开application.yml文件，修改 download-dir: {你本机的下载目录}
 
 ## 运行demo
 任务demo类：com.mr.modules.api.site.instance.DemoSiteTask  

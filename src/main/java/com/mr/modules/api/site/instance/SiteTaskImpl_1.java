@@ -67,6 +67,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 		Integer pageCount = Integer.MAX_VALUE;
 		for (int pageNo = 0; pageNo <= pageCount; pageNo++) {
+			log.info("page:" + pageNo);
 			requestParams.put("page", String.valueOf(pageNo));
 			String bodyStr = postData(url, requestParams)
 					.replace("jQuery18305898860958323444_1521941846680([", "");
@@ -148,22 +149,42 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		//处罚结果补充情况
 		String resultAddition = "";
 
-		Boolean isCompany = StringUtils.isNotEmpty(map.get("company"));    //当事人是否为公司
+		Boolean isCompany = StringUtils.isNotEmpty(map.get("company")) || map.get("person").contains("公司");    //当事人是否为公司
 		//当事人为公司，格式规则
 		if (isCompany) {
 			int sIndx = 0;
-			if (fullTxt.indexOf("法定代表人：") > -1) {
-				if(fullTxt.indexOf("住所地：") > -1){
-					address = fullTxt.substring(fullTxt.indexOf("住所地："), fullTxt.indexOf("法定代表人："))
-							.replace("住所地：", "").trim();
+			String[] zsd = {"住所地：", "住\n所地：", "住所\n地：", "住所地\n："};
+			String zsdStr = "";
+			int zsdindex = -1;
+			for (int i = 0; i < zsd.length; i++) {
+				if (fullTxt.indexOf(zsd[i]) > -1) {
+					zsdStr = zsd[i];
+					zsdindex = fullTxt.indexOf(zsd[i]);
+				}
+			}
+			String[] fddbr = {"法定代表人：", "法\n定代表人：", "法定\n代表人：", "法定代\n表人：", "法定代表\n人：", "法定代表人\n："};
+			String fddbrStr = "";
+			int fddbrIndex = -1;
+			for (int i = 0; i < fddbr.length; i++) {
+				if (fullTxt.indexOf(fddbr[i]) > -1) {
+					fddbrStr = fddbr[i];
+					fddbrIndex = fullTxt.indexOf(fddbr[i]);
+				}
+			}
+
+
+			if (fddbrIndex > -1) {
+				if (zsdindex > -1) {
+					address = fullTxt.substring(zsdindex, fddbrIndex)
+							.replace(zsdStr, "").trim();
 					address = address.substring(0, address.length() - 1).replace("\n", "");
 				}
-				holder = fullTxt.substring(fullTxt.indexOf("法定代表人："), fullTxt.indexOf("经查明"))
-						.replace("法定代表人：", "")
+				holder = fullTxt.substring(fddbrIndex, fullTxt.indexOf("经查明"))
+						.replace(fddbrStr, "")
 						.trim().replace("\n", "");
 			} else {
-				if (fullTxt.indexOf("住所地：") > -1 && fullTxt.indexOf("经查明：") > -1) {
-					String sTmp = fullTxt.substring(fullTxt.indexOf("住所地："), fullTxt.indexOf("经查明"));
+				if (zsdindex > -1 && fullTxt.indexOf("经查明：") > -1) {
+					String sTmp = fullTxt.substring(zsdindex, fullTxt.indexOf("经查明"));
 					if (sTmp.indexOf("；") > -1 && sTmp.indexOf("。") > -1) {
 						address = sTmp.substring(0, sTmp.indexOf("；"));
 						holder = sTmp.substring(sTmp.indexOf("；"), sTmp.lastIndexOf("。"));
@@ -178,7 +199,10 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 			}
 
-			sIndx = fullTxt.indexOf("当事人：");
+			sIndx = fullTxt.indexOf("当事人：") == -1 ? fullTxt.indexOf("当事人") : fullTxt.indexOf("当事人：");
+			if (sIndx == - 1) sIndx = fullTxt.indexOf("的决定");
+			if (sIndx == - 1) return;
+
 			if (fullTxt.indexOf("住所地") > -1) {
 				holderAddition = fullTxt.substring(sIndx, fullTxt.indexOf("住所地"))
 						.replace("当事人：", "").trim().replace("\n", "");
@@ -209,11 +233,23 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			//当事人为个人
 			address = "";
 			holder = "";
-			int sIndx = fullTxt.indexOf("当事人：");
+			int sIndx = fullTxt.indexOf("当事人：") == -1 ? fullTxt.indexOf("当事人") : fullTxt.indexOf("当事人：");
+			if (sIndx == - 1) sIndx = fullTxt.indexOf("的决定");
+			if (sIndx == - 1) return;
 
-			if (fullTxt.indexOf("一码通代码：") > -1) {
-				String sTmp = fullTxt.substring(fullTxt.indexOf("一码通代码："))
-						.replace("一码通代码：", "").trim();
+			String[] ymtdm = {"一码通代码：", "一\n码通代码：", "一码\n通代码：", "一码通\n代码：", "一码通代\n码：", "一码通代码\n：",};
+			String ymtdmStr = "";
+			int ymtdmIndex = -1;
+			for (int i = 0; i < ymtdm.length; i++) {
+				if (fullTxt.indexOf(ymtdm[i]) > -1) {
+					ymtdmStr = ymtdm[i];
+					ymtdmIndex = fullTxt.indexOf(ymtdm[i]);
+				}
+			}
+
+			if (ymtdmIndex > -1) {
+				String sTmp = fullTxt.substring(ymtdmIndex)
+						.replace(ymtdmStr, "").trim();
 				commonCode = sTmp.substring(0, sTmp.indexOf("）"));
 			}
 

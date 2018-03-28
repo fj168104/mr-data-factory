@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
+import schemasMicrosoftComVml.STTrueFalse;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -122,6 +123,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		map.put("punishDate", "");
 		map.put("detail", "");
 
+		String 根据[] = {"依据《中华人民共和国证券法》", "依据《私募投资基金监督管理暂行办法》"};
 		ArrayList<String> filterTags = Lists.newArrayList("<SPAN>", "</SPAN>", "&nbsp;", "　");
 		//序号 TODO 需确认
 		String seqNo = "";
@@ -158,18 +160,22 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				Elements strongEles = pElement.getElementsByTag("STRONG");
 				if (!CollectionUtils.isEmpty(strongEles)) {
 					punishNo = strongEles.get(0).text().trim();
-					continue;
+//					continue;
+				} else {
+					punishNo = Strings.isNullOrEmpty(pElement.text()) ? "" : pElement.text().trim();
 				}
+				// 处罚文号 不存在
+				if(punishNo.contains("当事人")) punishNo = "不存在";
 			}
 
 			//punishObject 处理
 			if (CollectionUtils.isEmpty(punishObjects) || isOn) {
 				String pString = filter(pElement.text().trim(), filterTags).trim();
-				if (pString.startsWith("当事人：")) {
+				if (pString.contains("当事人：")) {
 					isOn = true;    //打开当事人提取开关
 					punishObjects.add(pString);
 				}
-				if (pString.startsWith("依据《中华人民共和国证券法》")) {
+				if (StringUtils.isNotEmpty(contains(pString, 根据))) {
 					isOn = false;
 					punishObject = punishObjects.toString().replace("[", "").replace("]", "");
 					detailIsOn = true;    //打开详情提取开关
@@ -242,5 +248,21 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		cityMap.put("青岛", "http://www.csrc.gov.cn/pub/qingdao/xzcf/");
 
 		return cityMap;
+	}
+
+	/**
+	 * txt 是否包含 keys中的记录
+	 *
+	 * @param txt
+	 * @param keys
+	 * @return
+	 */
+	private String contains(String txt, String[] keys) {
+		if (Strings.isNullOrEmpty(txt))
+			return null;
+		for (String key : keys)
+			if (txt.contains(key))
+				return key;
+		return null;
 	}
 }

@@ -22,7 +22,7 @@
         <thymeleaf-layout-dialect.version>2.0.0</thymeleaf-layout-dialect.version>
         <shiro.version>1.3.2</shiro.version>
         <thymeleaf-shiro.version>2.0.0</thymeleaf-shiro.version>
-        <hutool.version>2.16.0</hutool.version>
+        <mr.framework.version>0.0.2</mr.framework.version>
         <commons-io.version>2.4</commons-io.version>
         <lombok.version>1.16.18</lombok.version>
         <commons-lang3.version>3.5</commons-lang3.version>
@@ -183,9 +183,11 @@
             <version>${commons-collections4.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.xiaoleilu</groupId>
-            <artifactId>hutool</artifactId>
-            <version>${hutool.version}</version>
+            <groupId>com.mr.framework</groupId>
+            <artifactId>tool-all</artifactId>
+            <version>${mr.framework.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/libs/mr-framework-tool-0.0.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.feilong.platform</groupId>
@@ -246,31 +248,6 @@
             <version>${lombok.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.swinglabs/swingx -->
-        <dependency>
-            <groupId>org.swinglabs</groupId>
-            <artifactId>swingx</artifactId>
-            <version>1.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>tesseract</artifactId>
-            <version>3.03-rc1-0.11</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/nu.pattern/opencv -->
-        <dependency>
-            <groupId>nu.pattern</groupId>
-            <artifactId>opencv</artifactId>
-            <version>2.4.9-4</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.jai-imageio/jai-imageio-core -->
         <dependency>
             <groupId>com.github.lafa.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>

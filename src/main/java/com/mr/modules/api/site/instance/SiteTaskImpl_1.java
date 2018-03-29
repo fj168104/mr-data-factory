@@ -1,27 +1,20 @@
 package com.mr.modules.api.site.instance;
 
-import com.feilong.core.date.DateUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.json.JSONArray;
+import com.mr.framework.json.JSONObject;
+import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.sun.tools.corba.se.idl.constExpr.ShiftRight;
-import com.xiaoleilu.hutool.date.DatePattern;
-import com.xiaoleilu.hutool.json.JSONArray;
-import com.xiaoleilu.hutool.json.JSONObject;
-import com.xiaoleilu.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by feng on 18-3-16

@@ -2,10 +2,10 @@ package com.mr.common.aop;
 
 
 import com.mr.common.annotation.OperationLog;
+import com.mr.framework.http.HttpUtil;
+import com.mr.framework.json.JSONUtil;
 import com.mr.modules.log.model.Log;
 import com.mr.modules.log.service.LogService;
-import com.xiaoleilu.hutool.http.HttpUtil;
-import com.xiaoleilu.hutool.json.JSONUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;

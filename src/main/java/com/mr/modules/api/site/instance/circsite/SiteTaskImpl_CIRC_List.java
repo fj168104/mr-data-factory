@@ -1,19 +1,13 @@
 package com.mr.modules.api.site.instance.circsite;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.mr.modules.api.site.SiteTaskExtend;
 import lombok.extern.slf4j.Slf4j;
-import org.codehaus.groovy.util.ListHashMap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.junit.Test;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.*;
 

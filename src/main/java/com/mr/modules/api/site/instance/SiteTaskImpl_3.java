@@ -3,7 +3,6 @@ package com.mr.modules.api.site.instance;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.xiaoleilu.hutool.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

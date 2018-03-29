@@ -1,7 +1,7 @@
 package com.mr.common.base.controller;
 
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
+import com.mr.framework.log.Log;
+import com.mr.framework.log.LogFactory;
 
 public class BaseController {
 

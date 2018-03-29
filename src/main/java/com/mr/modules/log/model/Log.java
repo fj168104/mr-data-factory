@@ -1,7 +1,7 @@
 package com.mr.modules.log.model;
 
 import com.mr.common.base.model.BaseEntity;
-import com.xiaoleilu.hutool.util.StrUtil;
+import com.mr.framework.core.util.StrUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,7 +1,7 @@
 package com.mr.common.aop;
 
 import com.mr.common.exception.BaseException;
-import com.xiaoleilu.hutool.json.JSONUtil;
+import com.mr.framework.json.JSONUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;

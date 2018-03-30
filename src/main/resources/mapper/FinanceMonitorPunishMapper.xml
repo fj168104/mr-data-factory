@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mr.modules.api.mapper.FinanceMonitorPunishMapper" >
+  <resultMap id="BaseResultMap" type="com.mr.modules.api.model.FinanceMonitorPunish" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="PRIMARY_KEY" property="primaryKey" jdbcType="VARCHAR" />
+    <result column="PUNISH_NO" property="punishNo" jdbcType="VARCHAR" />
+    <result column="PUNISH_TITLE" property="punishTitle" jdbcType="VARCHAR" />
+    <result column="PARTY_INSTITUTION" property="partyInstitution" jdbcType="VARCHAR" />
+    <result column="PARTY_PERSON" property="partyPerson" jdbcType="VARCHAR" />
+    <result column="PARTY_PERSON_ID" property="partyPersonId" jdbcType="VARCHAR" />
+    <result column="PARTY_PERSON_TITLE" property="partyPersonTitle" jdbcType="VARCHAR" />
+    <result column="PARTY_PERSON_DOMI" property="partyPersonDomi" jdbcType="VARCHAR" />
+    <result column="UNICODE" property="unicode" jdbcType="VARCHAR" />
+    <result column="PARTY_CATEGORY" property="partyCategory" jdbcType="VARCHAR" />
+    <result column="DOMICILE" property="domicile" jdbcType="VARCHAR" />
+    <result column="LEGAL_REPRESENTATIVE" property="legalRepresentative" jdbcType="VARCHAR" />
+    <result column="PARTY_SUPPLEMENT" property="partySupplement" jdbcType="VARCHAR" />
+    <result column="COMPANY_FULL_NAME" property="companyFullName" jdbcType="VARCHAR" />
+    <result column="INTERMEDIARY_CATEGORY" property="intermediaryCategory" jdbcType="VARCHAR" />
+    <result column="COMPANY_SHORT_NAME" property="companyShortName" jdbcType="VARCHAR" />
+    <result column="COMPANY_CODE" property="companyCode" jdbcType="VARCHAR" />
+    <result column="STOCK_CODE" property="stockCode" jdbcType="VARCHAR" />
+    <result column="STOCK_SHORT_NAME" property="stockShortName" jdbcType="VARCHAR" />
+    <result column="PUNISH_CATEGORY" property="punishCategory" jdbcType="VARCHAR" />
+    <result column="RELATED_BOND" property="relatedBond" jdbcType="VARCHAR" />
+    <result column="PUNISH_RESULT" property="punishResult" jdbcType="VARCHAR" />
+    <result column="PUNISH_INSTITUTION" property="punishInstitution" jdbcType="VARCHAR" />
+    <result column="PUNISH_DATE" property="punishDate" jdbcType="VARCHAR" />
+    <result column="REMEDIAL_LIMIT_TIME" property="remedialLimitTime" jdbcType="VARCHAR" />
+    <result column="PUBLISHER" property="publisher" jdbcType="VARCHAR" />
+    <result column="PUBLISH_DATE" property="publishDate" jdbcType="VARCHAR" />
+    <result column="LIST_CLASSIFICATION" property="listClassification" jdbcType="VARCHAR" />
+    <result column="SUPERVISION_TYPE" property="supervisionType" jdbcType="VARCHAR" />
+    <result column="SOURCE" property="source" jdbcType="VARCHAR" />
+    <result column="OBJECT" property="object" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="IRREGULARITIES" property="irregularities" jdbcType="LONGVARCHAR" />
+    <result column="RELATED_LAW" property="relatedLaw" jdbcType="LONGVARCHAR" />
+    <result column="PUNISH_RESULT_SUPPLEMENT" property="punishResultSupplement" jdbcType="LONGVARCHAR" />
+    <result column="DETAILS" property="details" jdbcType="LONGVARCHAR" />
+  </resultMap>
+</mapper>

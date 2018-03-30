@@ -47,5 +47,5 @@ public abstract class BaseEntity implements java.io.Serializable{
 
     private Date createTime;
 
-    private Date modifyTime;
+    private Date updateTime;
 }

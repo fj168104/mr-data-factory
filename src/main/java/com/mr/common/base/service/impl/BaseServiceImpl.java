@@ -74,7 +74,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
 	@Override
 	public Integer save(T record) {
 		record.setCreateTime(new Date());
-		record.setModifyTime(record.getCreateTime());
+		record.setUpdateTime(record.getCreateTime());
 		return this.mapper.insert(record);
 	}
 
@@ -87,7 +87,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
 	@Override
 	public Integer saveSelective(T record) {
 		record.setCreateTime(new Date());
-		record.setModifyTime(record.getCreateTime());
+		record.setUpdateTime(record.getCreateTime());
 		return this.mapper.insertSelective(record);
 	}
 
@@ -104,7 +104,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
 	 */
 	@Override
 	public Integer update(T record) {
-		record.setModifyTime(new Date());
+		record.setUpdateTime(new Date());
 		return this.mapper.updateByPrimaryKey(record);
 	}
 
@@ -116,7 +116,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
 	 */
 	@Override
 	public Integer updateSelective(T record) {
-		record.setModifyTime(new Date());
+		record.setUpdateTime(new Date());
 		return this.mapper.updateByPrimaryKeySelective(record);
 	}
 

@@ -38,7 +38,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//获取清单列表页数pageAll
 		String targetUri1 = "http://www.circ.gov.cn/web/site0/tab5240/";
 		String fullTxt1 = getData(targetUri1);
-//        pageAll = extractPage(fullTxt1);
+        pageAll = extractPage(fullTxt1);
         //1.保监会处罚列表清单
         List<List<?>> listList = new ArrayList<>();
         for (int i = 1;i<=pageAll;i++){
@@ -66,6 +66,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
                }
         }
 		exportToXls("circ.xlsx", listsExcel);
+        log.info("保监会处罚信息抓起完成···");
         return null;
 	}
 	/**
@@ -103,7 +104,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
             //抽取连接
             String href = "http://www.circ.gov.cn"+elementA.attr("href");
             //抽取标题
-            String title = elementA.attr("title");
+            String title = elementA.attr("title").replace("(","（").replace(")","）");
             //抽取发布的时间
             String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
             String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
@@ -119,14 +120,14 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 	 */
 	private Map extractContent(String fullTxt, String id, String title) {
 		Map map = new LinkedHashMap();
+		//文件类型
+        String fileType = ""; //TODO 对公处罚，个人处罚，处罚情况
 		//序号***** TODO 需确认
 		String seqNo = "";  //可以提取链接中的ID
 		seqNo = id;
 
 		//处罚文号******
-		String punishNo = "";
-		punishNo = "保监罚〔2018〕10号";    //丛链接中提取 TODO 部分在链接中不存在，需要在正文中提取
-
+		String punishNo = "";//丛链接中提取 TODO 部分在链接中不存在，需要在正文中提取
 
 		//机构当事人名称
 		String orgPerson = "";
@@ -165,15 +166,14 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//处罚日期***** TODO 可以中正文中提取，但是格式非阿拉伯数字类型
 		String punishDate = "";
 		//获取正文内容
-		Document doc = Jsoup.parse(fullTxt.replace("&nbsp;",""));
+		Document doc = Jsoup.parse(fullTxt.replace("&nbsp;","").replace("　","").replace(":","："));
 		//获取正文主节点
 		Elements textElements = doc.getElementsByAttributeValue("id","tab_content");
 		//获得主节点下的所有文本内容
 		String text = textElements.text();
 		/*1.提取发布时间*/
-		releaseDate = text.substring(text.indexOf("发布时间：")+6,text.indexOf("分享到：")).trim();
-		/*2.提取文号*/
-		punishNo = title.substring(title.indexOf("（保"),title.indexOf("号）")+2);
+		releaseDate = text.substring(text.indexOf("发布时间：")+5,text.indexOf("分享到：")).trim();
+
 //		log.info("-----文号："+punishNo+"-------文件名称："+title +"-----------提取发布时间:"+releaseDate);
 		/*3.提取处罚机关*/
 		Elements elementsSpan = doc.getElementsByClass("xilanwb");
@@ -184,56 +184,157 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		punishOrg = elementsSpanChild.get(elementsSpanChildCount-2).text().trim();
 		/*5.提取处罚时间*/
 		punishDate  = elementsSpanChild.get(elementsSpanChildCount-1).text().trim();
-//		log.info("处罚机关:"+punishOrg+"---处罚时间:"+punishDate+"---文件名称："+title);
-		/*解析机构与当事人*/
-		int countPerson =1;
+		//输出详情内容
 		StringBuffer stringBufferDetail = new StringBuffer();
-		for(Element elementP : elementsSpanChild){
-			if(elementP.text().indexOf("：")>-1){
-				String[] arrString = elementP.text().split("：");
+		/*TODO 保监会处罚站点分三大类*/
+		//一、主题中包括： TODO 中国保监会对 指自然人
+		if(title.indexOf("中国保监会对")>-1){
+            fileType = "个人处罚";
+		    List<String >  strList  = new ArrayList<>();
+		    int count = 1;
+            for(Element elementP : elementsSpanChild){
+                if(count==1){punishNo = elementP.text();}
+                if(count==3){
+                    //TODO 模型：受处罚人：李涛，瑞福德健康保险股份有限公司副总裁
+                    String[] strName =  elementP.text().split("：");
+                    String[] strNameJob =  strName[1].split("，");
+                    priPerson.add(strNameJob[0]);
+                    priCert.add("");
+                    if(strNameJob.length==2){
+                        priJob.add(strNameJob[1]);
+                    }else{
+                        priJob.add("");
+                    }
 
-				if(arrString.length==2){
-					//进行分析了【法定代表人，当事人，住所，身份证号，职务，住址】等字符标记长度不超过6，所以考虑用长度来过滤
-					if(arrString[0].length()<=6){
-						//提取机构相关信息（对公）
-						if(countPerson<=3){
-							//6.机构当事人名称
-							if(countPerson==1){orgPerson = arrString[1];}
-							//7.机构当事人住所
-							if(countPerson==2){orgAddress = arrString[1];}
-							//8.机构负责人姓名
-							if(countPerson==3){orgHolderName = arrString[1];}
+                    priAddress.add("");
+                }
+
+                if(!elementP.text().equals("")){
+                    strList.add(elementP.text());
+                }
+
+                count++;
+            }
+            log.info("strList:"+strList.size());
+            punishOrg=strList.get(strList.size()-2);
+            if(punishOrg.length()>11){
+				punishOrg="中国保险监督管理委员会";
+			}
+            punishDate = strList.get(strList.size()-1);
+			stringBufferDetail.append(elementsSpanChild.text());
+		}else if (title.indexOf("中国保险监督管理委员会行政处罚决定书")>-1){ //二、主题为包括： TODO 中国保险监督管理委员会行政处罚决定书 指法人
+            fileType = "对公处罚";
+			/*2.提取文号*/
+			punishNo = title.substring(title.indexOf("（保"),title.indexOf("号）")+2);
+			/*解析机构与当事人*/
+			int countPerson =1;//统计当事人
+			int countPMaker = 0;//统计P标签
+            boolean busiflag = false;//判断是否缺失法人代表标识
+            boolean priFlag = false;// TODO 判断是否为自然人
+            String peopleFeature = "";// TODO 特殊情况下标识自然人
+			for(Element elementP : elementsSpanChild){
+				if(elementP.text().indexOf("：")>-1){
+					String[] arrString = elementP.text().split("：");
+					if(arrString.length==2 ){
+						//进行分析了【法定代表人，当事人，住所，身份证号，职务，住址】等字符标记长度不超过6，所以考虑用长度来过滤
+						if(arrString[0].length()<=6){
+						    //通过身份证号判断为自然人
+						    if(countPerson==2&&(arrString[0].equals("身份证号")||arrString[0].equals("护照号"))){
+                                priFlag=true;
+                            }
+                            if(countPerson==1){peopleFeature =arrString[1];}
+
+
+							//提取机构相关信息（对公）
+							if(countPerson<=3 && priFlag == false){
+								//6.机构当事人名称
+								if(countPerson==1){orgPerson = arrString[1];}
+								//7.机构当事人住所
+								if(countPerson==2){orgAddress = arrString[1];}
+								//8.机构负责人姓名
+								if(countPerson==3) {
+									if (arrString[0].equals("当事人")) {
+										orgHolderName = "缺失法定代表人";
+									}else{
+										orgHolderName = arrString[1];
+									}
+								}
+							}
+							//提取相关当事人信息（个人）
+                            if(countPerson>=3 && priFlag == false ) {
+                                if (countPerson == 3 && arrString[0].equals("当事人")) {
+                                    busiflag = true;
+                                }
+                                if(busiflag==true){
+                                    if ((countPerson) % 4 == 3) {
+                                        priPerson.add(arrString[1]);
+                                    }
+                                    if ((countPerson) % 4 == 0) {
+                                        priCert.add(arrString[1]);
+                                    }
+                                    if ((countPerson) % 4 == 1) {
+                                        priJob.add(arrString[1]);
+                                    }
+                                    if ((countPerson) % 4 == 2) {
+                                        priAddress.add(arrString[1]);
+                                    }
+                                }
+                                if(busiflag==false){
+                                    if(countPerson>3){
+                                        if((countPerson)%4==0){
+                                            priPerson.add(arrString[1]);
+                                        }
+                                        if((countPerson)%4==1){
+                                            priCert.add(arrString[1]);
+                                        }
+                                        if((countPerson)%4==2){
+                                            priJob.add(arrString[1]);
+                                        }
+                                        if((countPerson)%4==3){
+                                            priAddress.add(arrString[1]);
+                                        }
+                                    }
+                                }
+
+							}
+
+                            if(priFlag==true){
+                                orgPerson = "";
+                                orgAddress = "";
+                                orgHolderName = "";
+                                priPerson.add(peopleFeature);
+                                fileType = "个人处罚";
+                                if((countPerson)%4==1){
+                                    priPerson.add(arrString[1]);
+                                }
+                                if((countPerson)%4==2){
+                                    priCert.add(arrString[1]);
+                                }
+                                if((countPerson)%4==3){
+                                    priJob.add(arrString[1]);
+                                }
+                                if((countPerson)%4==0){
+                                    priAddress.add(arrString[1]);
+                                }
+                            }
+							countPerson++;
 						}
-						//提取相关当事人信息（个人）
-						if(countPerson>3){
-
-							if((countPerson-3)%4==1){
-								priPerson.add(arrString[1]);
-//								System.out.println("0:"+arrString[1]);
-							}
-							if((countPerson-3)%4==2){
-								priCert.add(arrString[1]);
-//								System.out.println("1:"+arrString[1]);
-							}
-							if((countPerson-3)%4==3){
-								priJob.add(arrString[1]);
-//								System.out.println("2:"+arrString[1]);
-							}
-							if((countPerson-3)%4==0){
-								priAddress.add(arrString[1]);
-//								System.out.println("3"+arrString[1]);
-							}
-
-						}
-						countPerson++;
-//						log.info(arrString[0]+"-----------------------------------"+arrString[1]);
 					}
 				}
-			}else{
-				stringBufferDetail.append(elementP.text()+"\n");
+				if(countPMaker<=elementsSpanChild.size()-1){
+					stringBufferDetail.append(elementP.text()+"\n");
+				}
+				countPMaker++;
 			}
-
+			log.info("提取："+title+"······完成·····");
+		}else{//三、主题为包括： TODO 处罚实施情况内容
+			fileType ="处罚实施情况";
+			punishNo = title;
+			stringBufferDetail.append(elementsSpanChild.text());
+			punishOrg="";
+			punishDate="";
 		}
+
 		map.put("seqNo",seqNo);
 		map.put("punishNo",punishNo);
 		map.put("orgPerson",orgPerson);
@@ -248,8 +349,9 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		map.put("releaseDate",releaseDate);
 		map.put("punishOrg",punishOrg);
 		map.put("punishDate",punishDate);
+		map.put("fileType",fileType);
 
-		log.info(		"\nseqNo:"+seqNo+"\n"+
+		/*log.info(		"\nseqNo:"+seqNo+"\n"+
 						"punishNo:"+punishNo+"\n"+
 						"orgPerson:"+orgPerson+"\n"+
 						"orgAddress:"+orgAddress+"\n"+
@@ -258,13 +360,13 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 						"releaseDate:"+releaseDate+"\n"+
 						"punishOrg:"+punishOrg+"\n"+
 						"punishDate:"+punishDate+"\n"
-				);
+				);*/
 
-		log.info(priPerson.toString());
-		log.info(priCert.toString());
-		log.info(priJob.toString());
-		log.info(priAddress.toString());
-		log.info(stringBufferDetail.toString());
+//		log.info(priPerson.toString());
+//		log.info(priCert.toString());
+//		log.info(priJob.toString());
+//		log.info(priAddress.toString());
+//		log.info(stringBufferDetail.toString());
 		//		log.info("parse demo...\n" + punishDetail);
 		return  map;
 	}

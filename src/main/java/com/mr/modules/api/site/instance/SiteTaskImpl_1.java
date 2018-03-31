@@ -78,9 +78,16 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				//当事人 从链接中提取
 				String person = "";
 				String disclosureTitle = contentObj.getStr("disclosureTitle");
+				if (disclosureTitle.contains("撤销")) continue;
 				if (disclosureTitle.contains("关于对") && disclosureTitle.contains("采取")) {
-					person = disclosureTitle.substring(3, disclosureTitle.indexOf("采取"));
+					person = disclosureTitle.substring(3, disclosureTitle.indexOf("采取"))
+							.replace("“", "")
+							.replace("”", "");
 				}
+				if (StringUtils.isEmpty(person.trim())) {
+					person = company;
+				}
+
 				String destFilePath = "http://www.neeq.com.cn" + contentObj.getStr("destFilePath");
 				String fileName = downLoadFile(destFilePath);
 				String content = "";
@@ -88,8 +95,11 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					content = ocrUtil.getTextFromDoc(fileName);
 				} else if (fileName.toLowerCase().endsWith("pdf")) {
 					content = ocrUtil.getTextFromPdf(fileName);
+					if (!content.contains("当事人")) {
+						content = ocrUtil.getTextFromImg(fileName);
+					}
 				} else {
-					content = destFilePath;
+					log.warn("url{} is not doc or pdf", content);
 				}
 				map.put("company", company);
 				map.put("person", person);
@@ -142,26 +152,39 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		//处罚结果补充情况
 		String resultAddition = "";
 
-		Boolean isCompany = StringUtils.isNotEmpty(map.get("company")) || map.get("person").contains("公司");    //当事人是否为公司
+		Boolean isCompany = StringUtils.isNotEmpty(map.get("company"))
+				|| map.get("person").contains("公司")
+				|| map.get("person").contains("事务所");    //当事人是否为公司
 		//当事人为公司，格式规则
 		if (isCompany) {
 			int sIndx = 0;
-			String[] zsd = {"住所地：", "住\n所地：", "住所\n地：", "住所地\n："};
+			String[] zsd = {"住所地：", "住\n所地：", "住所\n地：", "住所地\n：",
+					"住所：", "住所",
+					"注\n册地：", "注册\n地：", "注册地\n：", "注册地：", "注册地址："};
 			String zsdStr = "";
 			int zsdindex = -1;
 			for (int i = 0; i < zsd.length; i++) {
 				if (fullTxt.indexOf(zsd[i]) > -1) {
 					zsdStr = zsd[i];
 					zsdindex = fullTxt.indexOf(zsd[i]);
+					break;
 				}
 			}
-			String[] fddbr = {"法定代表人：", "法\n定代表人：", "法定\n代表人：", "法定代\n表人：", "法定代表\n人：", "法定代表人\n："};
+			String[] fddbr = {"法定代表人：", "法\n定代表人：",
+					"法定\n代表人：",
+					"法定代\n表人：",
+					"法定代表\n人：",
+					"法定代表人\n：",
+					"法定代表人",
+					"控制人"};
 			String fddbrStr = "";
 			int fddbrIndex = -1;
+			String fddTxt = fullTxt.substring(0, fullTxt.indexOf("经查明"));
 			for (int i = 0; i < fddbr.length; i++) {
-				if (fullTxt.indexOf(fddbr[i]) > -1) {
+				if (fddTxt.indexOf(fddbr[i]) > -1) {
 					fddbrStr = fddbr[i];
-					fddbrIndex = fullTxt.indexOf(fddbr[i]);
+					fddbrIndex = fddTxt.indexOf(fddbr[i]);
+//					break;
 				}
 			}
 
@@ -176,7 +199,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 						.replace(fddbrStr, "")
 						.trim().replace("\n", "");
 			} else {
-				if (zsdindex > -1 && fullTxt.indexOf("经查明：") > -1) {
+				if (zsdindex > -1 && fullTxt.indexOf("经查明") > -1) {
 					String sTmp = fullTxt.substring(zsdindex, fullTxt.indexOf("经查明"));
 					if (sTmp.indexOf("；") > -1 && sTmp.indexOf("。") > -1) {
 						address = sTmp.substring(0, sTmp.indexOf("；"));
@@ -192,9 +215,26 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 			}
 
+			//公司一码通代码处理
+			String[] ymtdm = {"一码通代码：", "一\n码通代码：", "一码\n通代码：", "一码通\n代码：", "一码通代\n码：", "一码通代码\n：",};
+			String ymtdmStr = "";
+			int ymtdmIndex = -1;
+			for (int i = 0; i < ymtdm.length; i++) {
+				if (fullTxt.indexOf(ymtdm[i]) > -1) {
+					ymtdmStr = ymtdm[i];
+					ymtdmIndex = fullTxt.indexOf(ymtdm[i]);
+				}
+			}
+
+			if (ymtdmIndex > -1) {
+				String sTmp = fullTxt.substring(ymtdmIndex)
+						.replace(ymtdmStr, "").trim();
+				commonCode = sTmp.substring(0, sTmp.indexOf("）"));
+			}
+
 			sIndx = fullTxt.indexOf("当事人：") == -1 ? fullTxt.indexOf("当事人") : fullTxt.indexOf("当事人：");
-			if (sIndx == - 1) sIndx = fullTxt.indexOf("的决定");
-			if (sIndx == - 1) return;
+			if (sIndx == -1) sIndx = fullTxt.indexOf("的决定");
+			if (sIndx == -1) return;
 
 			if (fullTxt.indexOf("住所地") > -1) {
 				holderAddition = fullTxt.substring(sIndx, fullTxt.indexOf("住所地"))
@@ -227,8 +267,8 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			address = "";
 			holder = "";
 			int sIndx = fullTxt.indexOf("当事人：") == -1 ? fullTxt.indexOf("当事人") : fullTxt.indexOf("当事人：");
-			if (sIndx == - 1) sIndx = fullTxt.indexOf("的决定");
-			if (sIndx == - 1) return;
+			if (sIndx == -1) sIndx = fullTxt.indexOf("的决定");
+			if (sIndx == -1) return;
 
 			String[] ymtdm = {"一码通代码：", "一\n码通代码：", "一码\n通代码：", "一码通\n代码：", "一码通代\n码：", "一码通代码\n：",};
 			String ymtdmStr = "";
@@ -270,14 +310,14 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			resultAddition = "";
 		}
 
-		map.put("address", address);
-		map.put("holder", holder);
-		map.put("commonCode", commonCode);
-		map.put("holderAddition", holderAddition);
-		map.put("violation", violation);
-		map.put("rule", rule);
-		map.put("result", result);
-		map.put("resultAddition", resultAddition);
+		map.put("address", address.trim());
+		map.put("holder", holder.trim());
+		map.put("commonCode", commonCode.trim());
+		map.put("holderAddition", holderAddition.trim());
+		map.put("violation", violation.trim());
+		map.put("rule", rule.trim());
+		map.put("result", result.trim());
+		map.put("resultAddition", resultAddition.trim());
 
 	}
 

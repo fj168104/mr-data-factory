@@ -12,12 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -167,7 +163,7 @@ public class OCRUtil {
 		try {
 			OCRUtil ocrUtil = new OCRUtil();
 			ocrUtil.DOWNLOAD_DIR = "/home/fengjiang/Documents";
-			ocrUtil.postConfig();
+			ocrUtil.ocrUtils = new OcrUtils(DOWNLOAD_DIR);
 //			ocrUtil.renameTo("/home/fengjiang/Documents/nginx.conf", "/home/fengjiang/Documents/projdoc/nginx.conf");
 //			ocrUtil.pdf2image(DOWNLOAD_DIR + File.separator + "P020171222593212170499.pdf");
 //			ocrUtil.image2Dir("P020171222593212170499.pdf");
@@ -175,7 +171,8 @@ public class OCRUtil {
 
 //			log.info(ocrUtil.recognizeTexts(ocrUtil.image2Dir("P020171222593212170499.pdf")));
 
-			log.info(ocrUtil.getTextFromPdf("20180306182437_6kbbnpn3bb.pdf"));
+			log.info(ocrUtil.getTextFromImg("P020180302563551437859.pdf")
+					.replace("\n", "").replace(" ", ""));
 
 		} catch (Exception e) {
 			e.printStackTrace();

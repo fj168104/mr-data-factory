@@ -171,8 +171,7 @@ public class OCRUtil {
 
 //			log.info(ocrUtil.recognizeTexts(ocrUtil.image2Dir("P020171222593212170499.pdf")));
 
-			log.info(ocrUtil.getTextFromImg("P020180302563551437859.pdf")
-					.replace("\n", "").replace(" ", ""));
+			log.info("" + ocrUtil.getTextFromImg("P020170911352443434725.pdf"));
 
 		} catch (Exception e) {
 			e.printStackTrace();

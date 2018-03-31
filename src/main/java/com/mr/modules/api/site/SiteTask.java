@@ -1,5 +1,6 @@
 package com.mr.modules.api.site;
 
+import com.google.common.collect.Maps;
 import com.mr.common.util.EhCacheUtils;
 import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.TaskStatus;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.concurrent.*;
 
@@ -45,6 +47,12 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 		});
 		delThread.setDaemon(true);
 		delThread.start();
+	}
+
+	protected LinkedHashMap<String, String> contextDataMap = Maps.newLinkedHashMap();
+
+	public void setData(String key, String value){
+		contextDataMap.put(key, value);
 	}
 
 	public static void putFinishQueue(String callId) throws InterruptedException {

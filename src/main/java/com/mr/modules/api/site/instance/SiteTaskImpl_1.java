@@ -91,16 +91,23 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				String destFilePath = "http://www.neeq.com.cn" + contentObj.getStr("destFilePath");
 				String fileName = downLoadFile(destFilePath);
 				String content = "";
-				if (fileName.toLowerCase().endsWith("doc")) {
-					content = ocrUtil.getTextFromDoc(fileName);
-				} else if (fileName.toLowerCase().endsWith("pdf")) {
-					content = ocrUtil.getTextFromPdf(fileName);
-					if (!content.contains("当事人")) {
-						content = ocrUtil.getTextFromImg(fileName);
+				try{
+					if (fileName.toLowerCase().endsWith("doc")) {
+						content = ocrUtil.getTextFromDoc(fileName);
+					} else if (fileName.toLowerCase().endsWith("pdf")) {
+						content = ocrUtil.getTextFromPdf(fileName);
+						if (!content.contains("当事人")) {
+							fileName = downLoadFile(destFilePath);
+							log.info("fileName:::::" + fileName);
+							content = ocrUtil.getTextFromImg(fileName);
+						}
+					} else {
+						log.warn("url{} is not doc or pdf", content);
 					}
-				} else {
-					log.warn("url{} is not doc or pdf", content);
+				}catch (Exception ex){
+					log.error(ex.getMessage());
 				}
+
 				map.put("company", company);
 				map.put("person", person);
 				map.put("destFilePath", destFilePath);
@@ -179,6 +186,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					"控制人"};
 			String fddbrStr = "";
 			int fddbrIndex = -1;
+			if(fullTxt.indexOf("经查明") < 0) return;
 			String fddTxt = fullTxt.substring(0, fullTxt.indexOf("经查明"));
 			for (int i = 0; i < fddbr.length; i++) {
 				if (fddTxt.indexOf(fddbr[i]) > -1) {
@@ -191,13 +199,26 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 			if (fddbrIndex > -1) {
 				if (zsdindex > -1) {
-					address = fullTxt.substring(zsdindex, fddbrIndex)
-							.replace(zsdStr, "").trim();
-					address = address.substring(0, address.length() - 1).replace("\n", "");
+					if (zsdindex < fddbrIndex) {
+						address = fullTxt.substring(zsdindex, fddbrIndex)
+								.replace(zsdStr, "").trim();
+						address = address.substring(0, address.length() - 1).replace("\n", "");
+						holder = fullTxt.substring(fddbrIndex, fullTxt.indexOf("经查明"))
+								.replace(fddbrStr, "")
+								.trim().replace("\n", "");
+					} else {
+						holder = fullTxt.substring(fddbrIndex, zsdindex)
+								.replace(fddbrStr, "").trim();
+
+						holder = holder.substring(0, holder.length() - 1).replace("\n", "");
+
+						address = fullTxt.substring(zsdindex, fullTxt.indexOf("经查明"))
+								.replace(zsdStr, "")
+								.trim().replace("\n", "");
+					}
+
 				}
-				holder = fullTxt.substring(fddbrIndex, fullTxt.indexOf("经查明"))
-						.replace(fddbrStr, "")
-						.trim().replace("\n", "");
+
 			} else {
 				if (zsdindex > -1 && fullTxt.indexOf("经查明") > -1) {
 					String sTmp = fullTxt.substring(zsdindex, fullTxt.indexOf("经查明"));

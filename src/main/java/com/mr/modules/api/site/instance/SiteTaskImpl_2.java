@@ -3,6 +3,8 @@ package com.mr.modules.api.site.instance;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mr.common.OCRUtil;
+import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.site.SiteTaskExtend;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +33,9 @@ import java.util.*;
 public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 	private static LinkedHashMap<String, String> cityMap = Maps.newLinkedHashMap();
+
+	private static ArrayList<String> pdfOrDocType = Lists.newArrayList("天津");
+	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
 	@PostConstruct
 	public void initAfter() {
@@ -81,28 +86,22 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 							.getElementsByTag("li");
 					for (Element li : liElements) {
 						LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
+						map.put("city", city);
 
 						Element aElement = li.getElementsByTag("a").get(0);
-						String href = url + aElement.attr("href").substring(2);
-						try {
-							String hrefContent = getData(targetUri);
-							extract(getData(href), map);
-						} catch (HttpClientErrorException ex) {
-							if (ex.getMessage().trim().equals("404 Not Found"))
-								continue;
-						} catch (Exception e) {
-							log.error(e.getMessage());
-							e.printStackTrace();
-						}
 
-						String title = aElement.attr("title");
-						String releaseDate = li.getElementsByTag("span").get(0).text();
+						String title = StringUtils.isEmpty(aElement.attr("title"))
+								? aElement.text() : aElement.attr("title");
+						String releaseDate = li.getElementsByTag("span").first().text();
 						//标题
 						map.put("title", title);
 						//发布日期
 						map.put("releaseDate", releaseDate);
 						//发布机构
 						map.put("org", String.format("中国证监会%s监管局", city));
+
+						String href = url + aElement.attr("href").substring(2);
+						fetchOne(map, href);
 						lists.add(map);
 					}
 				}
@@ -111,20 +110,48 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		return lists;
 	}
 
+	/**
+	 * 抓取并解析单条数据
+	 *
+	 * @param map
+	 */
+	private boolean fetchOne(LinkedHashMap<String, String> map, String url) {
+		map.putAll(contextDataMap);
+		map.put("url", url);
+		//仅仅天津是pdf,doc
+		boolean isHtml = !pdfOrDocType.contains(map.get("city"));
+		try {
+			extract(getData(url), map, isHtml);
+		} catch (HttpClientErrorException ex) {
+			if (ex.getMessage().trim().equals("404 Not Found"))
+				return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+			return false;
+		}
+		return true;
+
+
+	}
 
 	/**
 	 * 提取所需要的信息
 	 * 序号、处罚文号、处罚对象、处罚日期、发布机构、发布日期、名单分类、标题名称、详情
 	 */
-	private void extract(String fullTxt, LinkedHashMap<String, String> map) {
+	private void extract(String fullTxt, LinkedHashMap<String, String> map, Boolean isHtml) {
 		//兼容异常发生时继续跑
 		map.put("punishNo", "");
 		map.put("punishObject", "");
 		map.put("punishDate", "");
 		map.put("detail", "");
 
-		String 根据[] = {"依据《中华人民共和国证券法》", "依据《私募投资基金监督管理暂行办法》"};
-		ArrayList<String> filterTags = Lists.newArrayList("<SPAN>", "</SPAN>", "&nbsp;", "　");
+		String 根据[] = {"依据《中华人民共和国证券法》",
+				"依据《私募投资基金监督管理暂行办法》",
+				"根据2006年1月1日起施行的《中华人民共和国证券法》",
+				"依据中国证监会《私募投资基金监督管理暂行办法》",
+				"依据《期货交易管理条例》"};
+		ArrayList<String> filterTags = Lists.newArrayList("<SPAN>", "</SPAN>", "&nbsp;", "　", "<BR>");
 		//序号 TODO 需确认
 		String seqNo = "";
 		seqNo = "";
@@ -150,55 +177,146 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		ArrayList<String> details = Lists.newArrayList();
 
 		Document doc = Jsoup.parse(fullTxt);
-		if (doc.getElementsByTag("title").get(0).text().contains("404"))
-			return;
 
-		Elements Ps = doc.getElementsByTag("P");
-		for (Element pElement : Ps) {
-			//punishNo 处理
-			if (Strings.isNullOrEmpty(punishNo)) {
-				Elements strongEles = pElement.getElementsByTag("STRONG");
-				if (!CollectionUtils.isEmpty(strongEles)) {
-					punishNo = strongEles.get(0).text().trim();
+		String[] zjh = {"中国证监会", map.get("city") + "证监会"};
+		String zjhStr = "";
+		int zjhIndex = -1;
+		for (int i = 0; i < zjh.length; i++) {
+			if (fullTxt.indexOf(zjh[i]) > -1) {
+				zjhStr = zjh[i];
+				zjhIndex = fullTxt.indexOf(zjh[i]);
+				break;
+			}
+		}
+
+		if (isHtml) {
+			if (doc.getElementsByTag("title").first().text().contains("404"))
+				return;
+			Elements Ps = doc.getElementsByTag("P");
+			if(map.get("city").equals("贵州"))
+				Ps = doc.getElementsByTag("SPAN");
+
+			for (Element pElement : Ps) {
+				if(map.get("city").equals("贵州") && !Ps.text().contains("当事人：") && !isOn)
+					continue;
+
+				//punishNo 处理
+				if (Strings.isNullOrEmpty(punishNo)) {
+					Elements strongEles = pElement.getElementsByTag("STRONG");
+					if (!CollectionUtils.isEmpty(strongEles)) {
+						punishNo = strongEles.get(0).text().trim();
 //					continue;
+					} else {
+						punishNo = Strings.isNullOrEmpty(pElement.text()) ? "" : pElement.text().trim();
+					}
+					// 处罚文号 不存在
+					if (punishNo.contains("当事人")) punishNo = "不存在";
+				}
+
+				//punishObject 处理
+				if (CollectionUtils.isEmpty(punishObjects) || isOn) {
+					String pString = filter(pElement.text().trim(), filterTags).trim();
+					if (pString.contains("当事人：") && StringUtils.isNotEmpty(contains(pString, 根据))) {
+						punishObject = pString.substring(0, pString.indexOf(contains(pString, 根据)));
+						if (zjhIndex > -1) {
+							log.info("contains(pString, 根据)):::" + contains(pString, 根据));
+							log.info("zjhIndex:::" + zjhIndex);
+							log.info("pString:::" + pString);
+
+							detail = pString.substring(pString.indexOf(contains(pString, 根据)),
+									pString.length()>zjhIndex?zjhIndex:pString.length());
+							if(zjhIndex + 10 > pString.length()){
+								punishDate = "";
+							}else {
+								punishDate = filter(pString.substring(zjhIndex + 10), filterTags);
+							}
+
+						}
+						break;
+					}
+
+					if (pString.contains("当事人：")) {
+						isOn = true;    //打开当事人提取开关
+						punishObjects.add(pString);
+
+					}
+					if (StringUtils.isNotEmpty(contains(pString, 根据))) {
+						isOn = false;
+						punishObject = punishObjects.toString().replace("[", "").replace("]", "");
+						detailIsOn = true;    //打开详情提取开关
+					}
+				}
+
+				//punishDate 处理
+				{
+					String pString = extracterZH(pElement.text().trim());
+					if ("年月日".equals(pString))
+						punishDate = filter(pElement.text().trim(), filterTags);
+				}
+
+
+				//detail 处理
+				if (detailIsOn) {
+					details.add(filter(pElement.text().trim(), filterTags));
+					if (filter(pElement.text().trim(), filterTags).startsWith(zjhStr)) {
+						detailIsOn = false;
+						detail = details.toString().replace("[", "").replace("]", "");
+					}
+
+				}
+			}
+
+			if (Strings.isNullOrEmpty(detail)) {
+				detail = details.toString().replace("[", "").replace("]", "");
+			}
+		} else {
+			String text = fullTxt.substring(fullTxt.indexOf("var file_appendix"));
+			String href = map.get("url").substring(0, map.get("url").lastIndexOf("/"))
+					+ text.substring(text.indexOf("href=\"."), text.indexOf("\">"))
+					.replace("href=\".", "'")
+					.replace("'", "");
+			String content = "";
+			try {
+				String fileName = downLoadFile(href);
+				if (fileName.toLowerCase().endsWith("doc")) {
+					content = ocrUtil.getTextFromDoc(fileName);
+				} else if (fileName.toLowerCase().endsWith("pdf")) {
+					content = ocrUtil.getTextFromImg(fileName);
 				} else {
-					punishNo = Strings.isNullOrEmpty(pElement.text()) ? "" : pElement.text().trim();
+					log.warn("url{} is not doc or pdf", content);
 				}
-				// 处罚文号 不存在
-				if(punishNo.contains("当事人")) punishNo = "不存在";
+			} catch (Exception ex) {
+				log.error(ex.getMessage());
+				return;
 			}
 
-			//punishObject 处理
-			if (CollectionUtils.isEmpty(punishObjects) || isOn) {
-				String pString = filter(pElement.text().trim(), filterTags).trim();
-				if (pString.contains("当事人：")) {
-					isOn = true;    //打开当事人提取开关
-					punishObjects.add(pString);
-				}
-				if (StringUtils.isNotEmpty(contains(pString, 根据))) {
-					isOn = false;
-					punishObject = punishObjects.toString().replace("[", "").replace("]", "");
-					detailIsOn = true;    //打开详情提取开关
+			String[] zjh1 = {"中国证监会", map.get("city") + "证监会"};
+			String zjhStr1 = "";
+			int zjhIndex1 = -1;
+			for (int i = 0; i < zjh1.length; i++) {
+				if (content.indexOf(zjh1[i]) > -1) {
+					zjhStr1 = zjh1[i];
+					zjhIndex1 = content.indexOf(zjh1[i]);
+					break;
 				}
 			}
 
-			//punishDate 处理
-			{
-				String pString = extracterZH(pElement.text().trim());
-				if ("年月日".equals(pString))
-					punishDate = filter(pElement.text().trim(), filterTags);
-			}
+			if (StringUtils.isNotEmpty(content)) {
 
+				punishNo = "不存在";
+				if (content.contains("当事人") && content.contains("依据")) {
 
-			//detail 处理
-			if (detailIsOn) {
-				details.add(filter(pElement.text().trim(), filterTags));
-				if (filter(pElement.text().trim(), filterTags).startsWith("中国证监会")) {
-					detailIsOn = false;
-					detail = details.toString().replace("[", "").replace("]", "");
+					punishObject = content.substring(content.indexOf("当事人"), content.indexOf("依据"));
+					if (zjhIndex1 > -1) {
+						punishDate = content.substring(zjhIndex1).replace(zjhStr1, "").trim();
+						detail = content.substring(content.indexOf("依据"), zjhIndex1);
+					} else {
+						punishDate = "";
+						detail = content.substring(content.indexOf("依据"));
+					}
 				}
-
 			}
+
 		}
 
 		map.put("punishNo", punishNo);

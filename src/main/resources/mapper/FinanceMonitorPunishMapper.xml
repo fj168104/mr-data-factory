@@ -46,13 +46,18 @@
     </resultMap>
 
     <!--通过业务主键删除-->
-    <select id="deleteByBizKey">
-      DELETE FROM finance_monitor_punish c WHERE c.PRIMARY_KEY = #{primaryKey}
-    </select>
+    <delete id="deleteByBizKey" parameterType="java.lang.String">
+      DELETE FROM finance_monitor_punish WHERE PRIMARY_KEY = #{primaryKey}
+    </delete>
 
     <!--通过业务主键查找-->
     <select id="selectByBizKey" resultMap="BaseResultMap">
         SELECT * FROM finance_monitor_punish c WHERE c.PRIMARY_KEY = #{primaryKey}
     </select>
+
+    <!--通过业务来源删除-->
+    <delete id="deleteByObject" parameterType="java.lang.String">
+        DELETE FROM finance_monitor_punish WHERE OBJECT = #{object}
+    </delete>
 
 </mapper>

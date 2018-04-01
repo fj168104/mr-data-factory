@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -34,7 +36,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 	private static LinkedHashMap<String, String> cityMap = Maps.newLinkedHashMap();
 
-	private static ArrayList<String> pdfOrDocType = Lists.newArrayList("天津");
+	private static ArrayList<String> pdfOrDocType = Lists.newArrayList("天津1");
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
 	@PostConstruct
@@ -50,8 +52,35 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	@Override
 	protected String execute() throws Throwable {
 		log.info("*******************call site2 task**************");
-		List<LinkedHashMap<String, String>> lists = extractPage();
-		exportToXls("Site2.xlsx", lists);
+		List<FinanceMonitorPunish> lists = extractPage();
+		if (!CollectionUtils.isEmpty(lists)) {
+			exportToXls("Site2.xlsx", lists);
+		}
+
+		return null;
+	}
+
+	@Override
+	protected String executeOne() throws Throwable {
+		log.info("*******************call site2 task for One Record**************");
+
+		if (org.springframework.util.StringUtils.isEmpty(oneFinanceMonitorPunish.getPartyInstitution())) {
+			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPartyPerson());
+			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPartyPerson());
+		} else {
+			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPunishInstitution());
+			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPunishInstitution());
+		}
+
+		Assert.notNull(oneFinanceMonitorPunish.getPunishInstitution());
+		Assert.notNull(oneFinanceMonitorPunish.getRegion());
+		Assert.notNull(oneFinanceMonitorPunish.getSource());
+		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
+		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
+		Assert.notNull(oneFinanceMonitorPunish.getPublisher());
+		oneFinanceMonitorPunish.setObject("地方证件局-行政处罚决定");
+
+		doFetch(oneFinanceMonitorPunish, true);
 		return null;
 	}
 
@@ -60,8 +89,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	 * 提取所需要的信息
 	 * 序号、处罚文号、处罚对象、处罚日期、发布机构、发布日期、名单分类、标题名称、详情
 	 */
-	private List<LinkedHashMap<String, String>> extractPage() throws Exception {
-		List<LinkedHashMap<String, String>> lists = Lists.newLinkedList();
+	private List<FinanceMonitorPunish> extractPage() throws Exception {
+		List<FinanceMonitorPunish> lists = Lists.newLinkedList();
 		for (Map.Entry<String, String> entry : cityMap.entrySet()) {
 			log.info("city:" + entry.getKey());
 			String city = entry.getKey();
@@ -85,25 +114,24 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					Elements liElements = doc.getElementsByClass("fl_list").get(0)
 							.getElementsByTag("li");
 					for (Element li : liElements) {
-						LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
-						map.put("city", city);
+						FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
 
 						Element aElement = li.getElementsByTag("a").get(0);
-
 						String title = StringUtils.isEmpty(aElement.attr("title"))
 								? aElement.text() : aElement.attr("title");
 						String releaseDate = li.getElementsByTag("span").first().text();
-						//标题
-						map.put("title", title);
-						//发布日期
-						map.put("releaseDate", releaseDate);
-						//发布机构
-						map.put("org", String.format("中国证监会%s监管局", city));
-
 						String href = url + aElement.attr("href").substring(2);
-						map.put("url", href);
-						doFetch(map);
-						lists.add(map);
+
+						financeMonitorPunish.setPunishTitle(title);
+						financeMonitorPunish.setPublishDate(releaseDate);
+						financeMonitorPunish.setPublisher(String.format("中国证监会%s监管局", city));
+						financeMonitorPunish.setSource(href);
+						financeMonitorPunish.setRegion(city);
+
+						if (!doFetch(financeMonitorPunish, false)) {
+							return lists;
+						}
+						lists.add(financeMonitorPunish);
 					}
 				}
 			}
@@ -113,23 +141,30 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 	/**
 	 * 抓取并解析单条数据
-	 *	map[city; title; releaseDate; org; url]
-	 * @param map
+	 * map[city; title; releaseDate; org; url]
+	 *
+	 * @param financeMonitorPunish
 	 */
-	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) {
-		String url = map.get("url");
-		//仅仅天津是pdf,doc
-		boolean isHtml = !pdfOrDocType.contains(map.get("city"));
+	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+							Boolean isForce) {
+		String url = financeMonitorPunish.getSource();
+
 		try {
-			extract(getData(url), map, isHtml);
+			extract(getData(url), financeMonitorPunish);
+			String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
+			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
+				insertOrUpdate(financeMonitorPunish);
+				return true;
+			} else {
+				return false;
+			}
 		} catch (HttpClientErrorException ex) {
 			if (ex.getMessage().trim().equals("404 Not Found"))
-				return map;
+				return true;
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error(e.getMessage());
 		}
-		return map;
+		return true;
 
 
 	}
@@ -138,12 +173,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	 * 提取所需要的信息
 	 * 序号、处罚文号、处罚对象、处罚日期、发布机构、发布日期、名单分类、标题名称、详情
 	 */
-	private void extract(String fullTxt, LinkedHashMap<String, String> map, Boolean isHtml) {
-		//兼容异常发生时继续跑
-		map.put("punishNo", "");
-		map.put("punishObject", "");
-		map.put("punishDate", "");
-		map.put("detail", "");
+	private void extract(String fullTxt, FinanceMonitorPunish financeMonitorPunish) {
 
 		String 根据[] = {"依据《中华人民共和国证券法》",
 				"依据《私募投资基金监督管理暂行办法》",
@@ -151,9 +181,10 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				"依据中国证监会《私募投资基金监督管理暂行办法》",
 				"依据《期货交易管理条例》"};
 		ArrayList<String> filterTags = Lists.newArrayList("<SPAN>", "</SPAN>", "&nbsp;", "　", "<BR>");
-		//序号 TODO 需确认
-		String seqNo = "";
-		seqNo = "";
+
+		String city = financeMonitorPunish.getRegion();
+		//仅仅天津是pdf,doc
+		boolean isHtml = !pdfOrDocType.contains(city);
 
 		//处罚文号
 		String punishNo = "";
@@ -177,7 +208,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 		Document doc = Jsoup.parse(fullTxt);
 
-		String[] zjh = {"中国证监会", map.get("city") + "证监会"};
+		String[] zjh = {"中国证监会", city + "证监会"};
 		String zjhStr = "";
 		int zjhIndex = -1;
 		for (int i = 0; i < zjh.length; i++) {
@@ -192,11 +223,11 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			if (doc.getElementsByTag("title").first().text().contains("404"))
 				return;
 			Elements Ps = doc.getElementsByTag("P");
-			if(map.get("city").equals("贵州"))
+			if (city.equals("贵州"))
 				Ps = doc.getElementsByTag("SPAN");
 
 			for (Element pElement : Ps) {
-				if(map.get("city").equals("贵州") && !Ps.text().contains("当事人：") && !isOn)
+				if (city.equals("贵州") && !Ps.text().contains("当事人：") && !isOn)
 					continue;
 
 				//punishNo 处理
@@ -218,15 +249,11 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					if (pString.contains("当事人：") && StringUtils.isNotEmpty(contains(pString, 根据))) {
 						punishObject = pString.substring(0, pString.indexOf(contains(pString, 根据)));
 						if (zjhIndex > -1) {
-							log.info("contains(pString, 根据)):::" + contains(pString, 根据));
-							log.info("zjhIndex:::" + zjhIndex);
-							log.info("pString:::" + pString);
-
 							detail = pString.substring(pString.indexOf(contains(pString, 根据)),
-									pString.length()>zjhIndex?zjhIndex:pString.length());
-							if(zjhIndex + 10 > pString.length()){
+									pString.length() > zjhIndex ? zjhIndex : pString.length());
+							if (zjhIndex + 10 > pString.length()) {
 								punishDate = "";
-							}else {
+							} else {
 								punishDate = filter(pString.substring(zjhIndex + 10), filterTags);
 							}
 
@@ -270,7 +297,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			}
 		} else {
 			String text = fullTxt.substring(fullTxt.indexOf("var file_appendix"));
-			String href = map.get("url").substring(0, map.get("url").lastIndexOf("/"))
+			String href = financeMonitorPunish.getSource().substring(0, financeMonitorPunish.getSource().lastIndexOf("/"))
 					+ text.substring(text.indexOf("href=\"."), text.indexOf("\">"))
 					.replace("href=\".", "'")
 					.replace("'", "");
@@ -289,7 +316,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				return;
 			}
 
-			String[] zjh1 = {"中国证监会", map.get("city") + "证监会"};
+			String[] zjh1 = {"中国证监会", city + "证监会"};
 			String zjhStr1 = "";
 			int zjhIndex1 = -1;
 			for (int i = 0; i < zjh1.length; i++) {
@@ -318,10 +345,11 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 		}
 
-		map.put("punishNo", punishNo);
-		map.put("punishObject", punishObject);
-		map.put("punishDate", punishDate);
-		map.put("detail", detail);
+		financeMonitorPunish.setPunishNo(punishNo);
+		financeMonitorPunish.setPartyPerson(punishObject);
+		financeMonitorPunish.setPartyInstitution(punishDate);
+		financeMonitorPunish.setPunishDate(punishDate);
+		financeMonitorPunish.setDetails(detail);
 
 	}
 

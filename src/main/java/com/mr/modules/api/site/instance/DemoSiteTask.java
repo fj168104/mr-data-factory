@@ -47,4 +47,9 @@ public class DemoSiteTask extends SiteTask {
 		return null;
 	}
 
+	@Override
+	protected String executeOne() throws Throwable {
+		return null;
+	}
+
 }

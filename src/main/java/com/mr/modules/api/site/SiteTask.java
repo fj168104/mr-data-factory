@@ -1,15 +1,15 @@
 package com.mr.modules.api.site;
 
-import com.google.common.collect.Maps;
 import com.mr.common.util.EhCacheUtils;
 import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.TaskStatus;
 import com.mr.modules.api.caller.SiteVisitor;
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.expression.spel.ast.OpNE;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.concurrent.*;
 
@@ -25,6 +25,13 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	private Future<String> future;
 	private SiteVisitor<Integer> startVisitor;
 
+	//单条处理时使用, 接受外部参数
+	protected FinanceMonitorPunish oneFinanceMonitorPunish;
+
+	public void setFinanceMonitorPunish(FinanceMonitorPunish oneFinanceMonitorPunish) {
+		this.oneFinanceMonitorPunish = oneFinanceMonitorPunish;
+	}
+
 	private static BlockingQueue<String> finishQueue = new LinkedBlockingQueue<>();
 
 	static {
@@ -34,7 +41,7 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 				try {
 					while (finishQueue.size() > 100) {
 						for (int i = 0; i < 50; i++) {
-							if(!Objects.isNull(EhCacheUtils.get(finishQueue.take()))){
+							if (!Objects.isNull(EhCacheUtils.get(finishQueue.take()))) {
 								EhCacheUtils.remove(finishQueue.take());
 							}
 						}
@@ -49,12 +56,6 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 		delThread.start();
 	}
 
-	protected LinkedHashMap<String, String> contextDataMap = Maps.newLinkedHashMap();
-
-	public void setData(String key, String value){
-		contextDataMap.put(key, value);
-	}
-
 	public static void putFinishQueue(String callId) throws InterruptedException {
 		finishQueue.put(callId);
 	}
@@ -62,6 +63,7 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	public static void delSiteTaskInstance(String callId) throws InterruptedException {
 		EhCacheUtils.remove(callId);
 	}
+
 	public SiteTask() {
 		startVisitor = (SiteVisitor<Integer>) SpringUtils.getBean("startVisitor");
 	}
@@ -100,7 +102,13 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	@Override
 	public String call() throws Exception {
 		try {
-			String res = execute();
+			String res = null;
+			if (Objects.isNull(oneFinanceMonitorPunish)) {
+				res = execute();
+			} else {
+				res = executeOne();
+			}
+
 			if (StringUtils.isEmpty(res)) {
 				returnCode = TaskStatus.CALL_SUCCESS.index;
 				throwableInfo = "";
@@ -119,4 +127,6 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	}
 
 	protected abstract String execute() throws Throwable;
+
+	protected abstract String executeOne() throws Throwable;
 }

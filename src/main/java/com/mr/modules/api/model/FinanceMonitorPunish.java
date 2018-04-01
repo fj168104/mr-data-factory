@@ -186,9 +186,9 @@ public class FinanceMonitorPunish extends BaseEntity {
     private String details;
 
     /**
-     * 原文链接
+     * 区域
      */
     @Transient
-    private String targetUrl;
+    private String region;
 
 }

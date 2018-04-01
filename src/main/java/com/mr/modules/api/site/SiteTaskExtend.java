@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
 import com.mr.framework.core.io.FileUtil;
+import com.mr.modules.api.mapper.FinanceMonitorPunishMapper;
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.xls.export.FileExportor;
 import com.mr.modules.api.xls.export.domain.common.ExportCell;
 import com.mr.modules.api.xls.export.domain.common.ExportConfig;
@@ -14,10 +16,12 @@ import com.mr.modules.api.xls.importfile.domain.MapResult;
 import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
@@ -38,6 +42,19 @@ public abstract class SiteTaskExtend extends SiteTask {
 	private static String XLS_EXPORT_PATH = OCRUtil.DOWNLOAD_DIR + File.separator + "export";
 
 	protected RestTemplate restTemplate = SpringUtils.getBean(RestTemplate.class);
+
+	@Autowired
+	protected FinanceMonitorPunishMapper financeMonitorPunishMapper;
+
+	/**
+	 * 适配单条处理, 子类需要覆盖此方法
+	 * @return
+	 * @throws Throwable
+	 */
+	@Override
+	protected String executeOne() throws Throwable {
+		return null;
+	}
 
 	/**
 	 * GET 请求
@@ -216,12 +233,12 @@ public abstract class SiteTaskExtend extends SiteTask {
 		exportConfig.setFileName(xlsName);
 
 		List<ExportCell> exportCells = Lists.newArrayList();
-		if(siteObjects.get(0) instanceof LinkedHashMap){
-			for (String key : ((LinkedHashMap<String, String>)siteObjects.get(0)).keySet()) {
+		if (siteObjects.get(0) instanceof LinkedHashMap) {
+			for (String key : ((LinkedHashMap<String, String>) siteObjects.get(0)).keySet()) {
 				exportCells.add(new ExportCell(key));
 			}
-		}else {
-			for(Field field : siteObjects.get(0).getClass().getDeclaredFields()){
+		} else {
+			for (Field field : siteObjects.get(0).getClass().getDeclaredFields()) {
 				exportCells.add(new ExportCell(field.getName()));
 			}
 		}
@@ -261,4 +278,41 @@ public abstract class SiteTaskExtend extends SiteTask {
 		return maps;
 	}
 
+	/**
+	 * 设置业务主键 格式：punish_no|punish_title|punish_institution|punish_date
+	 * @return primaryKey
+	 */
+	protected String buildFinanceMonitorPunishBizKey(FinanceMonitorPunish financeMonitorPunish) {
+		String punishNo = StringUtils.isEmpty(financeMonitorPunish.getPunishNo())
+				? "null" : financeMonitorPunish.getPunishNo();
+
+		String punishTitle = StringUtils.isEmpty(financeMonitorPunish.getPunishTitle())
+				? "null" : financeMonitorPunish.getPunishTitle();
+		String punishInstitution = StringUtils.isEmpty(financeMonitorPunish.getPunishInstitution())
+				? "null" : financeMonitorPunish.getPunishInstitution();
+		String punishDate = StringUtils.isEmpty(financeMonitorPunish.getPunishDate())
+				? "null" : financeMonitorPunish.getPunishDate();
+		//去空值
+		financeMonitorPunish.setPunishNo(punishNo);
+		financeMonitorPunish.setPunishTitle(punishTitle);
+		financeMonitorPunish.setPunishInstitution(punishInstitution);
+		financeMonitorPunish.setPublishDate(punishDate);
+		financeMonitorPunish.setPrimaryKey(punishNo + punishTitle + punishInstitution + punishDate);
+
+		return financeMonitorPunish.getPrimaryKey();
+	}
+
+	/**
+	 * 保存单条记录
+	 * @param financeMonitorPunish
+	 * @return
+	 */
+	protected FinanceMonitorPunish insertOrUpdate(FinanceMonitorPunish financeMonitorPunish){
+		if(StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())){
+			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
+		}
+		financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
+		financeMonitorPunishMapper.insert(financeMonitorPunish);
+		return financeMonitorPunish;
+	}
 }

@@ -1,12 +1,11 @@
 package com.mr.modules.api;
 
+import com.google.common.base.Strings;
 import com.mr.modules.api.service.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -62,5 +61,19 @@ public class SiteController extends BaseController {
 		return map;
 	}
 
+	@RequestMapping(value = "/data/delete")
+	public ModelMap delSiteData(@RequestParam(value = "primaryKey", required = false) String primaryKey,
+								@RequestParam(value = "object",required = false) String object) throws Exception {
+		ModelMap map = new ModelMap();
+		if (!StringUtils.isEmpty(primaryKey)) {
+			map.addAttribute("delete_result", siteService.deleteByBizKey(primaryKey));
+		} else if (!StringUtils.isEmpty(object)) {
+			map.addAttribute("delete_result", siteService.deleteByObject(object));
+		} else {
+			map.addAttribute("delete_result", 0);
+		}
+
+		return map;
+	}
 
 }

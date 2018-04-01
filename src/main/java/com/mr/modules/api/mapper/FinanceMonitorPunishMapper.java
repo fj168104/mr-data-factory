@@ -6,6 +6,7 @@ import com.mr.modules.api.model.FinanceMonitorPunish;
 public interface FinanceMonitorPunishMapper extends BaseMapper<FinanceMonitorPunish> {
 	/**
 	 * 通过业务主键删除
+	 *
 	 * @param primaryKey
 	 * @return
 	 */
@@ -13,8 +14,13 @@ public interface FinanceMonitorPunishMapper extends BaseMapper<FinanceMonitorPun
 
 	/**
 	 * 通过业务主键查找
-	 *
 	 */
 	FinanceMonitorPunish selectByBizKey(String primaryKey);
+
+	/**
+	 * 通过业务来源删除
+	 * @return
+	 */
+	int deleteByObject(String object);
 
 }

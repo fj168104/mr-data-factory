@@ -4,6 +4,8 @@ import com.mr.common.base.model.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.Transient;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class FinanceMonitorPunish extends BaseEntity {
@@ -182,5 +184,11 @@ public class FinanceMonitorPunish extends BaseEntity {
      * 详情=行政处罚详情=全文|地方证监局、保监会、深交所
      */
     private String details;
+
+    /**
+     * 原文链接
+     */
+    @Transient
+    private String targetUrl;
 
 }

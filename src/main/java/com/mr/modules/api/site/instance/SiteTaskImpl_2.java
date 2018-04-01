@@ -101,7 +101,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 						map.put("org", String.format("中国证监会%s监管局", city));
 
 						String href = url + aElement.attr("href").substring(2);
-						fetchOne(map, href);
+						map.put("url", href);
+						doFetch(map);
 						lists.add(map);
 					}
 				}
@@ -112,25 +113,23 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 	/**
 	 * 抓取并解析单条数据
-	 *
+	 *	map[city; title; releaseDate; org; url]
 	 * @param map
 	 */
-	private boolean fetchOne(LinkedHashMap<String, String> map, String url) {
-		map.putAll(contextDataMap);
-		map.put("url", url);
+	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) {
+		String url = map.get("url");
 		//仅仅天津是pdf,doc
 		boolean isHtml = !pdfOrDocType.contains(map.get("city"));
 		try {
 			extract(getData(url), map, isHtml);
 		} catch (HttpClientErrorException ex) {
 			if (ex.getMessage().trim().equals("404 Not Found"))
-				return false;
+				return map;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error(e.getMessage());
-			return false;
 		}
-		return true;
+		return map;
 
 
 	}

@@ -21,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -209,15 +210,22 @@ public abstract class SiteTaskExtend extends SiteTask {
 	/**
 	 * 导出为Excel
 	 */
-	protected int exportToXls(String xlsName, List<LinkedHashMap<String, String>> siteObjects) throws Exception {
+	protected int exportToXls(String xlsName, List<?> siteObjects) throws Exception {
 		FileUtil.mkdir(XLS_EXPORT_PATH);
 		ExportConfig exportConfig = new ExportConfig();
 		exportConfig.setFileName(xlsName);
 
 		List<ExportCell> exportCells = Lists.newArrayList();
-		for (String key : siteObjects.get(0).keySet()) {
-			exportCells.add(new ExportCell(key));
+		if(siteObjects.get(0) instanceof LinkedHashMap){
+			for (String key : ((LinkedHashMap<String, String>)siteObjects.get(0)).keySet()) {
+				exportCells.add(new ExportCell(key));
+			}
+		}else {
+			for(Field field : siteObjects.get(0).getClass().getDeclaredFields()){
+				exportCells.add(new ExportCell(field.getName()));
+			}
 		}
+
 
 		exportConfig.setExportCells(exportCells);
 

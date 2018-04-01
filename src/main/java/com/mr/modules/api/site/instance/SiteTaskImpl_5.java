@@ -30,6 +30,9 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
+	//过滤字段设置
+	ArrayList<String> filterTags = Lists.newArrayList("<Strong>", "</Strong>", "&nbsp;", "　");
+
 	//	公开认定 通报批评 公开谴责
 	enum MType {
 		A2("a-2", "公开认定"),
@@ -70,10 +73,8 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 	 * @param mType   监管类型
 	 * @param fullTxt 提取文本
 	 */
-	private List<LinkedHashMap<String, String>> extract(MType mType, String fullTxt) {
+	private List<LinkedHashMap<String, String>> extract(MType mType, String fullTxt) throws Exception {
 		List<LinkedHashMap<String, String>> lists = Lists.newLinkedList();
-		//过滤字段设置
-		ArrayList<String> filterTags = Lists.newArrayList("<Strong>", "</Strong>", "&nbsp;", "　");
 
 		Document doc = Jsoup.parse(fullTxt);
 		Element divElement = doc.getElementById(mType.code);
@@ -92,16 +93,6 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 
 			Element aElement = tdElements.get(2).getElementsByTag("a").get(0);
 			String href = "http://www.sse.com.cn" + aElement.attr("href");
-			if(href.endsWith(".doc")) continue;
-			//处理事由
-			String pReason = "";
-			Document pDoc = Jsoup.parse(getData(href));
-			Element allZoomDiv = pDoc.getElementsByClass("allZoom").get(0);
-			Elements ppEles = allZoomDiv.getElementsByTag("p");
-			for (Element pp : ppEles) {
-				pReason += filter(pp.text(), filterTags);
-			}
-
 			//标题
 			String title = tdElements.get(2).text();    //从链接中提取
 
@@ -109,14 +100,42 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 			String punishDate = tdElements.get(3).text();    //链接中提取
 
 			LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
+			map.put("href", href);
 			map.put("code", code);
 			map.put("sAbstract", sAbstract);
 			map.put("mType", mType.name);
-			map.put("pReason", pReason);
 			map.put("title", title);
 			map.put("punishDate", punishDate);
+
+			doFetch(map);
 			lists.add(map);
 		}
 		return lists;
+	}
+
+	/**
+	 * 抓取并解析单条数据
+	 *	map[code; sAbstract; mType; title; punishDate; href]
+	 * @param map
+	 */
+	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) throws Exception {
+		String href = map.get("href");
+
+		//处理事由
+		String pReason = "";
+		if(href.endsWith(".doc")){
+			pReason = ocrUtil.getTextFromDoc(downLoadFile(href));
+			map.put("pReason", pReason);
+			return map;
+		}
+
+		Document pDoc = Jsoup.parse(getData(href));
+		Element allZoomDiv = pDoc.getElementsByClass("allZoom").get(0);
+		Elements ppEles = allZoomDiv.getElementsByTag("p");
+		for (Element pp : ppEles) {
+			pReason += filter(pp.text(), filterTags);
+		}
+		map.put("pReason", pReason);
+		return map;
 	}
 }

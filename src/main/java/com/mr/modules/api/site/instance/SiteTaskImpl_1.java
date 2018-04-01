@@ -7,12 +7,16 @@ import com.mr.common.util.SpringUtils;
 import com.mr.framework.json.JSONArray;
 import com.mr.framework.json.JSONObject;
 import com.mr.framework.json.JSONUtil;
+import com.mr.modules.api.mapper.FinanceMonitorPunishMapper;
 import com.mr.modules.api.site.SiteTaskExtend;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -28,6 +32,9 @@ import java.util.List;
 public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
+
+	@Autowired
+	private FinanceMonitorPunishMapper financeMonitorPunishMapper;
 
 	/**
 	 * @return ""或者null为成功， 其它为失败
@@ -89,42 +96,56 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				}
 
 				String destFilePath = "http://www.neeq.com.cn" + contentObj.getStr("destFilePath");
-				String fileName = downLoadFile(destFilePath);
-				String content = "";
-				try{
-					if (fileName.toLowerCase().endsWith("doc")) {
-						content = ocrUtil.getTextFromDoc(fileName);
-					} else if (fileName.toLowerCase().endsWith("pdf")) {
-						content = ocrUtil.getTextFromPdf(fileName);
-						if (!content.contains("当事人")) {
-							fileName = downLoadFile(destFilePath);
-							log.info("fileName:::::" + fileName);
-							content = ocrUtil.getTextFromImg(fileName);
-						}
-					} else {
-						log.warn("url{} is not doc or pdf", content);
-					}
-				}catch (Exception ex){
-					log.error(ex.getMessage());
-				}
 
 				map.put("company", company);
 				map.put("person", person);
 				map.put("destFilePath", destFilePath);
-				try {
-					log.info(map.toString());
-					extract(content, map);
-				} catch (Exception e) {
-					e.printStackTrace();
-					log.error(e.getMessage());
-				}
 
+				doFetch(map);
 
 				lists.add(map);
 			}
 
 		}
 		return lists;
+	}
+
+	/**
+	 * 抓取并解析单条数据
+	 * map[person; company; destFilePath]
+	 *
+	 * @param map
+	 */
+	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) throws Exception {
+		String destFilePath = map.get("destFilePath");
+
+		String fileName = downLoadFile(destFilePath);
+		String content = "";
+		try {
+			if (fileName.toLowerCase().endsWith("doc")) {
+				content = ocrUtil.getTextFromDoc(fileName);
+			} else if (fileName.toLowerCase().endsWith("pdf")) {
+				content = ocrUtil.getTextFromPdf(fileName);
+				if (!content.contains("当事人")) {
+					fileName = downLoadFile(destFilePath);
+					content = ocrUtil.getTextFromImg(fileName);
+				}
+			} else {
+				log.warn("url{} is not doc or pdf", content);
+			}
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+		}
+
+		map.put("destFilePath", destFilePath);
+		try {
+			log.info(map.toString());
+			extract(content, map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+		}
+		return map;
 	}
 
 	/**
@@ -186,7 +207,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					"控制人"};
 			String fddbrStr = "";
 			int fddbrIndex = -1;
-			if(fullTxt.indexOf("经查明") < 0) return;
+			if (fullTxt.indexOf("经查明") < 0) return;
 			String fddTxt = fullTxt.substring(0, fullTxt.indexOf("经查明"));
 			for (int i = 0; i < fddbr.length; i++) {
 				if (fddTxt.indexOf(fddbr[i]) > -1) {

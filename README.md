@@ -82,6 +82,12 @@ callId：任务调用ID， 必须全局唯一，由客户端控制
 
 5、删除任务：/api/del/{callId}  
 
+6、删除数据：/api/data/delete  
+ ```
+ params:  
+ primary = {}  主键  
+ object={}     主题
+```
 
 ## 任务开发：
 1、继承com.mr.modules.api.site.SiteTask，实现execute()方法。  

@@ -9,7 +9,6 @@ import com.mr.framework.json.JSONObject;
 import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -51,18 +50,14 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	@Override
 	protected String executeOne() throws Throwable {
 		log.info("*******************call site1 task for One Record**************");
-		if (org.springframework.util.StringUtils.isEmpty(oneFinanceMonitorPunish.getPartyInstitution())) {
-			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPartyPerson());
-			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPartyPerson());
-		} else {
-			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPunishInstitution());
-			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPunishInstitution());
+
+		if(StringUtils.isEmpty(oneFinanceMonitorPunish.getCompanyFullName())){
+			oneFinanceMonitorPunish.setCompanyFullName(oneFinanceMonitorPunish.getPartyInstitution());
 		}
 
-		Assert.notNull(oneFinanceMonitorPunish.getPunishInstitution());
-		if(StringUtils.isEmpty(oneFinanceMonitorPunish.getCompanyFullName())){
-			oneFinanceMonitorPunish.setCompanyFullName(oneFinanceMonitorPunish.getPunishInstitution());
-		}
+		Assert.notNull(Objects.isNull(oneFinanceMonitorPunish.getPartyInstitution())
+				?oneFinanceMonitorPunish.getPartyPerson():oneFinanceMonitorPunish.getPartyInstitution());
+
 		Assert.notNull(oneFinanceMonitorPunish.getSource());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		oneFinanceMonitorPunish.setObject("全国中小企业股转系统-监管公告");

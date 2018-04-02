@@ -64,22 +64,22 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	protected String executeOne() throws Throwable {
 		log.info("*******************call site2 task for One Record**************");
 
-		if (org.springframework.util.StringUtils.isEmpty(oneFinanceMonitorPunish.getPartyInstitution())) {
-			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPartyPerson());
-			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPartyPerson());
-		} else {
-			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPunishInstitution());
-			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPunishInstitution());
-		}
+//		if (org.springframework.util.StringUtils.isEmpty(oneFinanceMonitorPunish.getPartyInstitution())) {
+//			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPartyPerson());
+//			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPartyPerson());
+//		} else {
+//			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPunishInstitution());
+//			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPunishInstitution());
+//		}
 
-		Assert.notNull(oneFinanceMonitorPunish.getPunishInstitution());
-		Assert.notNull(oneFinanceMonitorPunish.getRegion());
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
-		Assert.notNull(oneFinanceMonitorPunish.getPublisher());
+		Assert.notNull(oneFinanceMonitorPunish.getRegion());
+		Assert.notNull(oneFinanceMonitorPunish.getSource());
 		oneFinanceMonitorPunish.setObject("地方证件局-行政处罚决定");
 
+		//通过source先删除，确保不产生多余数据
+		financeMonitorPunishMapper.deleteBySource(oneFinanceMonitorPunish.getSource());
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
 	}
@@ -127,6 +127,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 						financeMonitorPunish.setPublisher(String.format("中国证监会%s监管局", city));
 						financeMonitorPunish.setSource(href);
 						financeMonitorPunish.setRegion(city);
+						financeMonitorPunish.setObject("地方证件局-行政处罚决定");
 
 						if (!doFetch(financeMonitorPunish, false)) {
 							return lists;
@@ -347,7 +348,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 		financeMonitorPunish.setPunishNo(punishNo);
 		financeMonitorPunish.setPartyPerson(punishObject);
-		financeMonitorPunish.setPartyInstitution(punishDate);
+		financeMonitorPunish.setPartyInstitution(punishObject);
 		financeMonitorPunish.setPunishDate(punishDate);
 		financeMonitorPunish.setDetails(detail);
 

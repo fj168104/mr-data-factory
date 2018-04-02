@@ -28,6 +28,7 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	//单条处理时使用, 接受外部参数
 	protected FinanceMonitorPunish oneFinanceMonitorPunish;
 
+	@Override
 	public void setFinanceMonitorPunish(FinanceMonitorPunish oneFinanceMonitorPunish) {
 		this.oneFinanceMonitorPunish = oneFinanceMonitorPunish;
 	}
@@ -72,6 +73,10 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	public Integer start() {
 		try {
 			future = startVisitor.visit(this);
+			//单条处理时使用闭锁同步
+			if (!Objects.isNull(oneFinanceMonitorPunish)) {
+				future.get();
+			}
 		} catch (Throwable e) {
 			return TaskStatus.CALL_FAIL.index;
 		}

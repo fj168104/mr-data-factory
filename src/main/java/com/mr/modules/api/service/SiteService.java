@@ -22,4 +22,6 @@ public interface SiteService {
 	public int deleteByBizKey(String primaryKey);
 
 	public FinanceMonitorPunish selectByBizKey(String primaryKey);
+
+	FinanceMonitorPunish fetchOneRecord(String indexId, FinanceMonitorPunish financeMonitorPunish) throws Exception;
 }

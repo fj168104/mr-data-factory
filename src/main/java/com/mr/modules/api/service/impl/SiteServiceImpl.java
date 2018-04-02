@@ -137,4 +137,25 @@ public class SiteServiceImpl implements SiteService {
 		}
 	}
 
+	@Override
+	public FinanceMonitorPunish fetchOneRecord(String groupIndex, FinanceMonitorPunish financeMonitorPunish) throws Exception {
+		ResourceGroup task = null;
+
+		log.info(String.valueOf(task));
+
+		try {
+			task = (ResourceGroup)SpringUtils.getBean(groupIndex);
+			if(Objects.isNull(task)){
+				return null;
+			}
+			task.setFinanceMonitorPunish(financeMonitorPunish);
+			task.start();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return null;
+		}
+
+		return financeMonitorPunish;
+	}
+
 }

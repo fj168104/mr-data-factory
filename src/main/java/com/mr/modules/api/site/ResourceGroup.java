@@ -1,5 +1,7 @@
 package com.mr.modules.api.site;
 
+import com.mr.modules.api.model.FinanceMonitorPunish;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -26,5 +28,10 @@ public interface ResourceGroup{
 	 * 返回错误信息
 	 */
 	String getThrowableInfo();
+
+	/**
+	 *单条抓取处理
+	 */
+	void setFinanceMonitorPunish(FinanceMonitorPunish oneFinanceMonitorPunish);
 
 }

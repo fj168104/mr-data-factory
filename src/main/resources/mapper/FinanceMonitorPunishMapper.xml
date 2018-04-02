@@ -55,6 +55,11 @@
         SELECT * FROM finance_monitor_punish c WHERE c.PRIMARY_KEY = #{primaryKey}
     </select>
 
+    <!--通过链接地址删除-->
+    <delete id="deleteBySource" parameterType="java.lang.String">
+        DELETE FROM finance_monitor_punish WHERE SOURCE = #{source}
+    </delete>
+
     <!--通过业务来源删除-->
     <delete id="deleteByObject" parameterType="java.lang.String">
         DELETE FROM finance_monitor_punish WHERE OBJECT = #{object}

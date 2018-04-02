@@ -18,6 +18,12 @@ public interface FinanceMonitorPunishMapper extends BaseMapper<FinanceMonitorPun
 	FinanceMonitorPunish selectByBizKey(String primaryKey);
 
 	/**
+	 * 通过链接地址删除
+	 * @param source
+	 * @return
+	 */
+	int deleteBySource(String source);
+	/**
 	 * 通过业务来源删除
 	 * @return
 	 */

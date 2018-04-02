@@ -1,6 +1,7 @@
 package com.mr.modules.api;
 
 import com.google.common.base.Strings;
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.service.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -61,9 +62,17 @@ public class SiteController extends BaseController {
 		return map;
 	}
 
+	/**
+	 * 删除数据
+	 *
+	 * @param primaryKey
+	 * @param object
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/data/delete")
 	public ModelMap delSiteData(@RequestParam(value = "primaryKey", required = false) String primaryKey,
-								@RequestParam(value = "object",required = false) String object) throws Exception {
+								@RequestParam(value = "object", required = false) String object) throws Exception {
 		ModelMap map = new ModelMap();
 		if (!StringUtils.isEmpty(primaryKey)) {
 			map.addAttribute("delete_result", siteService.deleteByBizKey(primaryKey));
@@ -71,6 +80,19 @@ public class SiteController extends BaseController {
 			map.addAttribute("delete_result", siteService.deleteByObject(object));
 		} else {
 			map.addAttribute("delete_result", 0);
+		}
+
+		return map;
+	}
+
+	@RequestMapping(value = "/data/{indexId}")
+	public ModelMap fetchOneRecord(@PathVariable("indexId") String indexId,
+								   FinanceMonitorPunish financeMonitorPunish) throws Exception {
+		ModelMap map = new ModelMap();
+		if (StringUtils.isEmpty(siteService.fetchOneRecord(indexId, financeMonitorPunish))) {
+			map.addAttribute("del_result", "fail");
+		} else {
+			map.addAttribute("del_result", financeMonitorPunish);
 		}
 
 		return map;

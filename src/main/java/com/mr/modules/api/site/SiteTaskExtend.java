@@ -48,6 +48,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 
 	/**
 	 * 适配单条处理, 子类需要覆盖此方法
+	 *
 	 * @return
 	 * @throws Throwable
 	 */
@@ -280,6 +281,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 
 	/**
 	 * 设置业务主键 格式：punish_no|punish_title|punish_institution|punish_date
+	 *
 	 * @return primaryKey
 	 */
 	protected String buildFinanceMonitorPunishBizKey(FinanceMonitorPunish financeMonitorPunish) {
@@ -293,22 +295,24 @@ public abstract class SiteTaskExtend extends SiteTask {
 		String punishDate = StringUtils.isEmpty(financeMonitorPunish.getPunishDate())
 				? "null" : financeMonitorPunish.getPunishDate();
 		//去空值
-		financeMonitorPunish.setPunishNo(punishNo);
-		financeMonitorPunish.setPunishTitle(punishTitle);
-		financeMonitorPunish.setPunishInstitution(punishInstitution);
-		financeMonitorPunish.setPublishDate(punishDate);
-		financeMonitorPunish.setPrimaryKey(punishNo + punishTitle + punishInstitution + punishDate);
+		financeMonitorPunish.setPunishNo(punishNo.trim());
+		financeMonitorPunish.setPunishTitle(punishTitle.trim());
+		financeMonitorPunish.setPunishInstitution(punishInstitution.trim());
+		financeMonitorPunish.setPublishDate(punishDate.trim());
+		financeMonitorPunish.setPrimaryKey(String.format("%s|%s|%s|%s",
+											punishNo, punishTitle, punishInstitution, punishDate));
 
 		return financeMonitorPunish.getPrimaryKey();
 	}
 
 	/**
 	 * 保存单条记录
+	 *
 	 * @param financeMonitorPunish
 	 * @return
 	 */
-	protected FinanceMonitorPunish insertOrUpdate(FinanceMonitorPunish financeMonitorPunish){
-		if(StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())){
+	protected FinanceMonitorPunish insertOrUpdate(FinanceMonitorPunish financeMonitorPunish) {
+		if (StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())) {
 			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		}
 		financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());

@@ -85,8 +85,30 @@ callId：任务调用ID， 必须全局唯一，由客户端控制
 6、删除数据：/api/data/delete  
  ```
  params:  
- primary = {}  主键  
- object={}     主题
+ primary = {primary}  主键
+ object={object}     主题
+```
+7、抓取单条数据：/data/{indexId}  
+ ```
+ params:  
+ 根据具体填写参数, 例如：
+ Site1：
+ 个人当事人：http://localhost:8082/api/data/site1?partyPerson=毛龙兵&source=http://www.neeq.com.cn/uploads/1/file/public/201803/20180330182459_4nd3tuq1j5.pdf&punishTitle=关于对毛龙兵采取自律监管措施的决定
+ source: http://www.neeq.com.cn/uploads/1/file/public/201803/20180330182459_4nd3tuq1j5.pdf  
+ punishTitle: 关于对毛龙兵采取自律监管措施的决定  
+ partyPerson: 毛龙兵  
+ 机构当事人：http://localhost:8082/api/data/site1?partyInstitution=关于对安徽天智信息科技集团股份有限公司及相关当事人采取纪律处分的决定&source=http://www.neeq.com.cn/uploads/1/file/public/201803/20180330182459_4nd3tuq1j5.pdf&punishTitle=关于对安徽天智信息科技集团股份有限公司及相关当事人采取纪律处分的决定&companyFullName=ST天智
+ source: http://www.neeq.com.cn/uploads/1/file/public/201803/20180330182459_4nd3tuq1j5.pdf  
+ punishTitle: 关于对安徽天智信息科技集团股份有限公司及相关当事人采取纪律处分的决定
+ partyInstitution: 关于对安徽天智信息科技集团股份有限公司及相关当事人采取纪律处分的决定
+ companyFullName: ST天智
+ 
+ Site2：http://localhost:8082/api/data/site2?region=北京&source=http://www.csrc.gov.cn/pub/beijing/bjxzcf/201803/t20180314_335261.htm&punishTitle=中国证券监督管理委员会北京监管局行政处罚决定书（文细棠）&publishDate=2018年3月7日
+ source: http://www.csrc.gov.cn/pub/beijing/bjxzcf/201803/t20180314_335261.htm
+ region: 北京  
+ punishTitle: 中国证券监督管理委员会北京监管局行政处罚决定书（文细棠）  
+ publishDate: 2018年3月7日  
+ 
 ```
 
 ## 任务开发：

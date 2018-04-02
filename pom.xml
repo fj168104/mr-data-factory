@@ -299,6 +299,7 @@
                      </nonFilteredFileExtensions>
                  </configuration>
              </plugin>-->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -332,6 +333,7 @@
                     </jvmArguments>
                     <executable>true</executable>
                     <fork>true</fork>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
             <plugin>

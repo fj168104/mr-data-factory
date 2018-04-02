@@ -100,10 +100,27 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
                      siteTaskImpl_bois_anHui.extractContent(getData(href));
                  }*/
                  //解析宁波信息
-                if(provinceCity.indexOf("宁波")>-1){
+                /*if(provinceCity.indexOf("宁波")>-1){
                     log.info("url-------"+href);
                     new SiteTaskImpl_BOIS_NingBo().extractContent(getData(href));
-                }
+                }*/
+                /* if(provinceCity.indexOf("宁夏")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_NingXia().extractContent(getData(href));
+                 }*/
+                 /*if(provinceCity.indexOf("青岛")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_QingDao().extractContent(getData(href));
+                 }*/
+                 if(provinceCity.indexOf("青海")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_QingHai().extractContent(getData(href));
+                 }
+                 if(provinceCity.indexOf("厦门")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_XiaMen().extractContent(getData(href));
+                 }
+
                  listUrl.add(map);
 //                 log.info(i+"----id："+id+"----href:"+href+"----provinceCity:"+provinceCity+"----title:"+title);
              }

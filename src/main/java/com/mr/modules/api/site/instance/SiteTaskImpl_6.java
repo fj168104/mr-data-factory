@@ -31,6 +31,15 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
+	ArrayList<String> filterTags = Lists.newArrayList("<SPAN>",
+			"<br />",
+			" &nbsp;",
+			"<p align=\"center\">",
+			"</strong>",
+			"<strong>",
+			"</p>",
+			" ");
+
 	/**
 	 * @return ""或者null为成功， 其它为失败
 	 * @throws Throwable
@@ -63,15 +72,6 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 	private List<LinkedHashMap<String, String>> extract(String pageCount) throws Exception {
 		List<LinkedHashMap<String, String>> lists = Lists.newLinkedList();
 
-		ArrayList<String> filterTags = Lists.newArrayList("<SPAN>",
-				"<br />",
-				" &nbsp;",
-				"<p align=\"center\">",
-				"</strong>",
-				"<strong>",
-				"</p>",
-				" ");
-
 		java.util.Map<String, String> requestParams = Maps.newHashMap();
 		Map<String, String> headParams = Maps.newHashMap();
 		headParams.put("Referer", "http://www.szse.cn/main/disclosure/zqxx/jlcf/");
@@ -90,25 +90,40 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 				Element aElement = dd.getElementsByTag("a").get(0);
 				String title = aElement.attr("title");
 				String docUrl = "http://www.sse.com.cn" + aElement.attr("href");
-				log.info(docUrl);
-				String mContent = "";
-				if (docUrl.endsWith("doc") || docUrl.endsWith("docx")) {
-					mContent = ocrUtil.getTextFromDoc(downLoadFile(docUrl));
-				} else if (docUrl.endsWith("shtml")) {
-					Document sDoc = Jsoup.parse(getData(docUrl));
-					Element std = sDoc.getElementsByClass("allZoom").get(0)
-							.getElementsByTag("td").get(0);
-					mContent = filter(std.text(), filterTags);
-				}
 
 				LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
 				map.put("mType", "纪律处分");    //监管类型
 				map.put("title", title);        //标题
-				map.put("mContent", mContent);    //处理事由
+				map.put("docUrl", docUrl);
+				doFetch(map);
+
 				lists.add(map);
 			}
 		}
 		return lists;
 	}
 
+	/**
+	 * 抓取并解析单条数据
+	 * map[mType; title; docUrl]
+	 *
+	 * @param map
+	 */
+	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) throws Exception {
+		String docUrl = map.get("docUrl");
+		log.info(docUrl);
+		String mContent = "";
+
+		if (docUrl.endsWith("doc") || docUrl.endsWith("docx")) {
+			mContent = ocrUtil.getTextFromDoc(downLoadFile(docUrl));
+		} else if (docUrl.endsWith("shtml")) {
+			Document sDoc = Jsoup.parse(getData(docUrl));
+			Element std = sDoc.getElementsByClass("allZoom").get(0)
+					.getElementsByTag("td").get(0);
+			mContent = filter(std.text(), filterTags);
+		}
+
+		map.put("mContent", mContent);    //处理事由
+		return map;
+	}
 }

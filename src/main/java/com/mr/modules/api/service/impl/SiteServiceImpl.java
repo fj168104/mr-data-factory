@@ -1,13 +1,18 @@
 package com.mr.modules.api.service.impl;
 
+import com.google.common.base.Strings;
 import com.mr.common.util.EhCacheUtils;
 import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.TaskStatus;
+import com.mr.modules.api.mapper.FinanceMonitorPunishMapper;
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.service.SiteService;
 import com.mr.modules.api.site.ResourceGroup;
 import com.mr.modules.api.site.SiteTask;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
@@ -18,6 +23,9 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class SiteServiceImpl implements SiteService {
+
+	@Autowired
+	protected FinanceMonitorPunishMapper financeMonitorPunishMapper;
 
 	/**
 	 * @param groupIndex SiteTask enum index 信息
@@ -103,6 +111,30 @@ public class SiteServiceImpl implements SiteService {
 
 	private ResourceGroup getTask(String callId) throws Exception {
 		return ((ResourceGroup) EhCacheUtils.get(callId));
+	}
+
+	public int deleteByObject(String object){
+		if(StringUtils.isEmpty(object))
+			return 0;
+		return financeMonitorPunishMapper.deleteByObject(object);
+	}
+
+	public int deleteByBizKey(String primaryKey){
+		if(StringUtils.isEmpty(primaryKey))
+			return 0;
+		return financeMonitorPunishMapper.deleteByBizKey(primaryKey);
+	}
+
+	public FinanceMonitorPunish selectByBizKey(String primaryKey){
+		if(StringUtils.isEmpty(primaryKey)){
+			return null;
+		}
+		FinanceMonitorPunish financeMonitorPunish = financeMonitorPunishMapper.selectByBizKey(primaryKey);
+		if(StringUtils.isEmpty(financeMonitorPunish)){
+			return null;
+		}else {
+			return financeMonitorPunish;
+		}
 	}
 
 }

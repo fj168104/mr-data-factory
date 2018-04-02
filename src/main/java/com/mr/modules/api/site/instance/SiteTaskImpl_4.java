@@ -9,12 +9,16 @@ import com.mr.framework.json.JSONObject;
 import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.site.SiteTaskExtend;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * Created by feng on 18-3-16
@@ -29,6 +33,8 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 
 
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
+
+	ArrayList<String> filterTags = Lists.newArrayList("<strong>", "</strong>", "&nbsp;", "　", "<br>");
 
 	@Override
 	/**
@@ -99,33 +105,26 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 //			证券简称
 				String extGSJC = jsObj.getStr("extGSJC");
 //			监管类型
-				String extWTFL = "公开认定";
+				String extWTFL = typeName;
 //			处理事由
 				String docTitle = jsObj.getStr("docTitle");
 //			链接
 				String docURL = jsObj.getStr("docURL");
-				String docTitleDetail = "";
-				if(docURL.endsWith("pdf")){
-					String fileName = downLoadFile(docURL.startsWith("http") ? docURL : "http://" + docURL);
-					//处理事由正文详细文本信息
-					docTitleDetail = ocrUtil.getTextFromPdf(fileName);
-				}else{
-					// TODO 解析shtml
-				}
 
 //			涉及对象
 				String extTeacher = jsObj.getStr("extTeacher");
 //			处理日期
 				String createTime = jsObj.getStr("createTime");
 
-				//TODO 后续调整
 				map.put("stockcode", stockcode);
 				map.put("extGSJC", extGSJC);
 				map.put("extWTFL", typeName);
 				map.put("docURL", docURL);
-				map.put("docTitleDetail", docTitleDetail);
 				map.put("extTeacher", extTeacher);
 				map.put("createTime", createTime);
+
+				doFetch(map);
+
 				lists.add(map);
 			}
 
@@ -134,6 +133,35 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		exportToXls(String.format("Site4_%s.xlsx", typeName), lists);
 
 		return null;
+	}
+
+	/**
+	 * 抓取并解析单条数据
+	 *	map[stockcode; extGSJC; extWTFL; docURL; extTeacher; createTime]
+	 * @param map
+	 */
+	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) throws Exception {
+		String docURL = map.get("docURL");
+		String docTitleDetail = map.get("docTitleDetail");
+
+		if (docURL.endsWith("pdf")) {
+			String fileName = downLoadFile(docURL.startsWith("http") ? docURL : "http://" + docURL);
+			//处理事由正文详细文本信息
+			docTitleDetail = ocrUtil.getTextFromPdf(fileName);
+		} else {
+			String docTitleTxt = getData(docURL.startsWith("http") ? docURL : "http://" + docURL);
+			Document doc = Jsoup.parse(docTitleTxt);
+			Element dtElement = doc.getElementsByClass("allZoom").first();
+			if (!Objects.isNull(dtElement.getElementsByTag("div").first())) {
+				docTitleDetail += filter(dtElement.getElementsByTag("div").first().text(), filterTags);
+				for (Element ps : dtElement.getElementsByTag("p")) {
+					docTitleDetail += filter(ps.text(), filterTags);
+				}
+			}
+		}
+
+		map.put("docTitleDetail", docTitleDetail);
+		return map;
 	}
 
 }

@@ -187,7 +187,7 @@
             <artifactId>tool-all</artifactId>
             <version>${mr.framework.version}</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/libs/mr-framework-tool-0.0.2.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/libs/mr-framework-tool-0.0.3.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.feilong.platform</groupId>

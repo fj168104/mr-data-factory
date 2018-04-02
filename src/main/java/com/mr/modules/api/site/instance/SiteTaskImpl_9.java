@@ -83,31 +83,25 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 				String objType = tdElements.get(1).text();        //处分对象类型
 				String pCode = tdElements.get(2).text();        //函号
 				String title = tdElements.get(3).getElementsByTag("a").text();
-				String content = ""; 	//函件内容
+
 				String fileName = tdElements.get(3).getElementsByTag("a")
 						.attr("onclick")
 						.replace("window.open('/UpFiles/zqjghj/'+encodeURIComponent('", "")
 						.replace("'))", "");
 				String contentUri = "http://www.szse.cn/UpFiles/zqjghj/" + fileName;    //函件标题URI
-				downLoadFile(contentUri, fileName);
-				if (fileName.toLowerCase().endsWith("doc")) {
-					content = ocrUtil.getTextFromDoc(fileName);
-				} else if (fileName.toLowerCase().endsWith("pdf")) {
-					content = ocrUtil.getTextFromImg(fileName);
-				} else {
-					content = contentUri;
-				}
 				String pDate = tdElements.get(4).text();        //发函日期
 				String pStock = tdElements.get(5).text();        //涉及债券
 				LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
+				map.put("fileName", fileName);
 				map.put("punishObj", punishObj);
 				map.put("objType", objType);
 				map.put("pCode", pCode);
 				map.put("title", title);
-				map.put("content", content);
 				map.put("contentUri", contentUri);
 				map.put("pDate", pDate);
 				map.put("pStock", pStock);
+
+				doFetch(map);
 
 				lists.add(map);
 			}
@@ -116,4 +110,25 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 		return lists;
 	}
 
+	/**
+	 * 抓取并解析单条数据
+	 *	map[fileName; punishObj; objType; pCode; title; pDate; pStock; contentUri]
+	 * @param map
+	 */
+	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) throws Exception {
+		String contentUri = map.get("contentUri");
+		log.info(contentUri);
+		String fileName = map.get("fileName");
+		String content = ""; 	//函件内容
+		downLoadFile(contentUri, fileName);
+		if (fileName.toLowerCase().endsWith("doc")) {
+			content = ocrUtil.getTextFromDoc(fileName);
+		} else if (fileName.toLowerCase().endsWith("pdf")) {
+			content = ocrUtil.getTextFromImg(fileName);
+		} else {
+			content = contentUri;
+		}
+		map.put("content", content);
+		return map;
+	}
 }

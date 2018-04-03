@@ -112,15 +112,28 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
                      log.info("url-------"+href);
                      new SiteTaskImpl_BOIS_QingDao().extractContent(getData(href));
                  }*/
-                 if(provinceCity.indexOf("青海")>-1){
+                 /*if(provinceCity.indexOf("青海")>-1){
                      log.info("url-------"+href);
                      new SiteTaskImpl_BOIS_QingHai().extractContent(getData(href));
                  }
                  if(provinceCity.indexOf("厦门")>-1){
                      log.info("url-------"+href);
                      new SiteTaskImpl_BOIS_XiaMen().extractContent(getData(href));
-                 }
+                 }*/
 
+                /* if(provinceCity.indexOf("山东")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_ShangDong().extractContent(getData(href));
+                 }*/
+
+                 /*if(provinceCity.indexOf("上海")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_ShangHai().extractContent(getData(href));
+                 }*/
+                 if(provinceCity.indexOf("山西")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_ShanXi().extractContent(getData(href));
+                 }
                  listUrl.add(map);
 //                 log.info(i+"----id："+id+"----href:"+href+"----provinceCity:"+provinceCity+"----title:"+title);
              }

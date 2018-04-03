@@ -13,7 +13,7 @@ import com.mr.modules.api.site.SiteTaskExtend;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
-@Component("chongqing")
+@Component("jiangxi")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_JiangXi extends SiteTaskExtend{
     /**

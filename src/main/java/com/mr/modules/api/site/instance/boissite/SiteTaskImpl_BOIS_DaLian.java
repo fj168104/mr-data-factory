@@ -13,9 +13,9 @@ import com.mr.modules.api.site.SiteTaskExtend;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
-@Component("chongqing")
+@Component("dalian")
 @Scope("prototype")
-public class SiteTaskImpl_BOIS_DaLiang  extends SiteTaskExtend{
+public class SiteTaskImpl_BOIS_DaLian  extends SiteTaskExtend{
     /**
      * 大连保监局处罚 提取所需要的信息
      * 序号、处罚文号、机构当事人名称、机构当事人住所、机构负责人姓名、

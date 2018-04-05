@@ -15,8 +15,8 @@ import com.mr.modules.api.xls.importfile.FileImportExecutor;
 import com.mr.modules.api.xls.importfile.domain.MapResult;
 import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
+import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Created by feng on 18-3-16
@@ -65,32 +66,58 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * @return
 	 */
 	protected String getData(String url) {
-		return restTemplate.getForObject(url, String.class);
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return restTemplate.getForObject(url, String.class);
+			}
+		}).execute();
 	}
 
 	protected String getData(String url, String charSet) {
-		return new String(restTemplate.getForObject(url, byte[].class), Charset.forName(charSet.toUpperCase()));
-
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return new String(restTemplate.getForObject(url, byte[].class),
+						Charset.forName(charSet.toUpperCase()));
+			}
+		}).execute();
 	}
 
 	protected String getData(String url, Charset charSet) {
-		return new String(restTemplate.getForObject(url, byte[].class), charSet);
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return new String(restTemplate.getForObject(url, byte[].class), charSet);
+			}
+		}).execute();
 	}
 
 	protected String getData(String url, Map<String, String> requestParams) {
-		return restTemplate.getForObject(url + showParams(requestParams), String.class);
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return restTemplate.getForObject(url + showParams(requestParams), String.class);
+			}
+		}).execute();
 	}
 
 	protected String getData(String url, Map<String, String> requestParams, Map<String, String> headParams) {
-		HttpHeaders requestHeaders = new HttpHeaders();
-		if (headParams.size() > 0) {
-			for (Map.Entry<String, String> entry : headParams.entrySet()) {
-				requestHeaders.add(entry.getKey(), entry.getValue());
+
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				HttpHeaders requestHeaders = new HttpHeaders();
+				if (headParams.size() > 0) {
+					for (Map.Entry<String, String> entry : headParams.entrySet()) {
+						requestHeaders.add(entry.getKey(), entry.getValue());
+					}
+				}
+				HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
+				ResponseEntity<String> response = restTemplate.exchange(url + showParams(requestParams), HttpMethod.GET, requestEntity, String.class);
+				return response.getBody();
 			}
-		}
-		HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
-		ResponseEntity<String> response = restTemplate.exchange(url + showParams(requestParams), HttpMethod.GET, requestEntity, String.class);
-		return response.getBody();
+		}).execute();
 	}
 
 	private String showParams(Map<String, String> requestParams) {
@@ -327,9 +354,10 @@ public abstract class SiteTaskExtend extends SiteTask {
 
 	/**
 	 * 保存抓取结果
+	 *
 	 * @return ture 保存成功		false 保存失败（如系统中已存在该记录）
 	 */
-	protected Boolean saveOne(FinanceMonitorPunish financeMonitorPunish, Boolean isForce){
+	protected Boolean saveOne(FinanceMonitorPunish financeMonitorPunish, Boolean isForce) {
 		String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
 			insertOrUpdate(financeMonitorPunish);
@@ -352,11 +380,57 @@ public abstract class SiteTaskExtend extends SiteTask {
 
 		financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
 		//设置createTime
-		if(StringUtils.isEmpty(financeMonitorPunish.getCreateTime())){
+		if (StringUtils.isEmpty(financeMonitorPunish.getCreateTime())) {
 			financeMonitorPunish.setCreateTime(new Date());
 			financeMonitorPunish.setUpdateTime(new Date());
 		}
 		financeMonitorPunishMapper.insert(financeMonitorPunish);
 		return financeMonitorPunish;
+	}
+
+	/**
+	 * 幂等操作类
+	 *
+	 * @param <T>
+	 */
+	static class IdempotentOperator<T> {
+
+		private Callable<T> task;
+
+		public IdempotentOperator(Callable<T> task) {
+			this.task = task;
+		}
+
+		public T execute() {
+			return execute(10);
+		}
+
+		/**
+		 * 重试操作
+		 *
+		 * @param maxRetryTimes 重试次数
+		 * @return
+		 */
+		public T execute(int maxRetryTimes) {
+			boolean executeSuccess = false;
+			T result = null;
+			int retryTimes = 0;
+			while (!executeSuccess && ++retryTimes < maxRetryTimes) {
+				try {
+					result = (T) task.call();
+					executeSuccess = true;
+				} catch (Throwable e) {
+					log.error(e.getMessage());
+					try {
+						Thread.sleep(retryTimes*1000);
+						log.info("retry...");
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			if (!executeSuccess) throw new RuntimeException("超过重试次数,执行失败");
+			return result;
+		}
 	}
 }

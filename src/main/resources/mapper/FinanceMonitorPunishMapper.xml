@@ -60,6 +60,11 @@
         DELETE FROM finance_monitor_punish WHERE SOURCE = #{source}
     </delete>
 
+    <!--通过链接地址查找-->
+    <select id="selectBySource" resultMap="BaseResultMap">
+        SELECT * FROM finance_monitor_punish c WHERE c.SOURCE = #{source}
+    </select>
+
     <!--通过业务来源删除-->
     <delete id="deleteByObject" parameterType="java.lang.String">
         DELETE FROM finance_monitor_punish WHERE OBJECT = #{object}

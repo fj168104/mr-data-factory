@@ -36,7 +36,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 	private static LinkedHashMap<String, String> cityMap = Maps.newLinkedHashMap();
 
-	private static ArrayList<String> pdfOrDocType = Lists.newArrayList("天津1");
+	private static ArrayList<String> pdfOrDocType = Lists.newArrayList("天津");
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
 	@PostConstruct
@@ -76,10 +76,17 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getRegion());
 		Assert.notNull(oneFinanceMonitorPunish.getSource());
-		oneFinanceMonitorPunish.setObject("地方证件局-行政处罚决定");
+		oneFinanceMonitorPunish.setObject("地方证监局-行政处罚决定");
 
-		//通过source先删除，确保不产生多余数据
-		financeMonitorPunishMapper.deleteBySource(oneFinanceMonitorPunish.getSource());
+		//通过source查找
+		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
+				.selectBySource(oneFinanceMonitorPunish.getSource());
+		if (!Objects.isNull(oneFinanceMonitorPunish)) {
+			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
+			oneFinanceMonitorPunish.setUpdateTime(new Date());
+		}
+
+		initDate();
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
 	}
@@ -123,11 +130,28 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 						String href = url + aElement.attr("href").substring(2);
 
 						financeMonitorPunish.setPunishTitle(title);
+						//根据title提取的punishNo
+						{
+							String punishNoTmp = "";
+							if (title.contains("处罚决定书")) {
+								punishNoTmp = title.substring(0, title.indexOf("处罚决定书"))
+										.replace("处罚决定书", "");
+								if (punishNoTmp.contains("号")) {
+									punishNoTmp.substring(0, punishNoTmp.indexOf("号") + 1);
+									punishNoTmp.replace("（", "")
+											.replace("）", "")
+											.trim();
+									financeMonitorPunish.setPunishNo(punishNoTmp);
+								}
+
+							}
+						}
+
 						financeMonitorPunish.setPublishDate(releaseDate);
 						financeMonitorPunish.setPublisher(String.format("中国证监会%s监管局", city));
 						financeMonitorPunish.setSource(href);
 						financeMonitorPunish.setRegion(city);
-						financeMonitorPunish.setObject("地方证件局-行政处罚决定");
+						financeMonitorPunish.setObject("地方证监局-行政处罚决定");
 
 						if (!doFetch(financeMonitorPunish, false)) {
 							return lists;
@@ -152,13 +176,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 		try {
 			extract(getData(url), financeMonitorPunish);
-			String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
-			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
-				insertOrUpdate(financeMonitorPunish);
-				return true;
-			} else {
-				return false;
-			}
+			return saveOne(financeMonitorPunish, isForce);
 		} catch (HttpClientErrorException ex) {
 			if (ex.getMessage().trim().equals("404 Not Found"))
 				return true;
@@ -241,7 +259,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 						punishNo = Strings.isNullOrEmpty(pElement.text()) ? "" : pElement.text().trim();
 					}
 					// 处罚文号 不存在
-					if (punishNo.contains("当事人")) punishNo = "不存在";
+					if (punishNo.contains("当事人")) punishNo = "NULL";
 				}
 
 				//punishObject 处理
@@ -317,20 +335,19 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				return;
 			}
 
-			String[] zjh1 = {"中国证监会", city + "证监会"};
+			String[] zjh1 = {"中国证监会", "中国证券监督管理委员会", city + "证监会", city + "监管局"};
 			String zjhStr1 = "";
 			int zjhIndex1 = -1;
 			for (int i = 0; i < zjh1.length; i++) {
-				if (content.indexOf(zjh1[i]) > -1) {
+				if (content.lastIndexOf(zjh1[i]) > -1) {
 					zjhStr1 = zjh1[i];
-					zjhIndex1 = content.indexOf(zjh1[i]);
+					zjhIndex1 = content.lastIndexOf(zjh1[i]);
 					break;
 				}
 			}
 
 			if (StringUtils.isNotEmpty(content)) {
 
-				punishNo = "不存在";
 				if (content.contains("当事人") && content.contains("依据")) {
 
 					punishObject = content.substring(content.indexOf("当事人"), content.indexOf("依据"));
@@ -346,10 +363,18 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 		}
 
-		financeMonitorPunish.setPunishNo(punishNo);
-		financeMonitorPunish.setPartyPerson(punishObject);
-		financeMonitorPunish.setPartyInstitution(punishObject);
-		financeMonitorPunish.setPunishDate(punishDate);
+		if (org.springframework.util.StringUtils.isEmpty(financeMonitorPunish.getPunishNo())) {
+			financeMonitorPunish.setPunishNo(punishNo.trim());
+		}
+
+		punishObject = punishObject.replace("当事人：", "");
+		if (punishObject.contains("出生") || punishObject.contains("住址")) {
+			financeMonitorPunish.setPartyPerson(punishObject.trim());
+		} else {
+			financeMonitorPunish.setPartyInstitution(punishObject.trim());
+		}
+
+		financeMonitorPunish.setPunishDate(punishDate.replace("'", "").trim());
 		financeMonitorPunish.setDetails(detail);
 
 	}

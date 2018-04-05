@@ -15,6 +15,7 @@ import com.mr.modules.api.xls.importfile.FileImportExecutor;
 import com.mr.modules.api.xls.importfile.domain.MapResult;
 import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -286,23 +287,56 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 */
 	protected String buildFinanceMonitorPunishBizKey(FinanceMonitorPunish financeMonitorPunish) {
 		String punishNo = StringUtils.isEmpty(financeMonitorPunish.getPunishNo())
-				? "null" : financeMonitorPunish.getPunishNo();
+				? "NULL" : financeMonitorPunish.getPunishNo();
 
 		String punishTitle = StringUtils.isEmpty(financeMonitorPunish.getPunishTitle())
-				? "null" : financeMonitorPunish.getPunishTitle();
+				? "NULL" : financeMonitorPunish.getPunishTitle();
 		String punishInstitution = StringUtils.isEmpty(financeMonitorPunish.getPunishInstitution())
-				? "null" : financeMonitorPunish.getPunishInstitution();
+				? "NULL" : financeMonitorPunish.getPunishInstitution();
 		String punishDate = StringUtils.isEmpty(financeMonitorPunish.getPunishDate())
-				? "null" : financeMonitorPunish.getPunishDate();
+				? "NULL" : financeMonitorPunish.getPunishDate();
 		//去空值
 		financeMonitorPunish.setPunishNo(punishNo.trim());
 		financeMonitorPunish.setPunishTitle(punishTitle.trim());
 		financeMonitorPunish.setPunishInstitution(punishInstitution.trim());
-		financeMonitorPunish.setPublishDate(punishDate.trim());
+		financeMonitorPunish.setPunishDate(punishDate.trim());
 		financeMonitorPunish.setPrimaryKey(String.format("%s|%s|%s|%s",
-											punishNo, punishTitle, punishInstitution, punishDate));
+				punishNo, punishTitle, punishInstitution, punishDate));
 
 		return financeMonitorPunish.getPrimaryKey();
+	}
+
+	/**
+	 * 设置单条抓取的更新日期
+	 */
+	protected void initDate() {
+		//通过source查找
+		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
+				.selectBySource(oneFinanceMonitorPunish.getSource());
+		if (Objects.isNull(oneFinanceMonitorPunish)) {
+			oneFinanceMonitorPunish.setCreateTime(new Date());
+			oneFinanceMonitorPunish.setUpdateTime(new Date());
+		} else {
+			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
+			oneFinanceMonitorPunish.setUpdateTime(new Date());
+		}
+
+		//通过source先删除，确保不产生多余数据
+		financeMonitorPunishMapper.deleteBySource(oneFinanceMonitorPunish.getSource());
+	}
+
+	/**
+	 * 保存抓取结果
+	 * @return ture 保存成功		false 保存失败（如系统中已存在该记录）
+	 */
+	protected Boolean saveOne(FinanceMonitorPunish financeMonitorPunish, Boolean isForce){
+		String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
+		if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
+			insertOrUpdate(financeMonitorPunish);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -311,11 +345,17 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * @param financeMonitorPunish
 	 * @return
 	 */
-	protected FinanceMonitorPunish insertOrUpdate(FinanceMonitorPunish financeMonitorPunish) {
+	private FinanceMonitorPunish insertOrUpdate(FinanceMonitorPunish financeMonitorPunish) {
 		if (StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())) {
 			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		}
+
 		financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
+		//设置createTime
+		if(StringUtils.isEmpty(financeMonitorPunish.getCreateTime())){
+			financeMonitorPunish.setCreateTime(new Date());
+			financeMonitorPunish.setUpdateTime(new Date());
+		}
 		financeMonitorPunishMapper.insert(financeMonitorPunish);
 		return financeMonitorPunish;
 	}

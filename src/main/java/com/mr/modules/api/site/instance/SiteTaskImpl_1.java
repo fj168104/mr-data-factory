@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -41,7 +40,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		log.info("*******************call site1 task**************");
 //		String targetUri = "http://www.neeq.com.cn/uploads/1/file/public/201802/20180226182405_lc6vjyqntd.pdf";
 		List<FinanceMonitorPunish> lists = extractPage();
-		if(!CollectionUtils.isEmpty(lists)) {
+		if (!CollectionUtils.isEmpty(lists)) {
 			exportToXls("Site1.xlsx", lists);
 		}
 		return null;
@@ -51,16 +50,13 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	protected String executeOne() throws Throwable {
 		log.info("*******************call site1 task for One Record**************");
 
-		if(StringUtils.isEmpty(oneFinanceMonitorPunish.getCompanyFullName())){
-			oneFinanceMonitorPunish.setCompanyFullName(oneFinanceMonitorPunish.getPartyInstitution());
-		}
-
 		Assert.notNull(Objects.isNull(oneFinanceMonitorPunish.getPartyInstitution())
-				?oneFinanceMonitorPunish.getPartyPerson():oneFinanceMonitorPunish.getPartyInstitution());
+				? oneFinanceMonitorPunish.getPartyPerson() : oneFinanceMonitorPunish.getPartyInstitution());
 
 		Assert.notNull(oneFinanceMonitorPunish.getSource());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		oneFinanceMonitorPunish.setObject("全国中小企业股转系统-监管公告");
+		initDate();
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
 	}
@@ -96,8 +92,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
 
 				JSONObject contentObj = contentArray.getJSONObject(i);
-				//公司
-				String company = contentObj.getStr("companyName");
+
 				//当事人 从链接中提取
 				String person = "";
 				String disclosureTitle = contentObj.getStr("disclosureTitle");
@@ -105,21 +100,19 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				if (disclosureTitle.contains("关于对") && disclosureTitle.contains("采取")) {
 					person = disclosureTitle.substring(3, disclosureTitle.indexOf("采取"))
 							.replace("“", "")
-							.replace("”", "");
-				}
-
-				if (StringUtils.isEmpty(person.trim())) {
-					person = company;
+							.replace("”", "")
+							.replace("\\u201c", "")
+							.replace("\\u201d", "");
 				}
 
 				String targetUrl = "http://www.neeq.com.cn" + contentObj.getStr("destFilePath");
 
 				financeMonitorPunish.setPartyInstitution(person);
 				financeMonitorPunish.setPartyPerson(person);
-				financeMonitorPunish.setCompanyFullName(company);
 				financeMonitorPunish.setSource(targetUrl);
 				financeMonitorPunish.setPunishTitle(disclosureTitle);
 				financeMonitorPunish.setObject("全国中小企业股转系统-监管公告");
+
 				//增量抓取
 				if (!doFetch(financeMonitorPunish, false)) {
 					return lists;
@@ -163,13 +156,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 		try {
 			extract(content, financeMonitorPunish);
-			String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
-			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
-				insertOrUpdate(financeMonitorPunish);
-				return true;
-			} else {
-				return false;
-			}
+			return saveOne(financeMonitorPunish, isForce);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,6 +171,13 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	 */
 	private void extract(String fullTxt, FinanceMonitorPunish financeMonitorPunish) {
 
+		fullTxt = fullTxt.replace(",", "，");
+		//处罚文号
+		String punishNo = "";
+		//当事人
+		String person = "";
+		//公司全名
+		String companyFullName;
 		//住所地
 		String address = "";
 		//法定代表人
@@ -208,22 +202,41 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				&& (financeMonitorPunish.getPartyInstitution().contains("公司")
 				|| financeMonitorPunish.getPartyInstitution().contains("事务所"));
 
+		//住所为空的当事人按照个人当事人来处理
+		String[] zsd = {"住所地：", "住\n所地：", "住所\n地：", "住所地\n：",
+				"住所：", "住所",
+				"注\n册地：", "注册\n地：", "注册地\n：", "注册地：", "注册地址："};
+		String zsdStr = "";
+		int zsdindex = -1;
+		for (int i = 0; i < zsd.length; i++) {
+			if (fullTxt.indexOf(zsd[i]) > -1) {
+				zsdStr = zsd[i];
+				zsdindex = fullTxt.indexOf(zsd[i]);
+				break;
+			}
+		}
+		if (zsdindex < 0) isCompany = false;
+
+		//违规事实关键字
+		String weiguiStr = "";
+		int weiguiIndex = -1;
+		String[] weigui = {"违规事实", "违规行为", "违规事实如下：", "违规事实如下", "经查明"};
+
+		for (int i = 0; i < weigui.length; i++) {
+			if (fullTxt.indexOf(weigui[i]) > -1) {
+				weiguiStr = weigui[i];
+				weiguiIndex = fullTxt.indexOf(weigui[i]) + weiguiStr.length() + 1;
+				break;
+			}
+		}
+
+
 		//当事人为公司，格式规则
 		if (isCompany) {
 			financeMonitorPunish.setPartyPerson(null);
+
 			int sIndx = 0;
-			String[] zsd = {"住所地：", "住\n所地：", "住所\n地：", "住所地\n：",
-					"住所：", "住所",
-					"注\n册地：", "注册\n地：", "注册地\n：", "注册地：", "注册地址："};
-			String zsdStr = "";
-			int zsdindex = -1;
-			for (int i = 0; i < zsd.length; i++) {
-				if (fullTxt.indexOf(zsd[i]) > -1) {
-					zsdStr = zsd[i];
-					zsdindex = fullTxt.indexOf(zsd[i]);
-					break;
-				}
-			}
+
 			String[] fddbr = {"法定代表人：", "法\n定代表人：",
 					"法定\n代表人：",
 					"法定代\n表人：",
@@ -242,7 +255,6 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 //					break;
 				}
 			}
-
 
 			if (fddbrIndex > -1) {
 				if (zsdindex > -1) {
@@ -283,6 +295,23 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 			}
 
+			if (holder.length() > 0 && extracterZH(holder.substring(0, 1)).length() == 0) {
+				holder = holder.substring(1);
+			}
+
+			if (address.contains("，")) {
+				address = address.substring(0, address.indexOf("，"));
+			}
+			if (address.contains("。")) {
+				address = address.substring(0, address.indexOf("。"));
+			}
+
+			if (address.length() > 0) {
+				address = address.replace(zsdStr, "");
+			}
+			address = address.replace(":", "");
+
+
 			//公司一码通代码处理
 			String[] ymtdm = {"一码通代码：", "一\n码通代码：", "一码\n通代码：", "一码通\n代码：", "一码通代\n码：", "一码通代码\n：",};
 			String ymtdmStr = "";
@@ -304,32 +333,56 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			if (sIndx == -1) sIndx = fullTxt.indexOf("的决定");
 			if (sIndx == -1) return;
 
-			if (fullTxt.indexOf("住所地") > -1) {
-				holderAddition = fullTxt.substring(sIndx, fullTxt.indexOf("住所地"))
+			{
+				String tmp = fullTxt.substring(0, sIndx);
+				if (tmp.contains(" \n \n \n")) {
+					tmp = tmp.substring(tmp.indexOf(" \n \n \n"))
+							.replace("\n", "")
+							.replace(" ", "");
+					if (tmp.length() >= 5)
+						punishNo = "股转系统发[" + tmp.substring(0, 4) + "]" + tmp.substring(4) + "号";
+				}
+			}
+
+			//提取公司全名和当事人信息
+			{
+				String tmp = fullTxt.substring(sIndx);
+
+				person = tmp.substring(0, tmp.indexOf("，"))
+						.replace("当事人：", "")
+						.replace("当事人", "");
+				if (person.contains("（")) {
+					companyFullName = person.substring(0, person.indexOf("（"));
+				} else {
+					companyFullName = person;
+				}
+			}
+
+
+			if (zsdindex > -1) {
+				holderAddition = fullTxt.substring(sIndx, zsdindex)
 						.replace("当事人：", "").trim().replace("\n", "");
 			}
 
-			sIndx = fullTxt.indexOf("经查明");
-			if (sIndx > -1 && fullTxt.indexOf("违反了") > -1) {
-				String sTmp = fullTxt.substring(sIndx, fullTxt.indexOf("违反了"));
-				violation = sTmp.substring(0, sTmp.lastIndexOf("\n")).replace("经查明", "")
-						.trim().replace("\n", "");
-			}
-
-			sIndx = fullTxt.indexOf("违反了");
-			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("违反了") > -1) {
-				rule = fullTxt.substring(fullTxt.indexOf("违反了"), fullTxt.indexOf("鉴于"));
+			sIndx = fullTxt.indexOf("违反");
+			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("违反") > -1) {
+				rule = fullTxt.substring(fullTxt.indexOf("违反"), fullTxt.indexOf("鉴于"));
 			}
 
 			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("全国股转公司") > -1) {
 				result = fullTxt.substring(fullTxt.indexOf("鉴于"), fullTxt.lastIndexOf("全国股转公司"));
 			}
 
-			sIndx = fullTxt.indexOf("你公司应自收到本决定书之");
-			if (fullTxt.indexOf("你公司应自收到本决定书之") > -1 && fullTxt.indexOf("全国股转公司") > -1) {
-				resultAddition = fullTxt.substring(sIndx, fullTxt.indexOf("全国股转公司"));
+			sIndx = fullTxt.lastIndexOf("你公司应自收到本决定书之");
+			if(sIndx == -1) sIndx = fullTxt.lastIndexOf("收到本决定书之");
+			if(sIndx == -1) sIndx = fullTxt.lastIndexOf("收到本");
+
+			if (sIndx> -1 && fullTxt.lastIndexOf("全国股转公司") > -1) {
+				resultAddition = fullTxt.substring(sIndx, fullTxt.lastIndexOf("全国股转公司"));
 			}
 			financeMonitorPunish.setDomicile(address.trim());
+			financeMonitorPunish.setPartyInstitution(person);
+			financeMonitorPunish.setCompanyFullName(companyFullName);
 		} else {
 			//当事人为个人
 			financeMonitorPunish.setPartyInstitution(null);
@@ -349,6 +402,17 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				}
 			}
 
+			{
+				String tmp = fullTxt.substring(0, sIndx);
+				if (tmp.contains(" \n \n \n \n")) {
+					tmp = tmp.substring(tmp.indexOf(" \n \n \n \n"))
+							.replace("\n", "")
+							.replace(" ", "");
+					if (tmp.length() >= 5)
+						punishNo = "股转系统发[" + tmp.substring(0, 4) + "]" + tmp.substring(4) + "号";
+				}
+			}
+
 			if (ymtdmIndex > -1) {
 				String sTmp = fullTxt.substring(ymtdmIndex)
 						.replace(ymtdmStr, "").trim();
@@ -360,16 +424,9 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 						.replace("当事人：", "").trim().replace("\n", "");
 			}
 
-			sIndx = fullTxt.indexOf("经查明");
-			if (fullTxt.indexOf("违反了") > -1) {
-				String sTmp = fullTxt.substring(sIndx, fullTxt.indexOf("违反了"));
-				violation = sTmp.substring(0, sTmp.lastIndexOf("\n")).replace("经查明，", "")
-						.trim().replace("\n", "");
-			}
-
-			sIndx = fullTxt.indexOf("违反了");
-			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("违反了") > -1) {
-				rule = fullTxt.substring(fullTxt.indexOf("违反了"), fullTxt.indexOf("鉴于"));
+			sIndx = fullTxt.indexOf("违反");
+			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("违反") > -1) {
+				rule = fullTxt.substring(fullTxt.indexOf("违反"), fullTxt.indexOf("鉴于"));
 			}
 
 			if (fullTxt.indexOf("鉴于") > -1 && fullTxt.indexOf("全国股转公司") > -1) {
@@ -380,6 +437,33 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			financeMonitorPunish.setPartyPersonDomi(address.trim());
 		}
 
+		//违规情况
+		if (fullTxt.indexOf("违反") > -1 && weiguiIndex < fullTxt.indexOf("违反")) {
+			violation = fullTxt.substring(weiguiIndex, fullTxt.indexOf("违反"));
+			if (violation.lastIndexOf("。") > violation.lastIndexOf("，")) {
+				violation = violation.substring(0, violation.lastIndexOf("。") + 1);
+			} else {
+				if (violation.lastIndexOf("，") > 0) {
+					violation = violation.substring(0, violation.lastIndexOf("，"));
+				}
+			}
+		} else if (fullTxt.indexOf("经查明") < fullTxt.indexOf("违反")) {
+			weiguiIndex = fullTxt.indexOf("经查明") + 1;
+			violation = fullTxt.substring(weiguiIndex, fullTxt.indexOf("违反"));
+			if (violation.lastIndexOf("。") > violation.lastIndexOf("，")) {
+				violation = violation.substring(0, violation.lastIndexOf("。") + 1);
+			} else {
+				if (violation.lastIndexOf("，") > 0) {
+					violation = violation.substring(0, violation.lastIndexOf("，"));
+				}
+			}
+		}
+
+		violation = filterErrInfo(violation);
+		rule = filterErrInfo(rule);
+		result = filterErrInfo(result);
+
+		financeMonitorPunish.setPunishNo(punishNo);
 		financeMonitorPunish.setLegalRepresentative(holder.trim());
 		financeMonitorPunish.setUnicode(commonCode.trim());
 		financeMonitorPunish.setPartySupplement(holderAddition.trim());
@@ -391,4 +475,11 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		return;
 	}
 
+	private String filterErrInfo(String s) {
+		return s.replace("〇", "").replace("/、\\", "小")
+				.replace("- 2 -", "'")
+				.replace("- 3 -", "")
+				.replace("- 4 -", "")
+				.replace("'", "");
+	}
 }

@@ -24,11 +24,23 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
         int pageAll = 1;
         String targetUri1 = "http://www.circ.gov.cn/web/site0/tab5241/";
         String fullTxt = getData(targetUri1);
-        log.info("\n"+fullTxt);
+//        log.info("\n"+fullTxt);
         pageAll = extractPage(fullTxt);
         List listMap = new ArrayList<>();
         listMap =extractUrl(pageAll);
-        exportToXls("bois.xlsx",listMap);
+        for(int i =0;i<listMap.size();i++){
+            LinkedHashMap lh = (LinkedHashMap)listMap.get(i);
+            //解析安徽信息
+            /*if(lh.get("provinceCity").toString().indexOf("安徽")>-1){
+                new SiteTaskImpl_BOIS_AnHui().extractContent(getData(getData(lh.get("herf").toString())));
+            }*/
+            //解析宁波信息
+            /*if(lh.get("provinceCity").toString().indexOf("宁波")>-1){
+                new SiteTaskImpl_BOIS_NingBo().extractContent(getData(getData(lh.get("herf").toString())));
+            }*/
+        }
+
+//        exportToXls("bois.xlsx",listMap);
         log.info("-------------保监局处罚抓取完成-------------");
         return null;
     }
@@ -83,8 +95,47 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
                  map.put("title",title);
                  map.put("text",text);
 
+                 /*if(provinceCity.indexOf("安徽")>-1){
+                     SiteTaskImpl_BOIS_AnHui siteTaskImpl_bois_anHui = new SiteTaskImpl_BOIS_AnHui();
+                     siteTaskImpl_bois_anHui.extractContent(getData(href));
+                 }*/
+                 //解析宁波信息
+                /*if(provinceCity.indexOf("宁波")>-1){
+                    log.info("url-------"+href);
+                    new SiteTaskImpl_BOIS_NingBo().extractContent(getData(href));
+                }*/
+                /* if(provinceCity.indexOf("宁夏")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_NingXia().extractContent(getData(href));
+                 }*/
+                 /*if(provinceCity.indexOf("青岛")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_QingDao().extractContent(getData(href));
+                 }*/
+                 /*if(provinceCity.indexOf("青海")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_QingHai().extractContent(getData(href));
+                 }
+                 if(provinceCity.indexOf("厦门")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_XiaMen().extractContent(getData(href));
+                 }*/
+
+                /* if(provinceCity.indexOf("山东")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_ShangDong().extractContent(getData(href));
+                 }*/
+
+                 /*if(provinceCity.indexOf("上海")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_ShangHai().extractContent(getData(href));
+                 }*/
+                 if(provinceCity.indexOf("山西")>-1){
+                     log.info("url-------"+href);
+                     new SiteTaskImpl_BOIS_ShanXi().extractContent(getData(href));
+                 }
                  listUrl.add(map);
-                 log.info(i+"----id："+id+"----href:"+href+"----provinceCity:"+provinceCity+"----title:"+title);
+//                 log.info(i+"----id："+id+"----href:"+href+"----provinceCity:"+provinceCity+"----title:"+title);
              }
 
         }

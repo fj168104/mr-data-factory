@@ -413,6 +413,10 @@ public abstract class SiteTaskExtend extends SiteTask {
 				.replace("－7－", "")
 				.replace("－8－", "")
 				.replace("－9－", "")
+				.replace("'", "")
+				.replace("- 2 -", "'")
+				.replace("- 3 -", "")
+				.replace("- 4 -", "")
 				.replace("'", "");
 	}
 

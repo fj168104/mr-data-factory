@@ -16,7 +16,7 @@ public class FinanceMonitorPunish extends BaseEntity {
     private String primaryKey;
 
     /**
-     * 处罚文号=函号 | 全国中小企业股转系统地方证监局、深交所、保监会
+     * 处罚文号=函号 | 地方证监局、深交所、保监会
      */
     private String punishNo;
 

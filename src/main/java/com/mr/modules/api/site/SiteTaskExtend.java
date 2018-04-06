@@ -16,7 +16,6 @@ import com.mr.modules.api.xls.importfile.domain.MapResult;
 import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
 import lombok.extern.slf4j.Slf4j;
-import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -57,6 +56,21 @@ public abstract class SiteTaskExtend extends SiteTask {
 	@Override
 	protected String executeOne() throws Throwable {
 		return null;
+	}
+
+	/**
+	 * 带着重试次数
+	 *
+	 * @param url
+	 * @return
+	 */
+	protected String getData(String url, int retryTimes) {
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return restTemplate.getForObject(url, String.class);
+			}
+		}).execute(retryTimes);
 	}
 
 	/**
@@ -388,6 +402,19 @@ public abstract class SiteTaskExtend extends SiteTask {
 		return financeMonitorPunish;
 	}
 
+	protected String filterErrInfo(String s) {
+		return s.replace("〇", "").replace("/、\\", "小")
+				.replace("－2－", "'")
+				.replace("－3－", "")
+				.replace("－4－", "")
+				.replace("－5－", "")
+				.replace("－6－", "")
+				.replace("－7－", "")
+				.replace("－8－", "")
+				.replace("－9－", "")
+				.replace("'", "");
+	}
+
 	/**
 	 * 幂等操作类
 	 *
@@ -412,24 +439,32 @@ public abstract class SiteTaskExtend extends SiteTask {
 		 * @return
 		 */
 		public T execute(int maxRetryTimes) {
+			Throwable ex = null;
 			boolean executeSuccess = false;
 			T result = null;
 			int retryTimes = 0;
-			while (!executeSuccess && ++retryTimes < maxRetryTimes) {
+			while (!executeSuccess && retryTimes++ < maxRetryTimes) {
 				try {
 					result = (T) task.call();
 					executeSuccess = true;
 				} catch (Throwable e) {
-					log.error(e.getMessage());
+					log.warn(e.getMessage());
+					ex = e;
 					try {
-						Thread.sleep(retryTimes*1000);
+						Thread.sleep(retryTimes * 1000);
 						log.info("retry...");
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}
 				}
 			}
-			if (!executeSuccess) throw new RuntimeException("超过重试次数,执行失败");
+			if (!executeSuccess)
+				if (ex instanceof RuntimeException) {
+					throw (RuntimeException) ex;
+				} else {
+					log.error(ex.getMessage());
+					throw new RuntimeException("超过重试次数,执行失败");
+				}
 			return result;
 		}
 	}

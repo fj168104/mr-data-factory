@@ -475,11 +475,4 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		return;
 	}
 
-	private String filterErrInfo(String s) {
-		return s.replace("〇", "").replace("/、\\", "小")
-				.replace("- 2 -", "'")
-				.replace("- 3 -", "")
-				.replace("- 4 -", "")
-				.replace("'", "");
-	}
 }

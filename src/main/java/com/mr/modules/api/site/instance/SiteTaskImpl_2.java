@@ -110,10 +110,11 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					log.info("targetUri>>>" + targetUri);
 					String fullTxt = "";
 					try {
-						fullTxt = getData(targetUri);
-					} catch (HttpClientErrorException ex) {
-						if (ex.getMessage().trim().equals("404 Not Found"))
+						fullTxt = getData(targetUri, 1);
+					} catch (RuntimeException ex) {
+						if (ex instanceof HttpClientErrorException && ex.getMessage().trim().equals("404 Not Found"))
 							break;
+						else throw ex;
 					}
 
 					Document doc = Jsoup.parse(fullTxt);
@@ -175,12 +176,12 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		String url = financeMonitorPunish.getSource();
 
 		try {
-			extract(getData(url), financeMonitorPunish);
+			extract(getData(url ,1), financeMonitorPunish);
 			return saveOne(financeMonitorPunish, isForce);
-		} catch (HttpClientErrorException ex) {
-			if (ex.getMessage().trim().equals("404 Not Found"))
+		} catch (RuntimeException ex) {
+			if (ex instanceof HttpClientErrorException && ex.getMessage().trim().equals("404 Not Found"))
 				return true;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 		}
 		return true;

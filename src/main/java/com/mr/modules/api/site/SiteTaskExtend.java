@@ -373,6 +373,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 */
 	protected Boolean saveOne(FinanceMonitorPunish financeMonitorPunish, Boolean isForce) {
 		String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
+		log.debug("primaryKey:" + primaryKey);
 		if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
 			insertOrUpdate(financeMonitorPunish);
 			return true;

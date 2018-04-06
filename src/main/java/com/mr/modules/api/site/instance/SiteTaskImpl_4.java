@@ -9,6 +9,7 @@ import com.mr.framework.json.JSONObject;
 import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -54,11 +55,36 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			}
 
 		}
-
-
 		return null;
-
 	}
+
+
+	@Override
+	protected String executeOne() throws Throwable {
+		log.info("*******************call site4 task for One Record**************");
+
+		String typeName  = oneFinanceMonitorPunish.getSupervisionType();
+		Assert.notNull(oneFinanceMonitorPunish.getStockCode());
+		Assert.notNull(oneFinanceMonitorPunish.getStockShortName());
+		Assert.notNull(oneFinanceMonitorPunish.getSupervisionType());
+		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
+		Assert.notNull(oneFinanceMonitorPunish.getPunishDate());
+		Assert.notNull(oneFinanceMonitorPunish.getSource());
+		oneFinanceMonitorPunish.setObject("上交所-公司监管");
+
+		FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
+				.selectBySource(oneFinanceMonitorPunish.getSource());
+		if (!Objects.isNull(srcFmp)) {
+			if (!srcFmp.getSupervisionType().contains(typeName)) {
+				oneFinanceMonitorPunish.setSupervisionType(srcFmp.getSupervisionType() + "|" + typeName);
+			}
+		}
+
+		initDate();
+		doFetch(oneFinanceMonitorPunish, true);
+		return null;
+	}
+
 
 	protected List<FinanceMonitorPunish> doSJSData(String typeName) throws Throwable {
 		List<FinanceMonitorPunish> lists = Lists.newLinkedList();
@@ -128,8 +154,8 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 				financeMonitorPunish.setSupervisionType(typeName);
 				financeMonitorPunish.setPunishTitle(docTitle);
 				financeMonitorPunish.setPunishDate(createTime);
-				financeMonitorPunish.setSource(docURL);
-				financeMonitorPunish.setObject(String.format("上交所-%s", typeName));
+				financeMonitorPunish.setSource(docURL.startsWith("http") ? docURL : "http://" + docURL);
+				financeMonitorPunish.setObject("上交所-公司监管");
 
 				if (!doFetch(financeMonitorPunish, false)) {
 					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
@@ -162,12 +188,12 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		String docTitleDetail = "";
 
 		if (docURL.endsWith("pdf")) {
-			String fileName = downLoadFile(docURL.startsWith("http") ? docURL : "http://" + docURL);
+			String fileName = downLoadFile(docURL);
 			//处理事由正文详细文本信息
 			docTitleDetail = ocrUtil.getTextFromPdf(fileName);
 			extractPDF(docTitleDetail, financeMonitorPunish);
 		} else {
-			extractHTML(getData(docURL.startsWith("http") ? docURL : "http://" + docURL), financeMonitorPunish);
+			extractHTML(getData(docURL), financeMonitorPunish);
 
 		}
 
@@ -190,21 +216,37 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 				fullTxt.indexOf("当事人") : fullTxt.indexOf("当事人：");
 		int pIndx = fullTxt.indexOf("经查明，") == -1 ?
 				fullTxt.indexOf("经查明") : fullTxt.indexOf("经查明，");
-		if (sIndx < 0 || pIndx < 0) return;
+		if (pIndx < 0) {
+			log.error("文本格式不规则，无法识别");
+			return;
+		}
 
 		{
-			String tmp = fullTxt.substring(0, sIndx);
-			if (tmp.contains("20") && tmp.contains("号")) {
+			String tmp = fullTxt;
+			if (tmp.indexOf("20") < tmp.indexOf("号")) {
 				tmp = tmp.substring(tmp.indexOf("20") - 1, tmp.indexOf("号") + 1)
 						.replace("\n", "")
 						.replace(" ", "");
-				if (tmp.length() >= 5)
+				if (tmp.length() >= 5 && tmp.length() < 10) {
 					punishNo = tmp;
+				}
+
+			}
+		}
+		if (sIndx > 0) {
+			person = fullTxt.substring(sIndx, pIndx).replace("当事人：", "")
+					.replace("当事人", "");
+		} else {
+			String tmp = fullTxt.substring(0, pIndx);
+
+			if (tmp.contains(" \n \n")) {
+				person = tmp.substring(tmp.lastIndexOf(" \n \n"))
+						.replace("：", "")
+						.replace("\n", "")
+						.replace(" ", "");
 			}
 		}
 
-		person = fullTxt.substring(sIndx, pIndx).replace("当事人：", "")
-				.replace("当事人", "");
 		{
 			String tmp = fullTxt.substring(pIndx);
 			if (tmp.lastIndexOf("上海证券交易所") > pIndx) {
@@ -246,29 +288,23 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		Document doc = Jsoup.parse(fullTxt);
 		Element allElement = doc.getElementsByClass("allZoom").first();
 		String allZoomString = allElement.html();
-		String allDivString = allZoomString.substring(0, allZoomString.indexOf("<p>"));
-		String allPString = allZoomString.substring(allZoomString.indexOf("<p>"));
+		String allDivString = allZoomString.substring(0, allZoomString.indexOf("<p"));
+		String allPString = allZoomString.substring(allZoomString.indexOf("<p"));
 
-		if(StringUtils.isNotEmpty(allDivString) && allDivString.contains("</div>")){
+		if (StringUtils.isNotEmpty(allDivString) &&
+				allDivString.trim().length() > 0 && allDivString.contains("</div>")) {
 			Document divDoc = Jsoup.parse(allDivString.substring(allDivString.indexOf("<div"),
-					allDivString.lastIndexOf("</div>")+6));
+					allDivString.lastIndexOf("</div>") + 6));
 			punishNo = filter(divDoc.getElementsByTag("div").first().text(), filterTags);
-			isPunishNo = false;
-			isPersonOn = true;
-		}else if(StringUtils.isNotEmpty(allDivString) && allDivString.contains("</p>")){
-			Document divDoc = Jsoup.parse(allDivString.substring(allDivString.indexOf("<p"),
-					allDivString.lastIndexOf("</p>")+4));
-			punishNo = filter(divDoc.getElementsByTag("p").first().text(), filterTags);
-			isPunishNo = false;
-			isPersonOn = true;
+			log.debug("div punishNo:" + punishNo);
+
 		}
 
 		Document pDoc = Jsoup.parse(allPString);
 		for (Element ps : pDoc.getElementsByTag("p")) {
 			String pString = filter(ps.text(), filterTags);
 
-
-			if (pString.contains("当事人")) {
+			if (isPunishNo && StringUtils.isNotEmpty(punishNo)) {
 				isPunishNo = false;
 				isPersonOn = true;
 			}
@@ -293,7 +329,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			}
 
 		}
-		
+
 		if (StringUtils.isEmpty(violation)) {
 			log.error("内容不规则 URL:" + financeMonitorPunish.getSource());
 			return;

@@ -63,7 +63,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 	protected String executeOne() throws Throwable {
 		log.info("*******************call site4 task for One Record**************");
 
-		String typeName  = oneFinanceMonitorPunish.getSupervisionType();
+		String typeName = oneFinanceMonitorPunish.getSupervisionType();
 		Assert.notNull(oneFinanceMonitorPunish.getStockCode());
 		Assert.notNull(oneFinanceMonitorPunish.getStockShortName());
 		Assert.notNull(oneFinanceMonitorPunish.getSupervisionType());

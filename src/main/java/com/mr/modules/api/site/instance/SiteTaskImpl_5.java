@@ -158,6 +158,7 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 				} else {
 					srcFmp.setSupervisionType(srcFmp.getSupervisionType() + "|" + mType.name);
 					financeMonitorPunishMapper.updateByPrimaryKey(srcFmp);
+					financeMonitorPunish.setSupervisionType(srcFmp.getSupervisionType());
 				}
 			}
 			lists.add(financeMonitorPunish);

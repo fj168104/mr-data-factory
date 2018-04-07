@@ -329,20 +329,16 @@ public abstract class SiteTaskExtend extends SiteTask {
 	protected String buildFinanceMonitorPunishBizKey(FinanceMonitorPunish financeMonitorPunish) {
 		String punishNo = StringUtils.isEmpty(financeMonitorPunish.getPunishNo())
 				? "NULL" : financeMonitorPunish.getPunishNo();
-
 		String punishTitle = StringUtils.isEmpty(financeMonitorPunish.getPunishTitle())
 				? "NULL" : financeMonitorPunish.getPunishTitle();
-		String punishInstitution = StringUtils.isEmpty(financeMonitorPunish.getPunishInstitution())
-				? "NULL" : financeMonitorPunish.getPunishInstitution();
 		String punishDate = StringUtils.isEmpty(financeMonitorPunish.getPunishDate())
 				? "NULL" : financeMonitorPunish.getPunishDate();
-		//去空值
-		financeMonitorPunish.setPunishNo(punishNo.trim());
-		financeMonitorPunish.setPunishTitle(punishTitle.trim());
-		financeMonitorPunish.setPunishInstitution(punishInstitution.trim());
-		financeMonitorPunish.setPunishDate(punishDate.trim());
+		String party = StringUtils.isEmpty(financeMonitorPunish.getPartyPerson())
+				? financeMonitorPunish.getPartyInstitution() : financeMonitorPunish.getPartyPerson();
+		party = StringUtils.isEmpty(party) ? "NULL" : party;
+
 		financeMonitorPunish.setPrimaryKey(String.format("%s|%s|%s|%s",
-				punishNo, punishTitle, punishInstitution, punishDate));
+				punishNo, punishTitle, party, punishDate));
 
 		return financeMonitorPunish.getPrimaryKey();
 	}
@@ -354,7 +350,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 		//通过source查找
 		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 				.selectBySource(oneFinanceMonitorPunish.getSource());
-		if (Objects.isNull(oneFinanceMonitorPunish)) {
+		if (Objects.isNull(originFinanceMonitorPunish)) {
 			oneFinanceMonitorPunish.setCreateTime(new Date());
 			oneFinanceMonitorPunish.setUpdateTime(new Date());
 		} else {
@@ -417,6 +413,15 @@ public abstract class SiteTaskExtend extends SiteTask {
 				.replace("- 2 -", "'")
 				.replace("- 3 -", "")
 				.replace("- 4 -", "")
+				.replace("— 1 —", "")
+				.replace("— 2 —", "")
+				.replace("— 3 —", "")
+				.replace("— 4 —", "")
+				.replace("— 5 —", "")
+				.replace("— 6 —", "")
+				.replace("— 7 —", "")
+				.replace("— 8 —", "")
+				.replace("— 9 —", "")
 				.replace("'", "");
 	}
 

@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,6 +14,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +49,29 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 		String fltxt = fullTxt.substring(fullTxt.indexOf("当前第1页  共")).replace("当前第1页  共", "");
 		String pageCount = fltxt.substring(0, fltxt.indexOf("页"));
 		log.info("pageCount:" + pageCount);
-		List<LinkedHashMap<String, String>> lists = extract(pageCount);
-		exportToXls("site9.xlsx", lists);
+		List<FinanceMonitorPunish> lists = extract(pageCount);
+
+		if (!CollectionUtils.isEmpty(lists)) {
+			exportToXls("site9.xlsx", lists);
+		}
+		return null;
+	}
+
+	@Override
+	protected String executeOne() throws Throwable {
+		log.info("*******************call site9 task for One Record**************");
+
+		Assert.notNull(oneFinanceMonitorPunish.getPartyInstitution());
+		Assert.notNull(oneFinanceMonitorPunish.getPunishCategory());
+		Assert.notNull(oneFinanceMonitorPunish.getPunishNo());
+		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
+		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
+		Assert.notNull(oneFinanceMonitorPunish.getRelatedBond());
+		Assert.notNull(oneFinanceMonitorPunish.getSource());
+
+		oneFinanceMonitorPunish.setObject("深交所-中介机构处罚与处分记录-债券信息");
+		initDate();
+		doFetch(oneFinanceMonitorPunish, true);
 		return null;
 	}
 
@@ -54,8 +79,8 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 	 * 提取所需信息
 	 * 处分对象、处分对象类型、函号、函件标题、发函日期、涉及债券
 	 */
-	private List<LinkedHashMap<String, String>> extract(String pageCount) throws Exception {
-		List<LinkedHashMap<String, String>> lists = Lists.newLinkedList();
+	private List<FinanceMonitorPunish> extract(String pageCount) throws Exception {
+		List<FinanceMonitorPunish> lists = Lists.newLinkedList();
 
 		String url = "http://www.szse.cn/szseWeb/FrontController.szse?randnum=0.8706381259752185";
 		java.util.Map<String, String> requestParams = Maps.newHashMap();
@@ -91,19 +116,21 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 				String contentUri = "http://www.szse.cn/UpFiles/zqjghj/" + fileName;    //函件标题URI
 				String pDate = tdElements.get(4).text();        //发函日期
 				String pStock = tdElements.get(5).text();        //涉及债券
-				LinkedHashMap<String, String> map = Maps.newLinkedHashMap();
-				map.put("fileName", fileName);
-				map.put("punishObj", punishObj);
-				map.put("objType", objType);
-				map.put("pCode", pCode);
-				map.put("title", title);
-				map.put("contentUri", contentUri);
-				map.put("pDate", pDate);
-				map.put("pStock", pStock);
 
-				doFetch(map);
+				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+				financeMonitorPunish.setPartyInstitution(punishObj);
+				financeMonitorPunish.setPartyCategory(objType);
+				financeMonitorPunish.setPunishNo(pCode);
+				financeMonitorPunish.setPunishTitle(title);
+				financeMonitorPunish.setPublishDate(pDate);
+				financeMonitorPunish.setRelatedBond(pStock);
+				financeMonitorPunish.setSource(contentUri);
+				financeMonitorPunish.setObject("深交所-中介机构处罚与处分记录-债券信息");
 
-				lists.add(map);
+				if (!doFetch(financeMonitorPunish, false)) {
+					return lists;
+				}
+				lists.add(financeMonitorPunish);
 			}
 		}
 
@@ -112,23 +139,29 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 
 	/**
 	 * 抓取并解析单条数据
-	 *	map[fileName; punishObj; objType; pCode; title; pDate; pStock; contentUri]
-	 * @param map
+	 * map[fileName; punishObj; objType; pCode; title; pDate; pStock; contentUri]
+	 *
+	 * @param financeMonitorPunish
+	 * @param isForce
 	 */
-	private LinkedHashMap<String, String> doFetch(LinkedHashMap<String, String> map) throws Exception {
-		String contentUri = map.get("contentUri");
+	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+							Boolean isForce) throws Exception {
+		String contentUri = financeMonitorPunish.getSource();
 		log.info(contentUri);
-		String fileName = map.get("fileName");
-		String content = ""; 	//函件内容
+		String fileName = contentUri.substring(contentUri.lastIndexOf("/") + 1);
+		String content = null;    //函件内容
 		downLoadFile(contentUri, fileName);
 		if (fileName.toLowerCase().endsWith("doc")) {
 			content = ocrUtil.getTextFromDoc(fileName);
 		} else if (fileName.toLowerCase().endsWith("pdf")) {
-			content = ocrUtil.getTextFromImg(fileName);
-		} else {
-			content = contentUri;
+			content = ocrUtil.getTextFromPdf(fileName);
+			if(!content.contains("深圳证券交易所")){
+				downLoadFile(contentUri, fileName);
+				content = ocrUtil.getTextFromImg(fileName);
+			}
 		}
-		map.put("content", content);
-		return map;
+		financeMonitorPunish.setDetails(filterErrInfo(content));
+
+		return saveOne(financeMonitorPunish, isForce);
 	}
 }

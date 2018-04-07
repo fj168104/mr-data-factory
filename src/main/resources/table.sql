@@ -8,9 +8,9 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `FINANCE_MONITOR_PUNISH`;
 CREATE TABLE `FINANCE_MONITOR_PUNISH` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `PRIMARY_KEY` varchar(1024) NOT NULL COMMENT '业务主键 | punish_no+punish_title+punish_institution+punish_date',
-  `PUNISH_NO` varchar(255) NOT NULL COMMENT '处罚文号=函号 | 地方证监局、深交所、保监会',
-  `PUNISH_TITLE` varchar(255) NOT NULL COMMENT '标题名称=函件标题 | 地方证监局、深交所、保监会、上交所、深交所、证监会',
+  `PRIMARY_KEY` varchar(1024) NOT NULL COMMENT '业务主键 | punish_no+punish_title+party_institution+punish_date',
+  `PUNISH_NO` varchar(255) DEFAULT 'NULL' COMMENT '处罚文号=函号 | 地方证监局、深交所、保监会',
+  `PUNISH_TITLE` varchar(255) DEFAULT 'NULL' COMMENT '标题名称=函件标题 | 地方证监局、深交所、保监会、上交所、深交所、证监会',
   `PARTY_INSTITUTION` varchar(1024) DEFAULT 'NULL' COMMENT '当事人（公司）=处罚对象=机构当事人名称=涉及对象=中介机构名称=处分对象 | 全国中小企业股转系统、地方证监局、保监会、深交所、证监会',
   `PARTY_PERSON` varchar(1024) DEFAULT 'NULL' COMMENT '当事人（个人）=处罚对象=当事人集合(当事人姓名)=涉及对象=处分对象 | 全国中小企业股转系统、地方证监局、保监会、上交所、深交所',
   `PARTY_PERSON_ID` varchar(1024) DEFAULT 'NULL' COMMENT '当事人集合(当事人身份证号)|保监会',

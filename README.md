@@ -88,9 +88,10 @@ callId：任务调用ID， 必须全局唯一，由客户端控制
  primary = {primary}  主键
  object={object}     主题
 ```
+
 7、抓取单条数据：/data/{indexId}  
-   格式样例：  curl -d "punishTitle=关于对卢荣妹名下证券账户实施限制交易纪律处分的决定-1&punishDate=2018sse.com.cn/disclosure/credibility/regulatory/punishment/c/4490049.docx" "http://localhost:8082/api/data/site6"
-   换行符：使用\r\n替换
+   格式样例：  curl -d "punishTitle=关于对卢荣妹名下证券账户实施限制交易纪律处分的决定-1&punishDate=2018sse.com.cn/disclosure/credibility/regulatory/punishment/c/4490049.docx" "http://localhost:8082/api/data/site6"  
+   换行符：使用\r\n替换  
  ```
  params:  
  根据具体填写参数, 例如：

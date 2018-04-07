@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -173,7 +174,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 		fullTxt = fullTxt.replace(",", "，");
 		//处罚文号
-		String punishNo = "";
+		String punishNo = null;
 		//当事人
 		String person = "";
 		//公司全名
@@ -220,12 +221,12 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		//违规事实关键字
 		String weiguiStr = "";
 		int weiguiIndex = -1;
-		String[] weigui = {"违规事实", "违规行为", "违规事实如下：", "违规事实如下", "经查明"};
+		String[] weigui = {"违规事实如下：", "违规事实如下", "违规事实", "违规行为", "经查明"};
 
 		for (int i = 0; i < weigui.length; i++) {
 			if (fullTxt.indexOf(weigui[i]) > -1) {
 				weiguiStr = weigui[i];
-				weiguiIndex = fullTxt.indexOf(weigui[i]) + weiguiStr.length() + 1;
+				weiguiIndex = fullTxt.indexOf(weigui[i]);
 				break;
 			}
 		}
@@ -339,6 +340,20 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					tmp = tmp.substring(tmp.indexOf(" \n \n \n"))
 							.replace("\n", "")
 							.replace(" ", "");
+					if (tmp.contains("关于")) {
+						tmp = tmp.substring(0, tmp.indexOf("关于"));
+					}
+					tmp = tmp.replace("碁", "").replace("号", "");
+					if (tmp.length() >= 5)
+						punishNo = "股转系统发[" + tmp.substring(0, 4) + "]" + tmp.substring(4) + "号";
+				} else if (tmp.contains("20")) {
+					tmp = tmp.substring(tmp.indexOf("20"))
+							.replace("\n", "")
+							.replace(" ", "");
+					if (tmp.contains("关于")) {
+						tmp = tmp.substring(0, tmp.indexOf("关于"));
+					}
+					tmp = tmp.replace("碁", "").replace("号", "");
 					if (tmp.length() >= 5)
 						punishNo = "股转系统发[" + tmp.substring(0, 4) + "]" + tmp.substring(4) + "号";
 				}
@@ -374,10 +389,10 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			}
 
 			sIndx = fullTxt.lastIndexOf("你公司应自收到本决定书之");
-			if(sIndx == -1) sIndx = fullTxt.lastIndexOf("收到本决定书之");
-			if(sIndx == -1) sIndx = fullTxt.lastIndexOf("收到本");
+			if (sIndx == -1) sIndx = fullTxt.lastIndexOf("收到本决定书之");
+			if (sIndx == -1) sIndx = fullTxt.lastIndexOf("收到本");
 
-			if (sIndx> -1 && fullTxt.lastIndexOf("全国股转公司") > -1) {
+			if (sIndx > -1 && fullTxt.lastIndexOf("全国股转公司") > -1) {
 				resultAddition = fullTxt.substring(sIndx, fullTxt.lastIndexOf("全国股转公司"));
 			}
 			financeMonitorPunish.setDomicile(address.trim());
@@ -408,6 +423,20 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					tmp = tmp.substring(tmp.indexOf(" \n \n \n \n"))
 							.replace("\n", "")
 							.replace(" ", "");
+					if (tmp.contains("关于")) {
+						tmp = tmp.substring(0, tmp.indexOf("关于"));
+					}
+					tmp = tmp.replace("碁", "").replace("号", "");
+					if (tmp.length() >= 5)
+						punishNo = "股转系统发[" + tmp.substring(0, 4) + "]" + tmp.substring(4) + "号";
+				} else if (tmp.contains("20")) {
+					tmp = tmp.substring(tmp.indexOf("20"))
+							.replace("\n", "")
+							.replace(" ", "");
+					if (tmp.contains("关于")) {
+						tmp = tmp.substring(0, tmp.indexOf("关于"));
+					}
+					tmp = tmp.replace("碁", "").replace("号", "");
 					if (tmp.length() >= 5)
 						punishNo = "股转系统发[" + tmp.substring(0, 4) + "]" + tmp.substring(4) + "号";
 				}
@@ -439,7 +468,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 		//违规情况
 		if (fullTxt.indexOf("违反") > -1 && weiguiIndex < fullTxt.indexOf("违反")) {
-			violation = fullTxt.substring(weiguiIndex, fullTxt.indexOf("违反"));
+			violation = fullTxt.substring(weiguiIndex, fullTxt.indexOf("违反")).replace(weiguiStr, "");
 			if (violation.lastIndexOf("。") > violation.lastIndexOf("，")) {
 				violation = violation.substring(0, violation.lastIndexOf("。") + 1);
 			} else {
@@ -448,7 +477,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				}
 			}
 		} else if (fullTxt.indexOf("经查明") < fullTxt.indexOf("违反")) {
-			weiguiIndex = fullTxt.indexOf("经查明") + 1;
+			weiguiIndex = fullTxt.indexOf("经查明") + 4;
 			violation = fullTxt.substring(weiguiIndex, fullTxt.indexOf("违反"));
 			if (violation.lastIndexOf("。") > violation.lastIndexOf("，")) {
 				violation = violation.substring(0, violation.lastIndexOf("。") + 1);
@@ -457,6 +486,9 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					violation = violation.substring(0, violation.lastIndexOf("，"));
 				}
 			}
+		}
+		if (StringUtils.isNotEmpty(violation) && violation.startsWith("：")) {
+			violation = violation.substring(1);
 		}
 
 		violation = filterErrInfo(violation);

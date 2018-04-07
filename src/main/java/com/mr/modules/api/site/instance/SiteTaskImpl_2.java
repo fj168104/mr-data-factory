@@ -133,14 +133,14 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 						financeMonitorPunish.setPunishTitle(title);
 						//根据title提取的punishNo
 						{
-							String punishNoTmp = "";
-							if (title.contains("处罚决定书")) {
-								punishNoTmp = title.substring(0, title.indexOf("处罚决定书"))
-										.replace("处罚决定书", "");
+							String punishNoTmp = null;
+							if (title.contains("20")) {
+								punishNoTmp = title.substring(title.indexOf("20") - 1);
 								if (punishNoTmp.contains("号")) {
 									punishNoTmp.substring(0, punishNoTmp.indexOf("号") + 1);
 									punishNoTmp.replace("（", "")
 											.replace("）", "")
+											.replace(" ", "")
 											.trim();
 									financeMonitorPunish.setPunishNo(punishNoTmp);
 								}
@@ -176,7 +176,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		String url = financeMonitorPunish.getSource();
 
 		try {
-			extract(getData(url ,1), financeMonitorPunish);
+			extract(getData(url, 1), financeMonitorPunish);
 			return saveOne(financeMonitorPunish, isForce);
 		} catch (RuntimeException ex) {
 			if (ex instanceof HttpClientErrorException && ex.getMessage().trim().equals("404 Not Found"))
@@ -216,7 +216,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		boolean isOn = false;
 
 		//处罚日期
-		String punishDate = "";
+		String punishDate = null;
 
 		//名单分类 TODO 需确认
 		String listType = "";
@@ -272,7 +272,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 							detail = pString.substring(pString.indexOf(contains(pString, 根据)),
 									pString.length() > zjhIndex ? zjhIndex : pString.length());
 							if (zjhIndex + 10 > pString.length()) {
-								punishDate = "";
+								punishDate = null;
 							} else {
 								punishDate = filter(pString.substring(zjhIndex + 10), filterTags);
 							}
@@ -336,6 +336,15 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				return;
 			}
 
+			//punishNo 处理
+			if (content.contains("20") && content.indexOf("20") < content.indexOf("号")) {
+				String tmp = content.substring(content.indexOf("20") - 1, content.indexOf("号") + 1);
+				if (tmp.length() > 5 && tmp.length() < 15) {
+					punishNo = tmp;
+				}
+			}
+
+
 			String[] zjh1 = {"中国证监会", "中国证券监督管理委员会", city + "证监会", city + "监管局"};
 			String zjhStr1 = "";
 			int zjhIndex1 = -1;
@@ -354,9 +363,12 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					punishObject = content.substring(content.indexOf("当事人"), content.indexOf("依据"));
 					if (zjhIndex1 > -1) {
 						punishDate = content.substring(zjhIndex1).replace(zjhStr1, "").trim();
+						if (punishDate.length() > 15) {
+							log.warn("punishDate:{}无法解析", punishDate);
+							punishDate = null;
+						}
 						detail = content.substring(content.indexOf("依据"), zjhIndex1);
 					} else {
-						punishDate = "";
 						detail = content.substring(content.indexOf("依据"));
 					}
 				}
@@ -365,8 +377,21 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		}
 
 		if (org.springframework.util.StringUtils.isEmpty(financeMonitorPunish.getPunishNo())) {
+			if (punishNo.contains("号")) {
+				punishNo = punishNo.substring(0, punishNo.indexOf("号") + 1);
+			}
 			financeMonitorPunish.setPunishNo(punishNo.trim());
 		}
+		if (StringUtils.isNotEmpty(financeMonitorPunish.getPunishNo())) {
+			String pTmp = financeMonitorPunish.getPunishNo();
+			if (pTmp.lastIndexOf("（") > pTmp.indexOf("号")){
+				pTmp = pTmp.substring(0, pTmp.lastIndexOf("（"));
+			}else if (pTmp.lastIndexOf("(") > pTmp.indexOf("号")){
+				pTmp = pTmp.substring(0, pTmp.lastIndexOf("("));
+			}
+			financeMonitorPunish.setPunishNo(pTmp);
+		}
+
 
 		punishObject = punishObject.replace("当事人：", "");
 		if (punishObject.contains("出生") || punishObject.contains("住址")) {
@@ -375,7 +400,9 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			financeMonitorPunish.setPartyInstitution(punishObject.trim());
 		}
 
-		financeMonitorPunish.setPunishDate(punishDate.replace("'", "").trim());
+		if (StringUtils.isNotEmpty(punishDate)) {
+			financeMonitorPunish.setPunishDate(punishDate.replace("'", "").trim());
+		}
 		financeMonitorPunish.setDetails(detail);
 
 	}

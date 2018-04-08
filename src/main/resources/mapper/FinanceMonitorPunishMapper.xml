@@ -36,6 +36,7 @@
         <result column="LIST_CLASSIFICATION" property="listClassification" jdbcType="VARCHAR"/>
         <result column="SUPERVISION_TYPE" property="supervisionType" jdbcType="VARCHAR"/>
         <result column="SOURCE" property="source" jdbcType="VARCHAR"/>
+        <result column="URL" property="url" jdbcType="VARCHAR"/>
         <result column="OBJECT" property="object" jdbcType="VARCHAR"/>
         <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
@@ -56,18 +57,18 @@
     </select>
 
     <!--通过链接地址删除-->
-    <delete id="deleteBySource" parameterType="java.lang.String">
-        DELETE FROM finance_monitor_punish WHERE SOURCE = #{source}
+    <delete id="deleteByUrl" parameterType="java.lang.String">
+        DELETE FROM finance_monitor_punish WHERE URL = #{url}
     </delete>
 
     <!--通过链接地址查找-->
-    <select id="selectBySource" resultMap="BaseResultMap">
-        SELECT * FROM finance_monitor_punish c WHERE c.SOURCE = #{source}
+    <select id="selectByUrl" resultMap="BaseResultMap">
+        SELECT * FROM finance_monitor_punish c WHERE c.URL = #{url}
     </select>
 
     <!--通过业务来源删除-->
-    <delete id="deleteByObject" parameterType="java.lang.String">
-        DELETE FROM finance_monitor_punish WHERE OBJECT = #{object}
+    <delete id="deleteBySource" parameterType="java.lang.String">
+        DELETE FROM finance_monitor_punish WHERE SOURCE = #{source}
     </delete>
 
 </mapper>

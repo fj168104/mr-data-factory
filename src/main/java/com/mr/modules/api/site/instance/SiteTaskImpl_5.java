@@ -91,11 +91,12 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getSupervisionType());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishDate());
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
-		oneFinanceMonitorPunish.setObject("上交所-债券监管");
+		Assert.notNull(oneFinanceMonitorPunish.getUrl());
+		oneFinanceMonitorPunish.setSource("上交所");
+		oneFinanceMonitorPunish.setObject("债券监管");
 
 		FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
-				.selectBySource(oneFinanceMonitorPunish.getSource());
+				.selectByUrl(oneFinanceMonitorPunish.getUrl());
 		if (!Objects.isNull(srcFmp)) {
 			if (!srcFmp.getSupervisionType().contains(typeName)) {
 				oneFinanceMonitorPunish.setSupervisionType(srcFmp.getSupervisionType() + "|" + typeName);
@@ -147,8 +148,9 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 			financeMonitorPunish.setSupervisionType(mType.name);
 			financeMonitorPunish.setPunishTitle(title);
 			financeMonitorPunish.setPunishDate(punishDate);
-			financeMonitorPunish.setSource(href);
-			financeMonitorPunish.setObject("上交所-债券监管");
+			financeMonitorPunish.setUrl(href);
+			financeMonitorPunish.setSource("上交所");
+			financeMonitorPunish.setObject("债券监管");
 
 			if (!doFetch(financeMonitorPunish, false)) {
 				FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
@@ -174,7 +176,7 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 	 */
 	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) throws Exception {
-		String href = financeMonitorPunish.getSource();
+		String href = financeMonitorPunish.getUrl();
 
 		String fullTxt = "";
 		if (href.endsWith(".doc")) {
@@ -185,6 +187,8 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 			Element allZoomDiv = pDoc.getElementsByClass("allZoom").get(0);
 			fullTxt = allZoomDiv.text();
 		}
+
+		financeMonitorPunish.setDetails(fullTxt);
 		extractTxt(fullTxt, financeMonitorPunish);
 		return saveOne(financeMonitorPunish, isForce);
 	}
@@ -240,7 +244,7 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isEmpty(violation)) {
-			log.error("内容不规则 URL:" + financeMonitorPunish.getSource());
+			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));

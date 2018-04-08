@@ -75,9 +75,10 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishDate());
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
+		Assert.notNull(oneFinanceMonitorPunish.getUrl());
 		oneFinanceMonitorPunish.setSupervisionType("纪律处分");
-		oneFinanceMonitorPunish.setObject("上交所-纪律处分");
+		oneFinanceMonitorPunish.setSource("上交所");
+		oneFinanceMonitorPunish.setObject("交易监管");
 
 		initDate();
 		doFetch(oneFinanceMonitorPunish, true);
@@ -114,9 +115,10 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 
 				financeMonitorPunish.setPunishTitle(title);
 				financeMonitorPunish.setPunishDate(punishDate);
-				financeMonitorPunish.setSource(docUrl);
+				financeMonitorPunish.setUrl(docUrl);
 				financeMonitorPunish.setSupervisionType("纪律处分");
-				financeMonitorPunish.setObject("上交所-纪律处分");
+				financeMonitorPunish.setSource("上交所");
+				financeMonitorPunish.setObject("交易监管");
 
 				//增量抓取
 				if (!doFetch(financeMonitorPunish, false)) {
@@ -137,7 +139,7 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 	 */
 	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) throws Exception {
-		String docUrl = financeMonitorPunish.getSource();
+		String docUrl = financeMonitorPunish.getUrl();
 		String fullTxt = "";
 
 		if (docUrl.endsWith("doc") || docUrl.endsWith("docx")) {
@@ -147,6 +149,7 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 			Element allZoomDiv = pDoc.getElementsByClass("allZoom").get(0);
 			fullTxt = allZoomDiv.text();
 		}
+		financeMonitorPunish.setDetails(fullTxt);
 		extractTxt(fullTxt, financeMonitorPunish);
 		return saveOne(financeMonitorPunish, isForce);
 	}
@@ -156,7 +159,7 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 	 * 处罚文号、处罚对象、处理事由
 	 */
 	private void extractTxt(String fullTxt, FinanceMonitorPunish financeMonitorPunish) {
-		log.debug(financeMonitorPunish.getSource());
+		log.debug(financeMonitorPunish.getUrl());
 		//处罚文号
 		String punishNo = "";
 		//当事人
@@ -220,7 +223,7 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isEmpty(violation)) {
-			log.error("内容不规则 URL:" + financeMonitorPunish.getSource());
+			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));

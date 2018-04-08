@@ -70,10 +70,11 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getSource());
-		oneFinanceMonitorPunish.setObject("上交所-公司监管");
+		oneFinanceMonitorPunish.setSource("上交所");
+		oneFinanceMonitorPunish.setObject("公司监管");
 
 		FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
-				.selectBySource(oneFinanceMonitorPunish.getSource());
+				.selectByUrl(oneFinanceMonitorPunish.getSource());
 		if (!Objects.isNull(srcFmp)) {
 			if (!srcFmp.getSupervisionType().contains(typeName)) {
 				oneFinanceMonitorPunish.setSupervisionType(srcFmp.getSupervisionType() + "|" + typeName);
@@ -154,8 +155,9 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 				financeMonitorPunish.setSupervisionType(typeName);
 				financeMonitorPunish.setPunishTitle(docTitle);
 				financeMonitorPunish.setPunishDate(createTime);
-				financeMonitorPunish.setSource(docURL.startsWith("http") ? docURL : "http://" + docURL);
-				financeMonitorPunish.setObject("上交所-公司监管");
+				financeMonitorPunish.setUrl(docURL.startsWith("http") ? docURL : "http://" + docURL);
+				financeMonitorPunish.setSource("上交所");
+				financeMonitorPunish.setObject("公司监管");
 
 				if (!doFetch(financeMonitorPunish, false)) {
 					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
@@ -184,7 +186,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 	 */
 	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) throws Exception {
-		String docURL = financeMonitorPunish.getSource();
+		String docURL = financeMonitorPunish.getUrl();
 		String docTitleDetail = "";
 
 		if (docURL.endsWith("pdf")) {
@@ -257,13 +259,14 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isEmpty(violation)) {
-			log.error("内容不规则 URL:" + financeMonitorPunish.getSource());
+			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
 
 		financeMonitorPunish.setPunishNo(punishNo);
 		financeMonitorPunish.setPartyPerson(filterErrInfo(person));
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));
+		financeMonitorPunish.setDetails(fullTxt);
 	}
 
 	/**
@@ -277,6 +280,8 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		String person = "";
 		//处理事由
 		String violation = "";
+		//详情
+		String detail = "";
 
 		//取处罚文号开关
 		boolean isPunishNo = true;
@@ -287,6 +292,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 
 		Document doc = Jsoup.parse(fullTxt);
 		Element allElement = doc.getElementsByClass("allZoom").first();
+		detail = allElement.text();
 		String allZoomString = allElement.html();
 		String allDivString = allZoomString.substring(0, allZoomString.indexOf("<p"));
 		String allPString = allZoomString.substring(allZoomString.indexOf("<p"));
@@ -331,12 +337,13 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isEmpty(violation)) {
-			log.error("内容不规则 URL:" + financeMonitorPunish.getSource());
+			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
 		financeMonitorPunish.setPunishNo(punishNo);
 		financeMonitorPunish.setPartyPerson(filterErrInfo(person));
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));
+		financeMonitorPunish.setDetails(detail);
 	}
 
 }

@@ -87,9 +87,9 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getCompanyShortName());
 		Assert.notNull(oneFinanceMonitorPunish.getPartyInstitution());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
-
-		oneFinanceMonitorPunish.setObject("深交所-中介机构处罚与处分记录");
+		Assert.notNull(oneFinanceMonitorPunish.getUrl());
+		oneFinanceMonitorPunish.setSource("深交所");
+		oneFinanceMonitorPunish.setObject("中介机构处罚与处分记录");
 		initDate();
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
@@ -122,8 +122,9 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 			financeMonitorPunish.setCompanyShortName((String) map.get("companyAlias"));
 			financeMonitorPunish.setPartyInstitution((String) map.get("person"));
 			financeMonitorPunish.setPunishTitle((String) map.get("title"));
-			financeMonitorPunish.setSource("http://www.szse.cn/UpFiles/cfwj/" + (String) map.get("contentUri"));
-			financeMonitorPunish.setObject("深交所-中介机构处罚与处分记录");
+			financeMonitorPunish.setUrl("http://www.szse.cn/UpFiles/cfwj/" + (String) map.get("contentUri"));
+			financeMonitorPunish.setSource("深交所");
+			financeMonitorPunish.setObject("中介机构处罚与处分记录");
 
 			//增量抓取
 			if (!doFetch(financeMonitorPunish, false)) {
@@ -201,7 +202,7 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 			}
 		}
 
-		String contentFile = downLoadFile(financeMonitorPunish.getSource());
+		String contentFile = downLoadFile(financeMonitorPunish.getUrl());
 
 		//详情
 		if (contentFile.toLowerCase().endsWith("doc")) {

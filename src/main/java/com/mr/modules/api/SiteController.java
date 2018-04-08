@@ -66,18 +66,18 @@ public class SiteController extends BaseController {
 	 * 删除数据
 	 *
 	 * @param primaryKey
-	 * @param object
+	 * @param source
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/data/delete")
 	public ModelMap delSiteData(@RequestParam(value = "primaryKey", required = false) String primaryKey,
-								@RequestParam(value = "object", required = false) String object) throws Exception {
+								@RequestParam(value = "source", required = false) String source) throws Exception {
 		ModelMap map = new ModelMap();
 		if (!StringUtils.isEmpty(primaryKey)) {
 			map.addAttribute("delete_result", siteService.deleteByBizKey(primaryKey));
-		} else if (!StringUtils.isEmpty(object)) {
-			map.addAttribute("delete_result", siteService.deleteByObject(object));
+		} else if (!StringUtils.isEmpty(source)) {
+			map.addAttribute("delete_result", siteService.deleteBySource(source));
 		} else {
 			map.addAttribute("delete_result", 0);
 		}

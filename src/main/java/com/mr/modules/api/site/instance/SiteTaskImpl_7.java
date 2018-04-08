@@ -86,10 +86,10 @@ public class SiteTaskImpl_7 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getPunishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishCategory());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
+		Assert.notNull(oneFinanceMonitorPunish.getUrl());
 		Assert.notNull(oneFinanceMonitorPunish.getPartyInstitution());
-
-		oneFinanceMonitorPunish.setObject("深交所-上市公司处罚与处分记录");
+		oneFinanceMonitorPunish.setSource("深交所");
+		oneFinanceMonitorPunish.setObject("上市公司处罚与处分记录");
 		initDate();
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
@@ -118,9 +118,10 @@ public class SiteTaskImpl_7 extends SiteTaskExtend {
 			financeMonitorPunish.setPunishDate((String) map.get("punishDate"));
 			financeMonitorPunish.setPunishCategory((String) map.get("punishType"));
 			financeMonitorPunish.setPunishTitle((String) map.get("title"));
-			financeMonitorPunish.setSource("http://www.szse.cn/UpFiles/cfwj/" + (String) map.get("contentUri"));
+			financeMonitorPunish.setUrl("http://www.szse.cn/UpFiles/cfwj/" + (String) map.get("contentUri"));
 			financeMonitorPunish.setPartyInstitution((String) map.get("person"));
-			financeMonitorPunish.setObject("深交所-上市公司处罚与处分记录");
+			financeMonitorPunish.setSource("深交所");
+			financeMonitorPunish.setObject("上市公司处罚与处分记录");
 
 			//增量抓取
 			if (!doFetch(financeMonitorPunish, false)) {
@@ -184,7 +185,7 @@ public class SiteTaskImpl_7 extends SiteTaskExtend {
 			}
 		}
 
-		String contentFile = downLoadFile(financeMonitorPunish.getSource());
+		String contentFile = downLoadFile(financeMonitorPunish.getUrl());
 
 		//详情
 		if (contentFile.toLowerCase().endsWith("doc")) {

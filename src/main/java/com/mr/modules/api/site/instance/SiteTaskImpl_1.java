@@ -54,9 +54,10 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		Assert.notNull(Objects.isNull(oneFinanceMonitorPunish.getPartyInstitution())
 				? oneFinanceMonitorPunish.getPartyPerson() : oneFinanceMonitorPunish.getPartyInstitution());
 
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
+		Assert.notNull(oneFinanceMonitorPunish.getUrl());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		oneFinanceMonitorPunish.setObject("全国中小企业股转系统-监管公告");
+		oneFinanceMonitorPunish.setSource("全国中小企业股转系统");
 		initDate();
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
@@ -110,9 +111,10 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 				financeMonitorPunish.setPartyInstitution(person);
 				financeMonitorPunish.setPartyPerson(person);
-				financeMonitorPunish.setSource(targetUrl);
+				financeMonitorPunish.setUrl(targetUrl);
 				financeMonitorPunish.setPunishTitle(disclosureTitle);
 				financeMonitorPunish.setObject("全国中小企业股转系统-监管公告");
+				financeMonitorPunish.setSource("全国中小企业股转系统");
 
 				//增量抓取
 				if (!doFetch(financeMonitorPunish, false)) {
@@ -135,7 +137,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	 * @return true:处理成功数据  false：未处理数据
 	 */
 	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish, Boolean isForce) throws Exception {
-		String targetUrl = financeMonitorPunish.getSource();
+		String targetUrl = financeMonitorPunish.getUrl();
 		log.info("targetUrl:" + targetUrl);
 		String content = "";
 		try {
@@ -156,6 +158,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		}
 
 		try {
+			financeMonitorPunish.setDetails(content);
 			extract(content, financeMonitorPunish);
 			return saveOne(financeMonitorPunish, isForce);
 

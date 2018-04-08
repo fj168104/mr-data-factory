@@ -67,9 +67,9 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getRelatedBond());
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
-
-		oneFinanceMonitorPunish.setObject("深交所-中介机构处罚与处分记录-债券信息");
+		Assert.notNull(oneFinanceMonitorPunish.getUrl());
+		oneFinanceMonitorPunish.setSource("深交所");
+		oneFinanceMonitorPunish.setObject("中介机构处罚与处分记录");
 		initDate();
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
@@ -124,8 +124,9 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 				financeMonitorPunish.setPunishTitle(title);
 				financeMonitorPunish.setPublishDate(pDate);
 				financeMonitorPunish.setRelatedBond(pStock);
-				financeMonitorPunish.setSource(contentUri);
-				financeMonitorPunish.setObject("深交所-中介机构处罚与处分记录-债券信息");
+				financeMonitorPunish.setUrl(contentUri);
+				financeMonitorPunish.setSource("深交所");
+				financeMonitorPunish.setObject("中介机构处罚与处分记录");
 
 				if (!doFetch(financeMonitorPunish, false)) {
 					return lists;
@@ -146,7 +147,7 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 	 */
 	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) throws Exception {
-		String contentUri = financeMonitorPunish.getSource();
+		String contentUri = financeMonitorPunish.getUrl();
 		log.info(contentUri);
 		String fileName = contentUri.substring(contentUri.lastIndexOf("/") + 1);
 		String content = null;    //函件内容

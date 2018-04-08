@@ -161,6 +161,11 @@ public class FinanceMonitorPunish extends BaseEntity {
     private String source;
 
     /**
+     * 来源url
+     */
+    private String url;
+
+    /**
      * 主题（全国中小企业股转系统-监管公告、行政处罚决定、公司监管、债券监管、交易监管、上市公司处罚与处分记录、中介机构处罚与处分记录
      */
     private String object;

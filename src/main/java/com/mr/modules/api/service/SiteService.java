@@ -17,7 +17,7 @@ public interface SiteService {
 
 	Boolean delSiteTaskInstance(String callId) throws Exception;
 
-	public int deleteByObject(String object);
+	public int deleteBySource(String source);
 
 	public int deleteByBizKey(String primaryKey);
 

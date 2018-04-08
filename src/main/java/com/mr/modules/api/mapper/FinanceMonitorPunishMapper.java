@@ -19,22 +19,22 @@ public interface FinanceMonitorPunishMapper extends BaseMapper<FinanceMonitorPun
 
 	/**
 	 * 通过链接地址删除
-	 * @param source
+	 * @param url
 	 * @return
 	 */
-	int deleteBySource(String source);
+	int deleteByUrl(String url);
 
 	/**
 	 * 通过链接地址查找
-	 * @param source
+	 * @param url
 	 * @return
 	 */
-	FinanceMonitorPunish selectBySource(String source);
+	FinanceMonitorPunish selectByUrl(String url);
 
 	/**
 	 * 通过业务来源删除
 	 * @return
 	 */
-	int deleteByObject(String object);
+	int deleteBySource(String source);
 
 }

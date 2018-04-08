@@ -349,7 +349,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	protected void initDate() {
 		//通过source查找
 		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
-				.selectBySource(oneFinanceMonitorPunish.getSource());
+				.selectByUrl(oneFinanceMonitorPunish.getUrl());
 		if (Objects.isNull(originFinanceMonitorPunish)) {
 			oneFinanceMonitorPunish.setCreateTime(new Date());
 			oneFinanceMonitorPunish.setUpdateTime(new Date());
@@ -358,8 +358,8 @@ public abstract class SiteTaskExtend extends SiteTask {
 			oneFinanceMonitorPunish.setUpdateTime(new Date());
 		}
 
-		//通过source先删除，确保不产生多余数据
-		financeMonitorPunishMapper.deleteBySource(oneFinanceMonitorPunish.getSource());
+		//通过url先删除，确保不产生多余数据
+		financeMonitorPunishMapper.deleteByUrl(oneFinanceMonitorPunish.getUrl());
 	}
 
 	/**

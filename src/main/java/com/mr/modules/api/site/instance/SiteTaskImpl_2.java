@@ -75,12 +75,13 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getRegion());
-		Assert.notNull(oneFinanceMonitorPunish.getSource());
-		oneFinanceMonitorPunish.setObject("地方证监局-行政处罚决定");
+		Assert.notNull(oneFinanceMonitorPunish.getUrl());
+		oneFinanceMonitorPunish.setSource("地方证监局");
+		oneFinanceMonitorPunish.setObject("行政处罚决定");
 
 		//通过source查找
 		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
-				.selectBySource(oneFinanceMonitorPunish.getSource());
+				.selectByUrl(oneFinanceMonitorPunish.getUrl());
 		if (!Objects.isNull(oneFinanceMonitorPunish)) {
 			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
 			oneFinanceMonitorPunish.setUpdateTime(new Date());
@@ -150,9 +151,10 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 						financeMonitorPunish.setPublishDate(releaseDate);
 						financeMonitorPunish.setPublisher(String.format("中国证监会%s监管局", city));
-						financeMonitorPunish.setSource(href);
+						financeMonitorPunish.setUrl(href);
 						financeMonitorPunish.setRegion(city);
-						financeMonitorPunish.setObject("地方证监局-行政处罚决定");
+						financeMonitorPunish.setSource("地方证监局");
+						financeMonitorPunish.setObject("行政处罚决定");
 
 						if (!doFetch(financeMonitorPunish, false)) {
 							return lists;
@@ -173,7 +175,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	 */
 	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) {
-		String url = financeMonitorPunish.getSource();
+		String url = financeMonitorPunish.getUrl();
 
 		try {
 			extract(getData(url, 1), financeMonitorPunish);
@@ -317,7 +319,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			}
 		} else {
 			String text = fullTxt.substring(fullTxt.indexOf("var file_appendix"));
-			String href = financeMonitorPunish.getSource().substring(0, financeMonitorPunish.getSource().lastIndexOf("/"))
+			String href = financeMonitorPunish.getUrl().substring(0, financeMonitorPunish.getUrl().lastIndexOf("/"))
 					+ text.substring(text.indexOf("href=\"."), text.indexOf("\">"))
 					.replace("href=\".", "'")
 					.replace("'", "");

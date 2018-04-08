@@ -113,10 +113,10 @@ public class SiteServiceImpl implements SiteService {
 		return ((ResourceGroup) EhCacheUtils.get(callId));
 	}
 
-	public int deleteByObject(String object){
-		if(StringUtils.isEmpty(object))
+	public int deleteBySource(String source){
+		if(StringUtils.isEmpty(source))
 			return 0;
-		return financeMonitorPunishMapper.deleteByObject(object);
+		return financeMonitorPunishMapper.deleteBySource(source);
 	}
 
 	public int deleteByBizKey(String primaryKey){

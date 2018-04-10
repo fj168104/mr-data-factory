@@ -333,12 +333,15 @@ public abstract class SiteTaskExtend extends SiteTask {
 				? "NULL" : financeMonitorPunish.getPunishTitle();
 		String punishDate = StringUtils.isEmpty(financeMonitorPunish.getPunishDate())
 				? "NULL" : financeMonitorPunish.getPunishDate();
-		String party = StringUtils.isEmpty(financeMonitorPunish.getPartyPerson())
-				? financeMonitorPunish.getPartyInstitution() : financeMonitorPunish.getPartyPerson();
-		party = StringUtils.isEmpty(party) ? "NULL" : party;
+//		String party = StringUtils.isEmpty(financeMonitorPunish.getPartyPerson())
+//				? financeMonitorPunish.getPartyInstitution() : financeMonitorPunish.getPartyPerson();
+//		party = StringUtils.isEmpty(party) ? "NULL" : party;
+
+		String punishInstitution = StringUtils.isEmpty(financeMonitorPunish.getPunishInstitution())
+				? "NULL" : financeMonitorPunish.getPunishInstitution();
 
 		financeMonitorPunish.setPrimaryKey(String.format("%s|%s|%s|%s",
-				punishNo, punishTitle, party, punishDate));
+				punishNo, punishTitle, punishInstitution, punishDate));
 
 		return financeMonitorPunish.getPrimaryKey();
 	}

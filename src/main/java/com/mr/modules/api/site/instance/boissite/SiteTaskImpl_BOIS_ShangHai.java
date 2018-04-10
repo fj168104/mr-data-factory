@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -210,6 +211,22 @@ public class SiteTaskImpl_BOIS_ShangHai{
         log.info("受处罚人地址："+priAddress);
         log.info("正文："+stringDetail);
 
-        return null;
+        Map<String,String> map = new HashMap<String,String>();
+        map.put("titleStr",titleStr);
+        map.put("publishOrg",publishOrg);
+        map.put("publishDate",publishDate);
+        map.put("punishOrg",punishOrg);
+        map.put("punishDate",punishDate);
+        map.put("punishNo",punishNo);
+        map.put("punishToOrg",punishToOrg);
+        map.put("punishToOrgAddress",punishToOrgAddress);
+        map.put("punishToOrgHolder",punishToOrgHolder);
+        map.put("priPerson",priPerson.toString());
+        map.put("priPersonCert",priPersonCert.toString());
+        map.put("priJob",priJob.toString());
+        map.put("priAddress","");
+        map.put("stringDetail",stringDetail);
+
+        return map;
     }
 }

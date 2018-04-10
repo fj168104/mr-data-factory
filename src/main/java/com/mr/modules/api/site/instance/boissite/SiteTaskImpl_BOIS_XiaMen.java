@@ -1,6 +1,5 @@
 package com.mr.modules.api.site.instance.boissite;
 
-import com.mr.modules.api.site.SiteTaskExtend;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,27 +64,22 @@ public class SiteTaskImpl_BOIS_XiaMen{
                 .replace(":","：")
                 .replace("&nbsp;","")
                 .replace(" ","")
-                .replace("当 事 人：","当事人：")
+                .replace("姓名：","当事人：")
+                .replaceAll("当(.*)事(.*)人：","当事人：")
                 .replace("受处罚人：","当事人：")
                 .replace("受处理人：","当事人：")
                 .replace("受处罚人名称：","当事人：")
                 .replace("营业地址：","地址：")
-                .replace("住  所：","地址：")
-                .replace("住 所：","地址：")
-                .replace("住所：","地址：")
-                .replace("住    址：","地址：")
-                .replace("住 址：","地址：")
-                .replace("住址：","地址：")
-                .replace("地 址：","地址：")
-                .replace("职    务：","职务：")
-                .replace("职 务：","职务：")
-                .replace("时 任：","职务：")
-                .replace("负 责 人：","负责人：")
-                .replace("主要负责人：","负责人：")
-                .replace("法定代表人：","负责人：")
-                .replace("主要负责人姓名：","负责人：")
-                .replace("身份证号码：","身份证号：")
-                .replace("姓名：","当事人：")
+                .replaceAll("住(.*)所：","地址：")
+                .replaceAll("住(.*)址：","地址：")
+                .replaceAll("地(.*)址：","地址：")
+                .replaceAll("职(.*)务：","职务：")
+                .replaceAll("时(.*)任：","职务：")
+                .replaceAll("负(.*)责(.*)人：","负责人：")
+                .replaceAll("主要负责人：","负责人：")
+                .replaceAll("法定代表人：","负责人：")
+                .replaceAll("主要负责人姓名：","负责人：")
+                .replaceAll("身份证号码：","身份证号：")
 
         );
         //TODO 全文
@@ -122,14 +117,7 @@ public class SiteTaskImpl_BOIS_XiaMen{
             for(Element elementP : elementsP){
                 String elementPStr =  elementP.text().replaceAll("　","").trim();
                 if(elementP.text().indexOf("：")>-1&&elementP.text().split("：").length>1){
-                    if(elementP.text().indexOf("身份证号：")>-1&&elementP.text().indexOf("地址：")>-1){
-                        listStr.add(elementP.text().split("地址：")[0]);
-                        listStr.add("地址："+elementP.text().split("地址：")[1]);
-
-                    }else{
-                        listStr.add(elementP.text().replaceAll("　","").trim());
-                    }
-
+                    listStr.add(elementP.text().replaceAll("　","").trim());
                 }
                 if(elementPStr.indexOf("年")>-1 && elementPStr.indexOf("月")>-1&&elementPStr.indexOf("日")>-1){
                     punishDate = elementPStr.replaceAll(" ","").trim();
@@ -208,6 +196,22 @@ public class SiteTaskImpl_BOIS_XiaMen{
         log.info("受处罚人地址："+priAddress);
         log.info("正文："+stringDetail);
 
-        return null;
+        Map<String,String> map = new HashMap<String,String>();
+        map.put("titleStr",titleStr);
+        map.put("publishOrg",publishOrg);
+        map.put("publishDate",publishDate);
+        map.put("punishOrg",punishOrg);
+        map.put("punishDate",punishDate);
+        map.put("punishNo",punishNo);
+        map.put("punishToOrg",punishToOrg);
+        map.put("punishToOrgAddress",punishToOrgAddress);
+        map.put("punishToOrgHolder",punishToOrgHolder);
+        map.put("priPerson",priPerson.toString());
+        map.put("priPersonCert",priPersonCert.toString());
+        map.put("priJob",priJob.toString());
+        map.put("priAddress","");
+        map.put("stringDetail",stringDetail);
+
+        return map;
     }
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 @Slf4j
 @Component("tangshan")
 @Scope("prototype")
-public class SiteTaskImpl_BOIS_TangShang extends SiteTaskExtend{
+public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtend{
     @Override
     protected String execute() throws Throwable {
         String url = "http://www.circ.gov.cn/web/site0/tab5241/info4095224.htm";

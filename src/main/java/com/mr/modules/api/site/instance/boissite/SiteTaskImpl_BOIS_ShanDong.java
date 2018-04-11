@@ -24,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @Component("shandong")
 @Scope("prototype")
-public class SiteTaskImpl_BOIS_ShangDong{
+public class SiteTaskImpl_BOIS_ShanDong{
      /*@Override
      protected String execute() throws Throwable {
          String url = "http://www.circ.gov.cn/web/site0/tab5241/info4098544.htm";

@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
-import schemasMicrosoftComVml.STTrueFalse;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -36,7 +35,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 	private static LinkedHashMap<String, String> cityMap = Maps.newLinkedHashMap();
 
-	private static ArrayList<String> pdfOrDocType = Lists.newArrayList("天津");
+	private static ArrayList<String> pdfOrDocType = Lists.newArrayList("天津1");
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
 	@PostConstruct
@@ -76,6 +75,11 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getRegion());
 		Assert.notNull(oneFinanceMonitorPunish.getUrl());
+		oneFinanceMonitorPunish.setPublisher(String.format("中国证监会%s监管局",
+				oneFinanceMonitorPunish.getRegion()));
+		oneFinanceMonitorPunish.setPunishInstitution(String.format("中国证监会%s监管局",
+				oneFinanceMonitorPunish.getRegion()));
+
 		oneFinanceMonitorPunish.setSource("地方证监局");
 		oneFinanceMonitorPunish.setObject("行政处罚决定");
 
@@ -151,6 +155,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 						financeMonitorPunish.setPublishDate(releaseDate);
 						financeMonitorPunish.setPublisher(String.format("中国证监会%s监管局", city));
+						financeMonitorPunish.setPunishInstitution(String.format("中国证监会%s监管局", city));
 						financeMonitorPunish.setUrl(href);
 						financeMonitorPunish.setRegion(city);
 						financeMonitorPunish.setSource("地方证监局");
@@ -386,26 +391,93 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		}
 		if (StringUtils.isNotEmpty(financeMonitorPunish.getPunishNo())) {
 			String pTmp = financeMonitorPunish.getPunishNo();
-			if (pTmp.lastIndexOf("（") > pTmp.indexOf("号")){
+			if (pTmp.lastIndexOf("（") > pTmp.indexOf("号")) {
 				pTmp = pTmp.substring(0, pTmp.lastIndexOf("（"));
-			}else if (pTmp.lastIndexOf("(") > pTmp.indexOf("号")){
+			} else if (pTmp.lastIndexOf("(") > pTmp.indexOf("号")) {
 				pTmp = pTmp.substring(0, pTmp.lastIndexOf("("));
 			}
 			financeMonitorPunish.setPunishNo(pTmp);
 		}
 
 
+		//当事人
 		punishObject = punishObject.replace("当事人：", "");
-		if (punishObject.contains("出生") || punishObject.contains("住址")) {
-			financeMonitorPunish.setPartyPerson(punishObject.trim());
-		} else {
-			financeMonitorPunish.setPartyInstitution(punishObject.trim());
+		String partyPerson = "";
+		String partyInstitution = "";
+
+		for (String ps : punishObject.split("。")) {
+			if (StringUtils.isEmpty(ps)) continue;
+			if (ps.contains("出生") || ps.contains("住址")) {
+				partyPerson += ps;
+
+			} else {
+				partyInstitution += ps;
+
+			}
+		}
+		if (StringUtils.isNotEmpty(partyPerson)) {
+			financeMonitorPunish.setPartyPerson(partyPerson.trim());
 		}
 
+		if (StringUtils.isNotEmpty(partyInstitution)) {
+			financeMonitorPunish.setPartyInstitution(partyInstitution.trim());
+		}
+
+		//处罚日期
 		if (StringUtils.isNotEmpty(punishDate)) {
 			financeMonitorPunish.setPunishDate(punishDate.replace("'", "").trim());
 		}
 		financeMonitorPunish.setDetails(detail);
+
+		//解析 违规情况 相关法规 处罚结果 监管类型
+		String irregularities = null;
+		String relatedLaw = null;
+		String punishResult = null;
+		String listClassification = "行政处罚";
+
+		//以上事实 关键字
+		String factStr = "";
+		int factIndex = -1;
+		String[] fact = {"以上事实：", "上述违法事实",
+				"以上情况有相关账户的开户", "上述事实",
+				"以上违法事实", "经复核，本局认为", "本局认为"};
+
+		//违法行为的事实 关键字
+		String wfssStr = "";
+		int wfssIndex = -1;
+		String[] wfss = {"根据当事人违法行为的事实", "本局决定", "我局决定"};
+		for (int i = 0; i < wfss.length; i++) {
+			if (detail.indexOf(wfss[i]) > -1) {
+				wfssStr = wfss[i];
+				wfssIndex = detail.lastIndexOf(wfss[i]);
+				break;
+			}
+		}
+		//irregularities
+		if (StringUtils.isEmpty(detail)) return;
+		{
+			if (detail.indexOf("经查") > -1 && detail.indexOf(":") > -1 && factIndex > -1) {
+				String tmp = detail.substring(detail.indexOf("经查") + 4);
+				tmp.substring(detail.indexOf(":") + 1, factIndex);
+			}
+		}
+
+		//relatedLaw
+		{
+			String tmp = detail.substring(detail.lastIndexOf("违反了"));
+			relatedLaw = tmp.substring(0, detail.indexOf("。"));
+		}
+
+		//punishResult
+		{
+			if (wfssIndex > -1 && wfssIndex < zjhIndex) {
+				punishResult = detail.substring(wfssIndex, zjhIndex);
+			}
+		}
+
+		financeMonitorPunish.setIrregularities(irregularities);
+		financeMonitorPunish.setRelatedLaw(relatedLaw);
+		financeMonitorPunish.setPunishResult(punishResult);
 
 	}
 

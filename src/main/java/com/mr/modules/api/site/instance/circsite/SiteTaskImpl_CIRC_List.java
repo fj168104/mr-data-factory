@@ -35,14 +35,14 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//3.输出到xlsx
 		//0.获取保监会处罚列表页码数量
 		int pageAll = 1;
-		//获取清单列表页数pageAll
-		String targetUri1 = "http://www.circ.gov.cn/web/site0/tab5240/";
+		//获取清单列表页数pageAll http://bxjg.circ.gov.cn/web/site0/tab5240/
+		String targetUri1 = "http://bxjg.circ.gov.cn/web/site0/tab5240/";
 		String fullTxt1 = getData(targetUri1);
         pageAll = extractPage(fullTxt1);
         //1.保监会处罚列表清单
         List<List<?>> listList = new ArrayList<>();
         for (int i = 1;i<=pageAll;i++){
-            String targetUri2 = "http://www.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
+            String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
             String fullTxt2 = getData(targetUri2);
             listList.add(extractList(fullTxt2));
         }
@@ -65,7 +65,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 //                   log.info("序号："+i+"----->>>------"+url);
                }
         }
-		exportToXls("circ.xlsx", listsExcel);
+		exportToXls("20180408circ.xlsx", listsExcel);
         log.info("保监会处罚信息抓起完成···");
         return null;
 	}
@@ -102,7 +102,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
             //抽取编号Id
             String id = elementA.attr("id");
             //抽取连接
-            String href = "http://www.circ.gov.cn"+elementA.attr("href");
+            String href = "http://bxjg.circ.gov.cn"+elementA.attr("href");
             //抽取标题
             String title = elementA.attr("title").replace("(","（").replace(")","）");
             //抽取发布的时间

@@ -1,5 +1,6 @@
 package com.mr.modules.api.site.instance.circsite;
 
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -35,7 +36,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//3.输出到xlsx
 		//0.获取保监会处罚列表页码数量
 		int pageAll = 1;
-		//获取清单列表页数pageAll http://bxjg.circ.gov.cn/web/site0/tab5240/
+		//获取清单列表页数pageAll
 		String targetUri1 = "http://bxjg.circ.gov.cn/web/site0/tab5240/";
 		String fullTxt1 = getData(targetUri1);
         pageAll = extractPage(fullTxt1);
@@ -59,13 +60,16 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 
                    //提取正文结构化数据
 				   Map record = extractContent(getData(url),id,fileName);
-				   listsExcel.add(record);
+
+				   getObj(record,url);
+
+//				   listsExcel.add(record);
                    //下载文件
 //                   downLoadFile(url,fileName+".html");
 //                   log.info("序号："+i+"----->>>------"+url);
                }
         }
-		exportToXls("20180408circ.xlsx", listsExcel);
+//		exportToXls("circ.xlsx", listsExcel);
         log.info("保监会处罚信息抓起完成···");
         return null;
 	}
@@ -171,6 +175,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		Elements textElements = doc.getElementsByAttributeValue("id","tab_content");
 		//获得主节点下的所有文本内容
 		String text = textElements.text();
+		log.info("--------text-----"+text);
 		/*1.提取发布时间*/
 		releaseDate = text.substring(text.indexOf("发布时间：")+5,text.indexOf("分享到：")).trim();
 
@@ -325,6 +330,9 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 					stringBufferDetail.append(elementP.text()+"\n");
 				}
 				countPMaker++;
+				if(elementP.text().endsWith("日") && elementP.text().contains("年") && elementP.text().contains("月")){
+					punishDate = elementP.text().substring(elementP.text().lastIndexOf("年")-4);
+				}
 			}
 			log.info("提取："+title+"······完成·····");
 		}else{//三、主题为包括： TODO 处罚实施情况内容
@@ -350,24 +358,39 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		map.put("punishOrg",punishOrg);
 		map.put("punishDate",punishDate);
 		map.put("fileType",fileType);
+		map.put("title",title);
 
-		/*log.info(		"\nseqNo:"+seqNo+"\n"+
-						"punishNo:"+punishNo+"\n"+
-						"orgPerson:"+orgPerson+"\n"+
-						"orgAddress:"+orgAddress+"\n"+
-						"orgHolderName:"+orgHolderName+"\n"+
-						"releaseOrg:"+releaseOrg+"\n"+
-						"releaseDate:"+releaseDate+"\n"+
-						"punishOrg:"+punishOrg+"\n"+
-						"punishDate:"+punishDate+"\n"
-				);*/
-
-//		log.info(priPerson.toString());
-//		log.info(priCert.toString());
-//		log.info(priJob.toString());
-//		log.info(priAddress.toString());
-//		log.info(stringBufferDetail.toString());
-		//		log.info("parse demo...\n" + punishDetail);
 		return  map;
+	}
+
+	/**
+	 * 获取Obj,并入库
+	 * */
+	public FinanceMonitorPunish getObj(Map<String,String> mapInfo, String href){
+
+		log.info("-----punishDate----"+mapInfo.get("punishDate")+"---------"+href);
+		FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+		financeMonitorPunish.setPunishNo(mapInfo.get("punishNo"));//处罚文号
+		financeMonitorPunish.setPunishTitle(mapInfo.get("title"));//标题
+		financeMonitorPunish.setPublisher(mapInfo.get("releaseOrg"));//发布机构
+		financeMonitorPunish.setPublishDate(mapInfo.get("releaseDate"));//发布时间
+		financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
+		financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
+		financeMonitorPunish.setPartyInstitution(mapInfo.get("orgPerson"));//当事人（公司）=处罚对象
+		financeMonitorPunish.setDomicile(mapInfo.get("orgAddress"));//机构住址
+		financeMonitorPunish.setLegalRepresentative(mapInfo.get("orgHolderName"));//机构负责人
+		financeMonitorPunish.setPartyPerson(mapInfo.get("priPerson"));//受处罚人
+		financeMonitorPunish.setPartyPersonId(mapInfo.get("priCert"));//受处罚人证件号码
+		financeMonitorPunish.setPartyPersonTitle(mapInfo.get("priJob"));//职务
+		financeMonitorPunish.setPartyPersonDomi(mapInfo.get("priAddress"));//自然人住址
+		financeMonitorPunish.setDetails(mapInfo.get("stringBufferDetail"));//详情
+		financeMonitorPunish.setUrl(href);
+		financeMonitorPunish.setSource("中国保险监督管理委员会");
+		financeMonitorPunish.setObject("行政处罚决定书");
+
+		//保存入库
+		saveOne(financeMonitorPunish,false);
+
+		return financeMonitorPunish;
 	}
 }

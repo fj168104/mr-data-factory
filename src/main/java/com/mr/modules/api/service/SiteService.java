@@ -3,6 +3,7 @@ package com.mr.modules.api.service;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import org.springframework.util.StringUtils;
 
+import java.io.FileInputStream;
 import java.util.Map;
 
 /**
@@ -28,4 +29,6 @@ public interface SiteService {
 	public FinanceMonitorPunish selectByBizKey(String primaryKey);
 
 	FinanceMonitorPunish fetchOneRecord(String indexId, FinanceMonitorPunish financeMonitorPunish) throws Exception;
+
+	String importData(FileInputStream fis, String uploadFilePath) throws Exception;
 }

@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,6 +123,25 @@ public class SiteController extends BaseController {
 			map.addAttribute("del_result", financeMonitorPunish);
 		}
 
+		return map;
+	}
+
+	/**
+	 * curl -F "file=@xxx.xlsx" http://localhost:8082/uploadFile
+	 *
+	 * @param multiReq
+	 * @return
+	 */
+	@RequestMapping(value = "/importData", method = RequestMethod.POST)
+	public ModelMap importData(
+			MultipartHttpServletRequest multiReq) throws Exception {
+		ModelMap map = new ModelMap();
+		// 获取上传文件的路径
+		String uploadFilePath = multiReq.getFile("file").getOriginalFilename();
+
+		FileInputStream fis = (FileInputStream) multiReq.getFile("file").getInputStream();
+		String result = siteService.importData(fis, uploadFilePath);
+		map.addAttribute("result_code", result);
 		return map;
 	}
 

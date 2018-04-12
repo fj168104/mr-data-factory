@@ -1,13 +1,21 @@
 package com.mr.modules.api.site.instance.circsite;
 
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -28,6 +36,23 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 	 */
 	@Override
 	protected String execute() throws Throwable {
+		extract();
+        return null;
+	}
+
+	@Override
+	protected String executeOne() throws Throwable {
+
+		if(!oneFinanceMonitorPunish.getUrl().equalsIgnoreCase("")){
+			extractPageByUrl(oneFinanceMonitorPunish.getUrl());
+		}else{
+			extract();
+		}
+		return null;
+	}
+
+	private void extract(){
+
 		log.info("*******************call circ task**************");
 		//到出Excel文件
 		List listsExcel = new ArrayList();
@@ -36,38 +61,47 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//0.获取保监会处罚列表页码数量
 		int pageAll = 1;
 		//获取清单列表页数pageAll
-		String targetUri1 = "http://www.circ.gov.cn/web/site0/tab5240/";
+		String targetUri1 = "http://bxjg.circ.gov.cn/web/site0/tab5240/";
 		String fullTxt1 = getData(targetUri1);
-        pageAll = extractPage(fullTxt1);
-        //1.保监会处罚列表清单
-        List<List<?>> listList = new ArrayList<>();
-        for (int i = 1;i<=pageAll;i++){
-            String targetUri2 = "http://www.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
-            String fullTxt2 = getData(targetUri2);
-            listList.add(extractList(fullTxt2));
-        }
+		pageAll = extractPage(fullTxt1);
+		//1.保监会处罚列表清单
+		List<List<?>> listList = new ArrayList<>();
+		for (int i = 1;i<=pageAll;i++){
+			String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
+			String fullTxt2 = getData(targetUri2);
+			if(oneFinanceMonitorPunish!=null){
+				if(!oneFinanceMonitorPunish.getPublishDate().equalsIgnoreCase("")){
+					listList.add(extractListByDate(fullTxt2,oneFinanceMonitorPunish.getPublishDate()));
+				}
+			}else{
+				listList.add(extractList(fullTxt2));
+			}
 
-        //2.获取处罚详情信息
-        for(List<?> list : listList) {//其内部实质上还是调用了迭代器遍历方式，这种循环方式还有其他限制，不建议使用。
-               for (int i=0;i<list.size();i++){
-                   String urlStr = list.get(i).toString();
+		}
+
+		//2.获取处罚详情信息
+		for(List<?> list : listList) {//其内部实质上还是调用了迭代器遍历方式，这种循环方式还有其他限制，不建议使用。
+			for (int i=0;i<list.size();i++){
+				String urlStr = list.get(i).toString();
 //                   log.info(urlStr);
-                   String[] urlArr = urlStr.split("\\|\\|");
-                   String id = urlArr[0];
-				   String url = urlArr[1];
-                   String fileName = urlArr[2];
+				String[] urlArr = urlStr.split("\\|\\|");
+				String id = urlArr[0];
+				String url = urlArr[1];
+				String fileName = urlArr[2];
 
-                   //提取正文结构化数据
-				   Map record = extractContent(getData(url),id,fileName);
-				   listsExcel.add(record);
-                   //下载文件
+				//提取正文结构化数据
+				Map record = extractContent(getData(url),id,fileName);
+
+				getObj(record,url);
+
+//				   listsExcel.add(record);
+				//下载文件
 //                   downLoadFile(url,fileName+".html");
 //                   log.info("序号："+i+"----->>>------"+url);
-               }
-        }
-		exportToXls("circ.xlsx", listsExcel);
-        log.info("保监会处罚信息抓起完成···");
-        return null;
+			}
+		}
+//		exportToXls("circ.xlsx", listsExcel);
+		log.info("保监会处罚信息抓起完成···");
 	}
 	/**
 	 * 获取保监会处罚列表所有页数
@@ -102,17 +136,59 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
             //抽取编号Id
             String id = elementA.attr("id");
             //抽取连接
-            String href = "http://www.circ.gov.cn"+elementA.attr("href");
+            String href = "http://bxjg.circ.gov.cn"+elementA.attr("href");
             //抽取标题
             String title = elementA.attr("title").replace("(","（").replace(")","）");
             //抽取发布的时间
-            String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+     //       String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            Element element_td = elementSpan.parent().nextElementSibling();
+			String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
+
             String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
             list.add(urlStr);
         }
 		return list;
 	}
+	/**
+	 * 根据发布日期获取总页数下的所有连接url，获取指定日期的数据时格式为yyyy-mm-dd,获取某年某一个月内的数据时格式为yyyy-mm
+	 * */
+	private List<?> extractListByDate(String fullTxt,String date){
+		List<String> list = new ArrayList<>();
+		Document doc = Jsoup.parse(fullTxt);
+		Elements span = doc.getElementsByAttributeValue("id","lan1");
 
+		for (Element elementSpan : span){
+			//发布时间
+			Element element_td = elementSpan.parent().nextElementSibling();
+			String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
+
+			if(date.equalsIgnoreCase(extract_Date) || extract_Date.contains(date)){
+				Elements elements = elementSpan.getElementsByTag("a");
+				Element elementA = elements.get(0);
+				//抽取编号Id
+				String id = elementA.attr("id");
+				//抽取连接
+				String href = "http://bxjg.circ.gov.cn"+elementA.attr("href");
+				//抽取标题
+				String title = elementA.attr("title").replace("(","（").replace(")","）");
+				//抽取发布的时间
+			//	String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+				String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
+				list.add(urlStr);
+			}
+
+		}
+		return list;
+	}
+
+	/**
+	 * 对传入的url作处理
+	 * */
+	private void extractPageByUrl(String url){
+		Map record = extractContent(getData(url),"","");
+		getObj(record,url);
+	}
 	/**
 	 * 保监会处罚 提取所需要的信息
 	 * 序号、处罚文号、机构当事人名称、机构当事人住所、机构负责人姓名、
@@ -168,9 +244,16 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//获取正文内容
 		Document doc = Jsoup.parse(fullTxt.replace("&nbsp;","").replace("　","").replace(":","："));
 		//获取正文主节点
-		Elements textElements = doc.getElementsByAttributeValue("id","tab_content");
+	//	Elements textElements = doc.getElementsByAttributeValue("id","tab_content");
+		Element elementsTxt = doc.getElementById("tab_content");
+		Elements elementsTD = elementsTxt.getElementsByTag("TD");
+		Element elementsTitle = elementsTD.first();
+
+		title = elementsTitle.text();
+	//	log.info("----------title-----------"+title);
 		//获得主节点下的所有文本内容
-		String text = textElements.text();
+		String text = elementsTxt.text();
+	//	log.info("--------text-----"+text);
 		/*1.提取发布时间*/
 		releaseDate = text.substring(text.indexOf("发布时间：")+5,text.indexOf("分享到：")).trim();
 
@@ -325,6 +408,9 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 					stringBufferDetail.append(elementP.text()+"\n");
 				}
 				countPMaker++;
+				if(elementP.text().endsWith("日") && elementP.text().contains("年") && elementP.text().contains("月")){
+					punishDate = elementP.text().substring(elementP.text().lastIndexOf("年")-4);
+				}
 			}
 			log.info("提取："+title+"······完成·····");
 		}else{//三、主题为包括： TODO 处罚实施情况内容
@@ -340,34 +426,64 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		map.put("orgPerson",orgPerson);
 		map.put("orgAddress",orgAddress);
 		map.put("orgHolderName",orgHolderName);
-		map.put("priPerson",priPerson.toString());
-		map.put("priCert",priCert.toString());
-		map.put("priJob",priJob.toString());
-		map.put("priAddress",priAddress.toString());
+		if(priPerson.size()==0){
+			map.put("priPerson","");
+		}else{
+			map.put("priPerson",priPerson.toString().replace("[","").replace("]",""));
+		}
+		if(priCert.size()==0){
+			map.put("priCert","");
+		}else{
+			map.put("priCert",priCert.toString().replace("[","").replace("]",""));
+		}
+		if(priJob.size()==0){
+			map.put("priJob","");
+		}else{
+			map.put("priJob",priJob.toString().replace("[","").replace("]",""));
+		}
+		if(priAddress.size()==0){
+			map.put("priAddress","");
+		}else{
+			map.put("priAddress",priAddress.toString().replace("[","").replace("]",""));
+		}
 		map.put("stringBufferDetail",stringBufferDetail.toString());
 		map.put("releaseOrg",releaseOrg);
 		map.put("releaseDate",releaseDate);
 		map.put("punishOrg",punishOrg);
 		map.put("punishDate",punishDate);
 		map.put("fileType",fileType);
+		map.put("title",title);
 
-		/*log.info(		"\nseqNo:"+seqNo+"\n"+
-						"punishNo:"+punishNo+"\n"+
-						"orgPerson:"+orgPerson+"\n"+
-						"orgAddress:"+orgAddress+"\n"+
-						"orgHolderName:"+orgHolderName+"\n"+
-						"releaseOrg:"+releaseOrg+"\n"+
-						"releaseDate:"+releaseDate+"\n"+
-						"punishOrg:"+punishOrg+"\n"+
-						"punishDate:"+punishDate+"\n"
-				);*/
-
-//		log.info(priPerson.toString());
-//		log.info(priCert.toString());
-//		log.info(priJob.toString());
-//		log.info(priAddress.toString());
-//		log.info(stringBufferDetail.toString());
-		//		log.info("parse demo...\n" + punishDetail);
 		return  map;
+	}
+
+	/**
+	 * 获取Obj,并入库
+	 * */
+	public FinanceMonitorPunish getObj(Map<String,String> mapInfo, String href){
+
+		FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+		financeMonitorPunish.setPunishNo(mapInfo.get("punishNo"));//处罚文号
+		financeMonitorPunish.setPunishTitle(mapInfo.get("title"));//标题
+		financeMonitorPunish.setPublisher(mapInfo.get("releaseOrg"));//发布机构
+		financeMonitorPunish.setPublishDate(mapInfo.get("releaseDate"));//发布时间
+		financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
+		financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
+		financeMonitorPunish.setPartyInstitution(mapInfo.get("orgPerson"));//当事人（公司）=处罚对象
+		financeMonitorPunish.setDomicile(mapInfo.get("orgAddress"));//机构住址
+		financeMonitorPunish.setLegalRepresentative(mapInfo.get("orgHolderName"));//机构负责人
+		financeMonitorPunish.setPartyPerson(mapInfo.get("priPerson"));//受处罚人
+		financeMonitorPunish.setPartyPersonId(mapInfo.get("priCert"));//受处罚人证件号码
+		financeMonitorPunish.setPartyPersonTitle(mapInfo.get("priJob"));//职务
+		financeMonitorPunish.setPartyPersonDomi(mapInfo.get("priAddress"));//自然人住址
+		financeMonitorPunish.setDetails(mapInfo.get("stringBufferDetail"));//详情
+		financeMonitorPunish.setUrl(href);
+		financeMonitorPunish.setSource("中国保险监督管理委员会");
+		financeMonitorPunish.setObject("行政处罚决定书");
+
+		//保存入库
+		saveOne(financeMonitorPunish,false);
+
+		return financeMonitorPunish;
 	}
 }

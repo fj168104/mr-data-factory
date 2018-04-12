@@ -9,7 +9,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author fengj
@@ -21,7 +23,8 @@ public class SiteController extends BaseController {
 	@Resource
 	private SiteService siteService;
 
-
+	@Autowired
+	private HttpServletRequest request;
 	/**
 	 * path /{indexId}/{callId}
 	 *
@@ -30,7 +33,30 @@ public class SiteController extends BaseController {
 	@RequestMapping(value = "/start/{indexId}/{callId}")
 	public ModelMap start(@PathVariable("indexId") String indexId, @PathVariable("callId") String callId) throws Exception {
 		ModelMap map = new ModelMap();
-		map.addAttribute("code", siteService.start(indexId, callId));
+		String code = "";
+		if(request.getQueryString()== null){//没有传参
+			code = siteService.start(indexId, callId);
+		}else{
+			Map mapParams = new HashMap();
+			if(request.getQueryString().contains("region=")){
+				String region = request.getParameter("region");
+				mapParams.put("region",region);
+				code = siteService.startByParams(indexId,callId,mapParams);
+			}else if(request.getQueryString().contains("publishDate=")){
+				String publishDate = request.getParameter("publishDate");
+				mapParams.put("publishDate",publishDate);
+				code = siteService.startByParams(indexId,callId,mapParams);
+			}else if(request.getQueryString().contains("url=")){
+				String url = request.getParameter("url");
+				log.info("---------url-----------"+url);
+				mapParams.put("url",url);
+				code = siteService.startByParams(indexId,callId,mapParams);
+			}else{
+				code = "params-error";
+			}
+
+		}
+		map.addAttribute("code",code);
 		return map;
 	}
 

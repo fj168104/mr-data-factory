@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,39 @@ public class SiteServiceImpl implements SiteService {
 	 * @param callId     调用ID,系统唯一
 	 * @return
 	 */
+	@Override
+	public String startByParams(String groupIndex, String callId, Map mapParams) throws Exception {
+		ResourceGroup task = null;
+
+		log.info(String.valueOf(task));
+		if (!Objects.isNull(getTask(callId))) {
+			log.warn("task exists...");
+			return "task exists...";
+		}
+		String region = (String)mapParams.get("region");
+		String date = (String)mapParams.get("publishDate");
+		String url = (String)mapParams.get("url");
+
+		FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+
+		financeMonitorPunish.setRegion(region);
+
+		financeMonitorPunish.setPublishDate(date);
+
+		financeMonitorPunish.setUrl(url);
+
+		try {
+			task = (ResourceGroup)SpringUtils.getBean(groupIndex);
+			task.setFinanceMonitorPunish(financeMonitorPunish);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return "SiteTask object instance not found";
+		}
+
+		EhCacheUtils.put(callId, task);
+		return TaskStatus.getName(task.start());
+	}
+
 	@Override
 	public String start(String groupIndex, String callId) throws Exception {
 		ResourceGroup task = null;
@@ -52,7 +86,6 @@ public class SiteServiceImpl implements SiteService {
 		EhCacheUtils.put(callId, task);
 		return TaskStatus.getName(task.start());
 	}
-
 	public Boolean isFinish(String callId) throws Exception {
 		ResourceGroup task = getTask(callId);
 		if (Objects.isNull(getTask(callId))) {

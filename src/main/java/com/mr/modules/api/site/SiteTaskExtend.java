@@ -333,12 +333,15 @@ public abstract class SiteTaskExtend extends SiteTask {
 				? "NULL" : financeMonitorPunish.getPunishTitle();
 		String punishDate = StringUtils.isEmpty(financeMonitorPunish.getPunishDate())
 				? "NULL" : financeMonitorPunish.getPunishDate();
-		String party = StringUtils.isEmpty(financeMonitorPunish.getPartyPerson())
-				? financeMonitorPunish.getPartyInstitution() : financeMonitorPunish.getPartyPerson();
-		party = StringUtils.isEmpty(party) ? "NULL" : party;
+//		String party = StringUtils.isEmpty(financeMonitorPunish.getPartyPerson())
+//				? financeMonitorPunish.getPartyInstitution() : financeMonitorPunish.getPartyPerson();
+//		party = StringUtils.isEmpty(party) ? "NULL" : party;
+
+		String punishInstitution = StringUtils.isEmpty(financeMonitorPunish.getPunishInstitution())
+				? "NULL" : financeMonitorPunish.getPunishInstitution();
 
 		financeMonitorPunish.setPrimaryKey(String.format("%s|%s|%s|%s",
-				punishNo, punishTitle, party, punishDate));
+				punishNo, punishTitle, punishInstitution, punishDate));
 
 		return financeMonitorPunish.getPrimaryKey();
 	}
@@ -422,6 +425,15 @@ public abstract class SiteTaskExtend extends SiteTask {
 				.replace("— 7 —", "")
 				.replace("— 8 —", "")
 				.replace("— 9 —", "")
+				.replace("- 1 -", "")
+				.replace("- 2 -", "")
+				.replace("- 3 -", "")
+				.replace("- 4 -", "")
+				.replace("- 5 -", "")
+				.replace("- 6 -", "")
+				.replace("- 7 -", "")
+				.replace("- 8 -", "")
+				.replace("- 9 -", "")
 				.replace("'", "");
 	}
 

@@ -170,9 +170,9 @@ public class OCRUtil {
 			//ocrUtil.image2Dir("434324.png");
 
 //			log.info(ocrUtil.recognizeTexts(ocrUtil.image2Dir("P020171222593212170499.pdf")));
-
-			log.info("" + ocrUtil.getTextFromImg("zqjghj_29eb45ce-da9f-461c-b4ad-b7478e68971e.pdf"));
-//			log.info("" + ocrUtil.getTextFromPdf("20170407180135_m91owtxbd6.pdf"));
+//
+			log.info("" + ocrUtil.getTextFromImg("P020170516403317946872.pdf"));
+//			log.info("" + ocrUtil.getTextFromPdf("20170613184522_2wa8r5l63v.pdf"));
 
 		} catch (Exception e) {
 			e.printStackTrace();

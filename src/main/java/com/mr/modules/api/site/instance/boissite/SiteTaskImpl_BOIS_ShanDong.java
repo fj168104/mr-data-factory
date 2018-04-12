@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @Component("shandong")
 @Scope("prototype")
-public class SiteTaskImpl_BOIS_ShanDong {
+public class SiteTaskImpl_BOIS_ShanDong{
      /*@Override
      protected String execute() throws Throwable {
          String url = "http://www.circ.gov.cn/web/site0/tab5241/info4098544.htm";
@@ -201,22 +200,6 @@ public class SiteTaskImpl_BOIS_ShanDong {
         log.info("受处罚人地址："+priAddress);
         log.info("正文："+stringDetail);
 
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("titleStr",titleStr);
-        map.put("publishOrg",publishOrg);
-        map.put("publishDate",publishDate);
-        map.put("punishOrg",punishOrg);
-        map.put("punishDate",punishDate);
-        map.put("punishNo",punishNo);
-        map.put("punishToOrg",punishToOrg);
-        map.put("punishToOrgAddress",punishToOrgAddress);
-        map.put("punishToOrgHolder",punishToOrgHolder);
-        map.put("priPerson",priPerson.toString());
-        map.put("priPersonCert",priPersonCert.toString());
-        map.put("priJob",priJob.toString());
-        map.put("priAddress","");
-        map.put("stringDetail",stringDetail);
-
-        return map;
+        return null;
     }
 }

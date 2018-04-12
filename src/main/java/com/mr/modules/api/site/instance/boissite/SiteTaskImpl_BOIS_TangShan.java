@@ -1,32 +1,31 @@
 package com.mr.modules.api.site.instance.boissite;
 
+
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.mr.modules.api.util.ParseTangShan;
+import com.mr.modules.api.util.ParseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @Component("tangshan")
 @Scope("prototype")
-public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtend {
+public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtend{
     @Override
     protected String execute() throws Throwable {
-        String url = "http://hebei.circ.gov.cn/web/site58/tab4768/info4093849.htm";
+        String url = "http://www.circ.gov.cn/web/site0/tab5241/info4095224.htm";
         extractContent(getData(url));
         return null;
     }
 
     public Map extractContent(String fullTxt) {
         //发布机构
-        String publishOrg = "中国保监会河北监管局唐山监管分局行政处";
+        String publishOrg = "中国保监会河北保监局行政处";
         //发布时间
         String publishDate = "";
         //TODO 处罚机关（由于有些页面没有，所以暂且给予默认值）
-        String punishOrg ="唐山保监分局";
+        String punishOrg ="河北保监局";
         //TODO 处罚时间
         String punishDate = "";
         //TODO 处罚文号
@@ -51,7 +50,7 @@ public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtend {
 
         String titleStr = "";
 
-        Map resMap = new ParseTangShan().parseInfo(fullTxt);
+        Map resMap = new ParseUtil().parseInfo(fullTxt);
         publishDate = (String)resMap.get("publishDate");
         punishDate = (String)resMap.get("punishDate");
         punishNo = (String)resMap.get("punishNo");
@@ -80,22 +79,6 @@ public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtend {
         log.info("受处罚人地址："+priAddress);
         log.info("正文："+stringDetail);
 
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("titleStr",titleStr);
-        map.put("publishOrg",publishOrg);
-        map.put("publishDate",publishDate);
-        map.put("punishOrg",punishOrg);
-        map.put("punishDate",punishDate);
-        map.put("punishNo",punishNo);
-        map.put("punishToOrg",punishToOrg);
-        map.put("punishToOrgAddress",punishToOrgAddress);
-        map.put("punishToOrgHolder",punishToOrgHolder);
-        map.put("priPerson",priPerson.toString());
-        map.put("priPersonCert",priPersonCert.toString());
-        map.put("priJob",priJob.toString());
-        map.put("priAddress","");
-        map.put("stringDetail",stringDetail);
-
-        return map;
+        return null;
     }
 }

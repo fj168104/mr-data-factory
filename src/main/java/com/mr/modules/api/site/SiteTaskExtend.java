@@ -326,7 +326,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 *
 	 * @return primaryKey
 	 */
-	protected String buildFinanceMonitorPunishBizKey(FinanceMonitorPunish financeMonitorPunish) {
+	public static String buildFinanceMonitorPunishBizKey(FinanceMonitorPunish financeMonitorPunish) {
 		String punishNo = StringUtils.isEmpty(financeMonitorPunish.getPunishNo())
 				? "NULL" : financeMonitorPunish.getPunishNo();
 		String punishTitle = StringUtils.isEmpty(financeMonitorPunish.getPunishTitle())
@@ -373,7 +373,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	protected Boolean saveOne(FinanceMonitorPunish financeMonitorPunish, Boolean isForce) {
 		String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		log.debug("primaryKey:" + primaryKey);
-		if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
+		if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByUrl(financeMonitorPunish.getUrl()))) {
 			insertOrUpdate(financeMonitorPunish);
 			return true;
 		} else {
@@ -434,6 +434,11 @@ public abstract class SiteTaskExtend extends SiteTask {
 				.replace("- 7 -", "")
 				.replace("- 8 -", "")
 				.replace("- 9 -", "")
+				.replace("－1－", "")
+				.replace("－2－", "")
+				.replace("－3－", "")
+				.replace("－4－", "")
+				.replace("－5－", "")
 				.replace("'", "");
 	}
 

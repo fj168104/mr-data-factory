@@ -11,6 +11,7 @@ import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.service.SiteService;
 import com.mr.modules.api.site.ResourceGroup;
 import com.mr.modules.api.site.SiteTask;
+import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.xls.importfile.FileImportExecutor;
 import com.mr.modules.api.xls.importfile.domain.MapResult;
 import com.mr.modules.api.xls.importfile.domain.common.Configuration;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,9 +58,9 @@ public class SiteServiceImpl implements SiteService {
 			log.warn("task exists...");
 			return "task exists...";
 		}
-		String region = (String)mapParams.get("region");
-		String date = (String)mapParams.get("publishDate");
-		String url = (String)mapParams.get("url");
+		String region = (String) mapParams.get("region");
+		String date = (String) mapParams.get("publishDate");
+		String url = (String) mapParams.get("url");
 
 		FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
 
@@ -69,7 +71,7 @@ public class SiteServiceImpl implements SiteService {
 		financeMonitorPunish.setUrl(url);
 
 		try {
-			task = (ResourceGroup)SpringUtils.getBean(groupIndex);
+			task = (ResourceGroup) SpringUtils.getBean(groupIndex);
 			task.setFinanceMonitorPunish(financeMonitorPunish);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -91,7 +93,7 @@ public class SiteServiceImpl implements SiteService {
 		}
 
 		try {
-			task = (ResourceGroup)SpringUtils.getBean(groupIndex);
+			task = (ResourceGroup) SpringUtils.getBean(groupIndex);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return "SiteTask object instance not found";
@@ -100,6 +102,7 @@ public class SiteServiceImpl implements SiteService {
 		EhCacheUtils.put(callId, task);
 		return TaskStatus.getName(task.start());
 	}
+
 	public Boolean isFinish(String callId) throws Exception {
 		ResourceGroup task = getTask(callId);
 		if (Objects.isNull(getTask(callId))) {
@@ -160,26 +163,26 @@ public class SiteServiceImpl implements SiteService {
 		return ((ResourceGroup) EhCacheUtils.get(callId));
 	}
 
-	public int deleteBySource(String source){
-		if(StringUtils.isEmpty(source))
+	public int deleteBySource(String source) {
+		if (StringUtils.isEmpty(source))
 			return 0;
 		return financeMonitorPunishMapper.deleteBySource(source);
 	}
 
-	public int deleteByBizKey(String primaryKey){
-		if(StringUtils.isEmpty(primaryKey))
+	public int deleteByBizKey(String primaryKey) {
+		if (StringUtils.isEmpty(primaryKey))
 			return 0;
 		return financeMonitorPunishMapper.deleteByBizKey(primaryKey);
 	}
 
-	public FinanceMonitorPunish selectByBizKey(String primaryKey){
-		if(StringUtils.isEmpty(primaryKey)){
+	public FinanceMonitorPunish selectByBizKey(String primaryKey) {
+		if (StringUtils.isEmpty(primaryKey)) {
 			return null;
 		}
 		FinanceMonitorPunish financeMonitorPunish = financeMonitorPunishMapper.selectByBizKey(primaryKey);
-		if(StringUtils.isEmpty(financeMonitorPunish)){
+		if (StringUtils.isEmpty(financeMonitorPunish)) {
 			return null;
-		}else {
+		} else {
 			return financeMonitorPunish;
 		}
 	}
@@ -191,8 +194,8 @@ public class SiteServiceImpl implements SiteService {
 		log.info(String.valueOf(task));
 
 		try {
-			task = (ResourceGroup)SpringUtils.getBean(groupIndex);
-			if(Objects.isNull(task)){
+			task = (ResourceGroup) SpringUtils.getBean(groupIndex);
+			if (Objects.isNull(task)) {
 				return null;
 			}
 			task.setFinanceMonitorPunish(financeMonitorPunish);
@@ -222,12 +225,10 @@ public class SiteServiceImpl implements SiteService {
 		log.info("uploadFileSuffix:" + uploadFileSuffix);
 		FileOutputStream fos = null;
 		//文件全路径名
-		String fullPath = downloadDir + File.separator + uploadFileName;
+		String fullPath = downloadDir + File.separator + uploadFilePath;
 		try {
 
-			fos = new FileOutputStream(new File(downloadDir + File.separator + uploadFileName
-					+ ".")
-					+ uploadFileSuffix);
+			fos = new FileOutputStream(new File(downloadDir + File.separator + uploadFilePath));
 			byte[] temp = new byte[1024];
 			int i = fis.read(temp);
 			while (i != -1) {
@@ -258,13 +259,12 @@ public class SiteServiceImpl implements SiteService {
 
 		log.info(uploadFilePath + "upload success.");
 		/******解析uploadFilePath并导入*****/
-
-//		fullPath;
-//TODO
+		int count = importXlsByNoConfig(fullPath);
+		log.info("导入成功条数:{}", count);
 		//删除导入的文件
 		FileUtil.del(fullPath);
-
-		return "success";
+		if (count <= 0) return "fail";
+		return "success " + count;
 	}
 
 	/**
@@ -274,9 +274,10 @@ public class SiteServiceImpl implements SiteService {
 	 * @throws FileNotFoundException
 	 * @throws URISyntaxException
 	 */
-	public String importXlsByNoConfig(String filePath) throws FileImportException,
+	public int importXlsByNoConfig(String filePath) throws FileImportException,
 			FileNotFoundException,
 			URISyntaxException {
+		int count = 0;
 		File importFile = new File(filePath);
 		Configuration configuration = new Configuration();
 		try {
@@ -328,7 +329,6 @@ public class SiteServiceImpl implements SiteService {
 			MapResult mapResult = (MapResult) FileImportExecutor.importFile(configuration, importFile, importFile.getName());
 			List<Map> maps = mapResult.getResult();
 			for (Map<String, Object> map : maps) {
-				financeMonitorPunishMapper.deleteByUrl(String.valueOf(map.get("URL")));
 
 				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
 				financeMonitorPunish.setPunishNo(String.valueOf(map.get("PUNISH_NO")));
@@ -367,13 +367,31 @@ public class SiteServiceImpl implements SiteService {
 				financeMonitorPunish.setUrl(String.valueOf(map.get("URL")));
 				financeMonitorPunish.setObject(String.valueOf(map.get("OBJECT")));
 
-//				financeMonitorPunishMapper.insert(t)
+				//保存单条数据
+				// 通过source查找
+				FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
+						.selectByUrl(financeMonitorPunish.getUrl());
+				if (Objects.isNull(originFinanceMonitorPunish)) {
+					financeMonitorPunish.setCreateTime(new Date());
+					financeMonitorPunish.setUpdateTime(new Date());
+				} else {
+					financeMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
+					financeMonitorPunish.setUpdateTime(new Date());
+				}
 
+				//通过url先删除，确保不产生多余数据
+				financeMonitorPunishMapper.deleteByUrl(financeMonitorPunish.getUrl());
+
+				//保存到数据库
+				log.info(SiteTaskExtend.buildFinanceMonitorPunishBizKey(financeMonitorPunish));
+				financeMonitorPunishMapper.insert(financeMonitorPunish);
+				count++;
 			}
 		} catch (FileImportException e) {
-			System.out.println(e);
+			e.printStackTrace();
+			log.error(e.getMessage());
 		}
-		return null;
+		return count;
 	}
 
 

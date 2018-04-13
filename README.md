@@ -163,10 +163,12 @@ callId：任务调用ID， 必须全局唯一，由客户端控制
       relatedBond:16西彭债，118619
                   16西彭02，118690
       
+ ```     
       
-      
-       
- 
+ 8、批量导入数据：api/importData  
+    格式样例：  curl -F "file=@{fileName}.xlsx" http://localhost:8082/api/importData        
+    导入模板：import_templete.xlsx  
+    
 ```
 
 ## 任务开发：

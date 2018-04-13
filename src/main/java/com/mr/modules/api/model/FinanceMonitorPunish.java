@@ -3,7 +3,6 @@ package com.mr.modules.api.model;
 import com.mr.common.base.model.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import javax.persistence.Transient;
 
 @Data

@@ -200,6 +200,8 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		String result = "";
 		//处罚结果补充情况
 		String resultAddition = "";
+		//处罚日期
+		String punishDate = "";
 
 		Boolean isCompany = (financeMonitorPunish.getPunishTitle().contains("公司")
 				|| financeMonitorPunish.getPunishTitle().contains("事务所"));
@@ -438,8 +440,24 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					}
 
 
-					if (StringUtils.isNotEmpty(person) && person.startsWith("。"))
-						person = person.substring(1);
+					if (StringUtils.isNotEmpty(person)) {
+						if (person.startsWith("。"))
+							person = person.substring(1);
+
+						String pTmps[] = person.split("。");
+						person = "";
+						for (String pTmp : pTmps) {
+							String str = pTmp.replace("法定代表人：", "");
+							if (str.contains("，男")) {
+								person += "," + str.substring(0, str.indexOf("，男"));
+							} else if (str.contains("，女")) {
+								person += "," + str.substring(0, str.indexOf("，女"));
+							}
+						}
+						person = person.substring(1).replace("\n", "").trim();
+						if (person.contains("，女")) person = person.substring(0, person.indexOf("，女"));
+						if (person.contains("，男")) person = person.substring(0, person.indexOf("，男"));
+					}
 
 					holder = null;
 				}
@@ -462,10 +480,24 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				result = fullTxt.substring(fullTxt.indexOf("鉴于"), fullTxt.lastIndexOf("全国股转公司"));
 			}
 
+			if (fullTxt.lastIndexOf("全国股转公司") > -1) {
+				String tmp = fullTxt.substring(fullTxt.lastIndexOf("全国股转公司") + 7);
+				if (tmp.contains("日")) {
+					punishDate = tmp.substring(0, tmp.indexOf("日") + 1);
+				}
+			}
+
 			if (resultSupplementIndex > -1 && fullTxt.lastIndexOf("全国股转公司") > -1) {
 				resultAddition = fullTxt.substring(resultSupplementIndex, fullTxt.lastIndexOf("全国股转公司")).trim();
+				if (resultAddition.contains("全国股转公司")) {
+					String tmp = resultAddition.substring(resultAddition.lastIndexOf("全国股转公司"));
+					punishDate = tmp.substring(7, tmp.indexOf("日") + 1).trim();
+					resultAddition = resultAddition.substring(0, resultAddition.lastIndexOf("全国股转公司"));
+				}
+
 				resultAddition = filterErrInfo(resultAddition);
 			}
+
 
 			financeMonitorPunish.setDomicile(address);
 			financeMonitorPunish.setPartyInstitution(companyFullName);
@@ -537,6 +569,13 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				result = fullTxt.substring(fullTxt.indexOf("鉴于"), fullTxt.indexOf("全国股转公司"));
 			}
 
+			if (fullTxt.lastIndexOf("全国股转公司") > -1) {
+				String tmp = fullTxt.substring(fullTxt.lastIndexOf("全国股转公司") + 7);
+				if (tmp.contains("日")) {
+					punishDate = tmp.substring(0, tmp.indexOf("日") + 1);
+				}
+			}
+
 			resultAddition = null;
 			financeMonitorPunish.setPartyPersonDomi(address.trim());
 		}
@@ -570,6 +609,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		rule = filterErrInfo(rule);
 		result = filterErrInfo(result);
 
+		financeMonitorPunish.setPunishInstitution("全国股转公司");
 		financeMonitorPunish.setPunishNo(punishNo);
 		financeMonitorPunish.setLegalRepresentative(holder);
 		financeMonitorPunish.setUnicode(commonCode.trim());
@@ -578,7 +618,8 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		financeMonitorPunish.setRelatedLaw(rule.trim());
 		financeMonitorPunish.setPunishResult(result.trim());
 		financeMonitorPunish.setPunishResultSupplement(resultAddition);
-
+		financeMonitorPunish.setPunishDate(punishDate.contains("20")
+				? punishDate.substring(punishDate.indexOf("20")) : null);
 		return;
 	}
 

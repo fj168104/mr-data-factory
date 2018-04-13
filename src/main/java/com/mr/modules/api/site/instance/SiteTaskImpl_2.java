@@ -336,7 +336,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				//punishDate 处理
 				{
 					String pString = extracterZH(pElement.text().trim());
-					if ("年月日".equals(pString))
+					if ("年月日".equals(pString) || (pElement.text().contains("二〇")))
 						punishDate = filter(pElement.text().trim(), filterTags);
 				}
 
@@ -450,19 +450,51 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					|| ps.contains("时任")
 					|| ps.contains("现居住于")
 					|| ps.contains("生，")) {
-				partyPerson += ps;
-
+				if (ps.contains("，男")) {
+					partyPerson += "," + ps.substring(0, ps.indexOf("，男"));
+				} else if (ps.contains("，女")) {
+					partyPerson += "," + ps.substring(0, ps.indexOf("，女"));
+				}
 			} else {
 				partyInstitution += ps;
 
 			}
 		}
+
 		if (StringUtils.isNotEmpty(partyPerson)) {
-			financeMonitorPunish.setPartyPerson(partyPerson.trim());
+			partyPerson = partyPerson.substring(1).replace("\n", "").trim();
+			if (partyPerson.contains("，女")) partyPerson = partyPerson.substring(0, partyPerson.indexOf("，女"));
+			if (partyPerson.contains("，男")) partyPerson = partyPerson.substring(0, partyPerson.indexOf("，男"));
+
+			if (partyPerson.contains("公司")) {
+				partyInstitution = partyPerson;
+				partyPerson = null;
+			} else {
+				financeMonitorPunish.setPartyInstitution(null);
+			}
+
+			financeMonitorPunish.setPartyPerson(partyPerson);
 		}
 
 		if (StringUtils.isNotEmpty(partyInstitution)) {
-			financeMonitorPunish.setPartyInstitution(partyInstitution.trim());
+			if (partyInstitution.contains("，住所")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("，住所"));
+			} else if (partyInstitution.contains("，注册地")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("，注册地"));
+			} else if (partyInstitution.contains("）注册地")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("）注册地"));
+			} else if (partyInstitution.contains("）注册地")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("）注册地"));
+			}
+
+			if (partyInstitution.contains("，女") || partyInstitution.contains("，男")) {
+				financeMonitorPunish.setPartyPerson(partyInstitution.trim());
+				partyInstitution = null;
+			} else {
+				financeMonitorPunish.setPartyPerson(null);
+			}
+
+			financeMonitorPunish.setPartyInstitution(partyInstitution);
 		}
 
 		//处罚日期
@@ -557,11 +589,11 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		{
 			if (detailAll.contains("违反了")) {
 				String tmp = detailAll.substring(detailAll.lastIndexOf("违反了"));
-				if(tmp.indexOf("。") > -1)
+				if (tmp.indexOf("。") > -1)
 					relatedLaw = tmp.substring(0, tmp.indexOf("。"));
 			} else if (detailAll.contains("违反")) {
 				String tmp = detailAll.substring(detailAll.lastIndexOf("违反"));
-				if(tmp.indexOf("。") > -1)
+				if (tmp.indexOf("。") > -1)
 					relatedLaw = tmp.substring(0, tmp.indexOf("。"));
 			}
 

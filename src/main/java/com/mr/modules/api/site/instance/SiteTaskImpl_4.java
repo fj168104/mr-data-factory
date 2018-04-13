@@ -19,6 +19,7 @@ import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import schemasMicrosoftComVml.STTrueFalse;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -199,6 +200,8 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 
 		}
 
+		financeMonitorPunish.setPunishInstitution("上海证券交易所");
+
 		return saveOne(financeMonitorPunish, isForce);
 	}
 
@@ -211,6 +214,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		String punishNo = "";
 		//当事人
 		String person = "";
+		String partyInstitution = "";
 		//处理事由
 		String violation = "";
 
@@ -263,10 +267,31 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			return;
 		}
 
+
+		if (sIndx > 0 && sIndx < pIndx) {
+			person = "";
+			String tmp = fullTxt.substring(sIndx + 4, pIndx);
+			String[] tArr = tmp.split("；");
+			for (String t : tArr) {
+				if (t.indexOf("，") > -1) {
+					String s = t.substring(0, t.indexOf("，"));
+					if (s.contains("公司"))
+						partyInstitution += "," + s;
+					else
+						person += "," + s;
+				}
+			}
+			person = StringUtils.isNotEmpty(person)
+					? filterErrInfo(person.substring(1)) : null;
+		}
+
+
 		financeMonitorPunish.setPunishNo(punishNo);
-		financeMonitorPunish.setPartyPerson(filterErrInfo(person));
+		financeMonitorPunish.setPartyPerson(person);
+		financeMonitorPunish.setPartyInstitution(StringUtils.isNotEmpty(partyInstitution)
+				? partyInstitution.substring(1) : null);
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));
-		financeMonitorPunish.setDetails(fullTxt);
+		financeMonitorPunish.setDetails(filterErrInfo(fullTxt));
 	}
 
 	/**
@@ -278,6 +303,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		String punishNo = "";
 		//当事人
 		String person = "";
+		String partyInstitution = "";
 		//处理事由
 		String violation = "";
 		//详情
@@ -340,10 +366,40 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
+
+		//解析出当事人信息
+		int sIndx = detail.indexOf("当事人：") == -1 ?
+				detail.indexOf("当事人") : detail.indexOf("当事人：");
+		int pIndx = detail.indexOf("经查明，") == -1 ?
+				detail.indexOf("经查明") : detail.indexOf("经查明，");
+		if (pIndx < 0) {
+			log.error("文本格式不规则，无法识别");
+			return;
+		}
+
+		if (sIndx > 0 && sIndx < pIndx) {
+			person = "";
+			String tmp = detail.substring(sIndx + 4, pIndx);
+			String[] tArr = tmp.split("；");
+			for (String t : tArr) {
+				if (t.indexOf("，") > -1) {
+					String s = t.substring(0, t.indexOf("，"));
+					if (s.contains("公司"))
+						partyInstitution += "," + s;
+					else
+						person += "," + s;
+				}
+			}
+			person = StringUtils.isNotEmpty(person)
+					? filterErrInfo(person.substring(1)) : null;
+		}
+
 		financeMonitorPunish.setPunishNo(punishNo);
-		financeMonitorPunish.setPartyPerson(filterErrInfo(person));
+		financeMonitorPunish.setPartyPerson(person);
+		financeMonitorPunish.setPartyInstitution(StringUtils.isNotEmpty(partyInstitution)
+				? partyInstitution.substring(1) : null);
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));
-		financeMonitorPunish.setDetails(detail);
+		financeMonitorPunish.setDetails(filterErrInfo(detail));
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.mr.modules.api;
 
-import com.google.common.base.Strings;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.service.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,7 +140,7 @@ public class SiteController extends BaseController {
 
 		FileInputStream fis = (FileInputStream) multiReq.getFile("file").getInputStream();
 		String result = siteService.importData(fis, uploadFilePath);
-		map.addAttribute("result_code", result);
+		map.addAttribute("imort_result", result);
 		return map;
 	}
 

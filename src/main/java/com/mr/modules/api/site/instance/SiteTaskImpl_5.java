@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.SiteTaskDict;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
@@ -190,6 +191,7 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 
 		financeMonitorPunish.setDetails(fullTxt);
 		extractTxt(fullTxt, financeMonitorPunish);
+		financeMonitorPunish.setPunishInstitution("上海证券交易所");
 		return saveOne(financeMonitorPunish, isForce);
 	}
 
@@ -202,6 +204,8 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 		String punishNo = "";
 		//当事人
 		String person = "";
+		String partyPerson = "";
+		String partyInstitution = "";
 		//处理事由
 		String violation = "";
 
@@ -219,27 +223,76 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 			}
 		}
 
+		String punishTitle = financeMonitorPunish.getPunishTitle();
+		String companyName = punishTitle.substring(punishTitle.indexOf("关于对") + 3, punishTitle.indexOf("公司") + 2)
+				.replace(" ", "")
+				.replace("\n", "")
+				.replace("　", "");
+		financeMonitorPunish.setPartyInstitution(companyName);
+
 		int sIndx = fullTxt.indexOf("当事人：") == -1 ?
 				fullTxt.indexOf("当事人") : fullTxt.indexOf("当事人：");
 		int pIndx = fullTxt.indexOf("经查明，") == -1 ?
 				fullTxt.indexOf("经查明") : fullTxt.indexOf("经查明，");
+		int pIndexlength = 4;
 		if (pIndx < 0) {
-			log.error("文本格式不规则，无法识别");
-			return;
+			int tmpIndex = fullTxt.indexOf(companyName);
+			if (tmpIndex < 0) {
+				log.error("格式不规则，无法解析");
+				return;
+			}
+			String tmp1 = fullTxt.substring(tmpIndex + companyName.length());
+			if (tmp1.indexOf(companyName) < 0) {
+				log.error("格式不规则，无法解析");
+				return;
+			}
+
+			pIndx = fullTxt.indexOf(tmp1.substring(0, 30));
 		}
 
-		if (sIndx >= 0) {
-			person = fullTxt.substring(sIndx, pIndx).replace("当事人：", "")
+		if (sIndx >= 0 && punishTitle.contains("关责任人")) {
+			person = fullTxt.substring(sIndx, pIndx)
+					.replace("当事人：", "")
+					.replace("当事人:", "")
 					.replace("当事人", "");
-			financeMonitorPunish.setPartyPerson(filterErrInfo(person));
+			String pTag = "";
+
+			if (person.contains("；")) {
+				pTag = "；";
+			}else if(person.contains("。")){
+				pTag = "。";
+			}
+			if(StrUtil.isNotEmpty(pTag)){
+				String[] pArrs = person.split(pTag);
+				int j = 0;
+				for (String p : pArrs) {
+					String p1 = p.replace(" ", "")
+							.replace(" ", "")
+							.replace("\n", "")
+							.replace("　", "").trim();
+					if (!p1.startsWith(companyName)) {
+						if (p1.contains("，"))
+							partyPerson += "," + p1.substring(0, p1.indexOf("，"));
+						else
+							partyPerson += "," + p1;
+					}else{
+						if(j++ > 0) break;
+					}
+				}
+			}
+
+			if (StrUtil.isNotEmpty(partyPerson)) {
+				financeMonitorPunish.setPartyPerson(filterErrInfo(partyPerson.substring(1)));
+			}
+
 		}
 
 		{
 			String tmp = fullTxt.substring(pIndx);
 			if (tmp.lastIndexOf("上海证券交易所") > pIndx) {
-				violation = tmp.substring(4, tmp.lastIndexOf("上海证券交易所"));
+				violation = tmp.substring(pIndexlength, tmp.lastIndexOf("上海证券交易所"));
 			} else {
-				violation = tmp.substring(4);
+				violation = tmp.substring(pIndexlength);
 			}
 		}
 

@@ -149,8 +149,9 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 			Element allZoomDiv = pDoc.getElementsByClass("allZoom").get(0);
 			fullTxt = allZoomDiv.text();
 		}
-		financeMonitorPunish.setDetails(fullTxt);
+		financeMonitorPunish.setDetails(filterErrInfo(fullTxt));
 		extractTxt(fullTxt, financeMonitorPunish);
+		financeMonitorPunish.setPunishInstitution("上海证券交易所");
 		return saveOne(financeMonitorPunish, isForce);
 	}
 
@@ -164,6 +165,7 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 		String punishNo = "";
 		//当事人
 		String person = "";
+		String partyInstitution = "";
 		//处理事由
 		String violation = "";
 
@@ -208,10 +210,29 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 					.replace("当事人", "");
 		} else {
 			if (fullTxt.indexOf("的决定") > 0 && fullTxt.indexOf("的决定") < pIndx) {
-				person = fullTxt.substring(fullTxt.indexOf("的决定"), pIndx);
+				person = fullTxt.substring(fullTxt.indexOf("的决定") + 4, pIndx);
 			}
 		}
-		financeMonitorPunish.setPartyPerson(filterErrInfo(person));
+		person = person.replace(" ", "")
+				.replace("\n", "")
+				.replace("　", "").trim();
+		//通过标点来截取
+		String sTag[] = {"（", "：", "，"};
+		int sTagIndex = 10000;
+		for (int i = 0; i < sTag.length; i++) {
+			if (person.indexOf(sTag[i]) > -1 && person.indexOf(sTag[i]) < sTagIndex) {
+				sTagIndex = person.indexOf(sTag[i]);
+			}
+		}
+		if (sTagIndex != 10000) {
+			person = person.substring(0, sTagIndex);
+		}
+		if (person.endsWith("公司")){
+			financeMonitorPunish.setPartyInstitution(filterErrInfo(person));
+		}else{
+			financeMonitorPunish.setPartyPerson(filterErrInfo(person));
+		}
+
 
 		{
 			String tmp = fullTxt.substring(pIndx);

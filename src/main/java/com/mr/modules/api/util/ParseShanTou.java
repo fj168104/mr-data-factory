@@ -13,11 +13,12 @@ import java.util.Map;
 
 /**
  * @Author: zqzhou
- * @Description:解析工具类
+ * @Description:解析工具类，,汕头保监局处罚信息获取处理
  * @Date: Created in 2018/4/3 16:04
+ * @Modifyer：zjxu
  */
 @Slf4j
-public class ParseSuZhou {
+public class ParseShanTou {
 
     /**
      * 解析法人信息
@@ -28,9 +29,17 @@ public class ParseSuZhou {
         String punishToOrg ="";
         String punishToOrgHolder = "";
         String punishToOrgAddress = "";
+
         if(text.contains("；")){//有些以"；"间断，统一以"，"
             text = text.replaceAll("；","，");
             log.info("*********text*********"+text);
+        }
+        if(text.contains("&&")){//有些以"&&"间断，统一以"，"
+            text = text.replaceAll("&&","，");
+            log.info("*********text*********"+text);
+        }
+        if(!text.contains("，地址：")){
+            text = text.replaceAll("，地址","，地址：");
         }
         String[] infoArray= text.split("，");
         for(int j=0;j<infoArray.length;j++){
@@ -40,6 +49,7 @@ public class ParseSuZhou {
             if(infoArray[j].contains("地址：")){
                 punishToOrgAddress = infoArray[j].split("：")[1].replace("。","");
             }
+
             if(infoArray[j].contains("负责人：")){
                 punishToOrgHolder = infoArray[j].split("：")[1].replace("。","");
             }
@@ -59,30 +69,58 @@ public class ParseSuZhou {
         String priPerson =  "";
         String priPersonCert = "";
         String priAddress = "";
-
+        String priJob = "";
+        if(text.contains("&&")){//有些以"&&"间断，统一以"，"
+            text = text.replaceAll("&&","，");
+            log.info("*********text*********"+text);
+        }
         if(!text.contains("当事人：")){
             text = text.replace("当事人","当事人：");
         }
         if(!text.contains("身份证号：")){
             text = text.replace("身份证号","身份证号：");
         }
+        if(!text.contains("职务：")){
+            text = text.replace("职务","职务：");
+        }
+        if(!text.contains("，年龄")){
+            text = text.replaceAll("年龄","，年龄");
+        }
+        if(!text.contains("，性别")){
+            text = text.replaceAll("性别","，性别");
+        }
+        //  有时存在这种情况---当事人：张明照（身份证号：51222219551224XXXX）
+        text = text.replaceAll("（","，").replaceAll("）","，");
 
+        log.info("--getZiranRenInfo--text"+text);
         String[] infoArray =  text.split("，");
         for(int k=0;k<infoArray.length;k++){
             if(infoArray[k].contains("当事人")){
-                priPerson = infoArray[k].split("：")[1].replace("。","");
+                if(infoArray[k].split("：").length>1){
+                    priPerson = infoArray[k].split("：")[1].replace("。","");
+                }
             }
             if(infoArray[k].contains("地址")){
-                priAddress = infoArray[k].split("：")[1].replace("。","");
+                if(infoArray[k].split("：").length>1){
+                    priAddress = infoArray[k].split("：")[1].replace("。","");
+                }
             }
             if(infoArray[k].contains("身份证")){
-                priPersonCert = infoArray[k].split("：")[1].replace("。","");
+                if(infoArray[k].split("：").length>1){
+                    priPersonCert = infoArray[k].split("：")[1].replace("。","");
+                }
+            }
+            if(infoArray[k].contains("职务")){
+                if(infoArray[k].split("：").length>1){
+                    priJob = infoArray[k].split("：")[1].replace("。","");
+                }
             }
 
         }
         map.put("priPerson",priPerson);
         map.put("priAddress",priAddress);
         map.put("priPersonCert",priPersonCert);
+        map.put("priJob",priJob);
         return map;
     }
 
@@ -95,7 +133,7 @@ public class ParseSuZhou {
         resString = resString.replaceAll(" ","").replaceAll("@"," ");
         return resString.replaceAll("<br>","&&")
                 .replaceAll("<br/>","&&")
-                .replaceAll("</br>","&&");
+                .replaceAll("</br>","&&").replace((char) 12288, ' ').trim();
     }
 
     /**
@@ -108,7 +146,6 @@ public class ParseSuZhou {
                 .replaceAll("受处罚人(公民):姓名：","当事人：")
                 .replaceAll("受处罚人：姓名：","当事人：")
                 .replaceAll("受处罚人：姓名","当事人：")
-                .replaceAll("受处罚单位：名称：","当事人：")
                 .replaceAll("受处罚单位：","当事人：")
                 .replaceAll("、","，")
                 .replaceAll(",","，")
@@ -121,20 +158,25 @@ public class ParseSuZhou {
                 .replace("受罚人名称：","当事人：")
                 .replace("受罚单位名称：","当事人：")
                 .replace("被处罚人名称：","当事人：")
+                .replaceAll("受处罚机构：名称","当事人：")
                 .replaceAll("受处罚机构：","当事人：")
                 .replaceAll("受处罚机构名称：","当事人：")
+                .replaceAll("受处罚人（机构）名称：","当事人：")
                 .replaceAll("受处罚人名称：","当事人：")
                 .replaceAll("机构名称：","当事人：")
                 .replaceAll("名称：","当事人：")
                 .replace("被告知人：","当事人：")
                 .replace("被处罚人：","当事人：")
                 .replaceAll("法定代表人或主要负责人姓名：","负责人：")
+                .replaceAll("法定代表人或者主要负责人姓名","负责人：")
+                .replaceAll("法定代表人或者主要负责人姓名：","负责人：")
                 .replaceAll("主要负责人姓名：","负责人：")
                 .replaceAll("受处罚人姓名：","当事人：")
                 .replaceAll("姓名：","当事人：")
                 //      .replaceAll("当(.*)事(.*)人：","当事人：")
                 .replaceAll("受处罚人：","当事人：")
                 .replace("受处理人：","当事人：")
+                .replaceAll("当事人：：","当事人：")
                 .replace("营业地址：","地址：")
                 .replaceAll("工作单位：","地址：")
                 .replaceAll("工作单位地址：","地址：")
@@ -146,17 +188,20 @@ public class ParseSuZhou {
                 .replaceAll("营业住所：","地址：")
                 .replaceAll("个人住址：","地址：")
                 .replaceAll("家庭住址：","地址：")
+                .replaceAll("地址","地址：")
                 .replaceAll("住所：","地址：")
                 .replaceAll("住所:","地址：") //存在有些为英文格式的:
                 .replaceAll("住所地","地址：")
                 .replaceAll("住所地：","地址：")
+                .replaceAll("住址＿","地址：")
+                .replaceAll("住址","地址：")
                 .replaceAll("住址：","地址：")
                 .replaceFirst("，住所地","，地址：")
                 .replaceFirst("；住所地","，地址：")
                 .replaceFirst("机构负责人：","负责人：")
-                .replaceAll("单位负责人：","负责人：")
                 .replaceFirst("，负责人","，负责人：")
                 .replaceAll("，负责人：：","，负责人：")
+                .replaceAll("负责人：：","负责人：")
                 .replaceAll("地址：：","地址：")
                 .replaceFirst("，住","，地址：")
                 //      .replaceAll("地(.*)址：","地址：")
@@ -172,7 +217,8 @@ public class ParseSuZhou {
                 .replaceAll("法定代表人：","负责人：")
                 .replaceAll("身份证号码","身份证号")
                 .replaceAll("身份证号码：","身份证号：")
-
+                .replaceAll("证件号码：","，身份证号：")
+                .trim()
                 //      .replace((char) 12288, ' ') //去掉全角空格
                 ;
 
@@ -227,6 +273,10 @@ public class ParseSuZhou {
             stringDetail = textTransfer(elementsSpan.text().trim());
             stringDetailSource = "span";
         }
+
+        if(textTransfer(elementsPre.text().trim()).contains("当事人：")){
+            stringDetail = textTransfer(elementsPre.text().trim())+" "+stringDetail;
+        }
         log.info("stringDetailSource---"+stringDetailSource+"---stringDetail:"+stringDetail);
 
         /*TODO 通用型*/
@@ -240,23 +290,25 @@ public class ParseSuZhou {
 
 
 
+        List<String> listStr = new ArrayList();
+
+
+        for(Element elementPre : elementsPre){//存在过信息在pre标签里
+            String elementPreStr = elementPre.text().replaceAll("\\s*", "");
+            elementPreStr = textTransfer(elementPreStr);
+            log.info("-------elementPreStr-------"+elementPreStr);
+            if(elementPreStr.indexOf("：")>-1 && elementPreStr.split("：").length>1){
+                elementPreStr = textTransfer(elementPreStr);
+                if(elementPreStr.contains("当事人：") || elementPreStr.contains("负责人：")|| elementPreStr.contains("地址：") || elementPreStr.contains("身份证号：") || elementPreStr.endsWith("日")){
+                    listStr.add(elementPreStr);
+
+                }
+            }
+
+        }
 
         /*TODO 特殊型 只适合没有标明当事人的处罚文案，需要加限制条件*/
         if(stringDetail.indexOf("当事人")>-1){
-
-            List<String> listStr = new ArrayList();
-
-            for(Element elementPre : elementsPre){//存在过信息在pre标签里
-                String elementPreStr = elementPre.text().replaceAll("\\s*", "");
-                if(elementPreStr.indexOf("：")>-1&&elementPreStr.split("：").length>1){
-                    elementPreStr = textTransfer(elementPreStr);
-                    if(elementPreStr.contains("当事人：") || elementPreStr.contains("负责人：")|| elementPreStr.contains("地址：") || elementPreStr.endsWith("日")){
-                        listStr.add(elementPreStr);
-                    }
-                }
-
-            }
-
             //TODO 判断是否为法人
             if(stringDetailSource.equalsIgnoreCase("p")){
                 for(Element elementP : elementsP){
@@ -282,7 +334,8 @@ public class ParseSuZhou {
                         }
 
                     }
-                    if(formatText(elementP.text()).indexOf("监罚〔")>-1 || formatText(elementP.text()).indexOf("监罚[")>-1){
+                    if(formatText(elementP.text()).indexOf("监罚〔")>-1 || formatText(elementP.text()).indexOf("监罚[")>-1
+                            || formatText(elementP.text()).indexOf("监处〔")>-1 || formatText(elementP.text()).indexOf("监处[")>-1){
                         punishNo = elementP.text().replaceAll(" ","").trim();
                     }
                 }
@@ -324,14 +377,50 @@ public class ParseSuZhou {
             }
             //时间有时会在pre标签里
             if(punishDate.equalsIgnoreCase("")){
-                if(elementsPre.last()!=null){
+                if(elementsPre.last()!=null && elementsPre.last().text().endsWith("日")){
                     punishDate = getPunishDate(elementsPre.last().text().replaceAll("　","").trim());
                 }
             }
 
+            //时间有时会在span里
+            if(punishDate.equalsIgnoreCase("")){
+                String info = textTransfer(elementsSpan.text().replaceAll("&&","")).trim();
+                log.info("info-------------"+info);
+                log.info("info@@@@@@@@@@"+info.substring(info.lastIndexOf("年"))+"@@@@-------------");
+                if(info.endsWith("日") && info.contains("年") && info.contains("月")){
+                    punishDate = getPunishDate(info);
+                }
+            }
+            //如果正文里没有处罚文号
+            if(punishNo.equalsIgnoreCase("")){
+                if(titleStr.contains("监罚") & titleStr.contains("号")){
+                    //TODO 从标题中获取处罚文号
+                    log.info("---titleStr---"+titleStr);
+                    // 甘肃保监局行政处罚决定公布（处罚文号：甘保监罚〔2018〕3号）
+                    punishNo = titleStr.substring(titleStr.indexOf("监罚")-2, titleStr.lastIndexOf("号")+1);
+                }else if(titleStr.contains("监处") & titleStr.contains("号")){
+                    log.info("---titleStr---"+titleStr);
+                    // 甘肃保监局行政处罚决定公布（处罚文号：甘保监罚〔2018〕3号）
+                    punishNo = titleStr.substring(titleStr.indexOf("监处")-2, titleStr.lastIndexOf("号")+1);
+                }
+
+            }else {
+                //各个省份的文号格式不一致 暂以浙江的为准
+                //浙江：浙保监罚[2010]3号
+                //云南：[按照云南保监局《行政处罚决定书》（云保监罚〔2018〕20号）内容公布] 或 云保监罚〔2013〕27号
+                if(punishNo.contains("保监处")){
+                    punishNo = punishNo.substring(punishNo.indexOf("保监处")-1, punishNo.indexOf("号")+1);
+                }else{
+                    punishNo = punishNo.substring(punishNo.indexOf("保监罚")-1, punishNo.indexOf("号")+1);
+                }
+
+            }
+
+
             //TODO 需要判断是法人还是自然人
             boolean busiPersonFlag = false;
             int m = 0;
+            log.info("listStr.size()----------"+listStr.size());
             for(int i=0;i<listStr.size();i++ ){
 
 
@@ -339,7 +428,7 @@ public class ParseSuZhou {
                     // 有些版本的处罚决定书，正文的第一行包括当事人，地址及负责人信息；有些版本决定书的正文全在一个p标签里，需特殊处理
                     String firstStr = listStr.get(i);
                     log.info("##################"+firstStr);
-                    if((firstStr.contains("当事人") && firstStr.contains("地址") && firstStr.contains("保险法》"))){
+                    if((firstStr.contains("当事人") && firstStr.contains("保险法》"))){
                         Map resInfoMap = parseInfoInOneTag(firstStr);
                         punishToOrg = (String) resInfoMap.get("punishToOrg");
                         punishToOrgAddress = (String) resInfoMap.get("punishToOrgAddress");
@@ -356,13 +445,14 @@ public class ParseSuZhou {
                     }
                 }
                 String textInfo = listStr.get(i);
-                if(textInfo.contains("当事人：") && textInfo.contains("地址：") && textInfo.contains("负责人：")){//此为法人
+                if(textInfo.contains("当事人：") && textInfo.contains("负责人：")){//此为法人
                     Map<String,String> resMap = getFaRenInfo(listStr.get(i));
                     punishToOrg = resMap.get("punishToOrg");
                     punishToOrgAddress = resMap.get("punishToOrgAddress");
                     punishToOrgHolder = resMap.get("punishToOrgHolder");
                 }else if((textInfo.contains("当事人") && textInfo.contains("地址：")) || (textInfo.contains("当事人") && textInfo.contains("身份证号"))
-                        || (textInfo.contains("当事人") && textInfo.contains("性别")) || (textInfo.contains("当事人") && textInfo.contains("年龄"))){//此为自然人
+                        || (textInfo.contains("当事人") && textInfo.contains("性别")) || (textInfo.contains("当事人") && textInfo.contains("年龄"))
+                        || (textInfo.contains("当事人") && textInfo.contains("职务"))){//此为自然人
                     Map<String,String> map = getZiranRenInfo(textInfo);
                     if(!map.get("priPerson").equalsIgnoreCase("")){
                         priPerson.append(map.get("priPerson")).append("，");
@@ -373,52 +463,68 @@ public class ParseSuZhou {
                     if(!map.get("priPersonCert").equalsIgnoreCase("")){
                         priPersonCert.append(map.get("priPersonCert")).append("，");
                     }
+                    if(!map.get("priJob").equalsIgnoreCase("")){
+                        priJob.append(map.get("priJob")).append("，");
+                    }
                 }else {
                     //对有规律信息的处理
                     String[] currentPersonStr  = listStr.get(i).split("：");
-
-                    String info_0 = currentPersonStr[0].replaceAll("&&","").trim();
-                    String info_1 = currentPersonStr[1].replaceAll("&&","").trim();
-
-                    log.info(info_0+"-----------"+info_1);
-                    if(info_1.length()>5 && info_0.equals("当事人")){
+                    log.info(currentPersonStr[0]+"-----------"+currentPersonStr[1]);
+                    // 当事人：郭秀珍（又名郭佳颖） 此长度大于5 但是为自然人
+                    if(currentPersonStr[1].length()>5&&currentPersonStr[0].trim().equals("当事人") && !currentPersonStr[1].contains("又名")){
                         m = i;
                         busiPersonFlag =true;
-                        punishToOrg = info_1;
+                        punishToOrg = currentPersonStr[1];
                     }
                     // TODO 法人
-                    if(busiPersonFlag==true && info_0.equals("地址")){
+                    if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("地址")){
                         m = i;
-                        punishToOrgAddress = info_1;
+                        punishToOrgAddress = currentPersonStr[1];
                     }
-                    if(busiPersonFlag==true && info_0.equals("负责人")){
-                        punishToOrgHolder = info_1;
+                    if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("负责人")){
+                        punishToOrgHolder = currentPersonStr[1];
                     }else if(m!=i){
                         busiPersonFlag = false;
                     }
 
                     //TODO 自然人
-                    if(busiPersonFlag==false && info_0.equals("当事人")){
-                        priPerson.append(info_1).append("，");
+                    if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("当事人")){
+                        priPerson.append(currentPersonStr[1]).append("，");
                     }
-                    if(busiPersonFlag==false && info_0.equals("地址")){
-                        priAddress.append(info_1).append("，");
+                    if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("地址")){
+                        priAddress.append(currentPersonStr[1]).append("，");
                     }
-                    if(busiPersonFlag==false && (info_0.equals("身份证号") || info_0.equals("身份证"))){
-                        priPersonCert.append(info_1).append("，");
+                    if(busiPersonFlag==false&& (currentPersonStr[0].trim().equals("身份证号") || currentPersonStr[0].trim().equals("身份证"))){
+                        priPersonCert.append(currentPersonStr[1]).append("，");
                     }
-                    if(busiPersonFlag==false && info_0.equals("职务")){
-                        priJob.append(info_1).append("，");
+                    if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("职务")){
+                        priJob.append(currentPersonStr[1]).append("，");
                     }
                 }
 
 
+            }
+        }else{
+            for(Element elementP : elementsP){
+                String textInfo = elementP.text().replace((char) 12288, ' ').trim(); //去掉全角空格
+                if(textInfo.contains("：") && textInfo.contains("有限") && textInfo.contains("公司")){
+                    punishToOrg = textInfo.replaceAll("：","").trim();
+                }else if(formatText(textInfo).indexOf("监罚〔")>-1 || formatText(textInfo).indexOf("监罚[")>-1
+                        || formatText(textInfo).indexOf("监处〔")>-1 || formatText(textInfo).indexOf("监处[")>-1){
+                    punishNo = textInfo;
+                }else if(textInfo.endsWith("日") && textInfo.contains("年") && textInfo.contains("月")){
+                    punishDate = textInfo.substring(textInfo.lastIndexOf("年")-4);
+                }
             }
         }
 
         resmap.put("publishDate",publishDate);
         resmap.put("punishDate",punishDate);
         resmap.put("punishNo",punishNo);
+        //中华联合财产保险股份有限公司黑龙江分公司（以下简称中华联黑龙江分公司）
+        if(punishToOrg.contains("以下简称")){
+            punishToOrg = punishToOrg.substring(0, punishToOrg.indexOf("以下简称")-1);
+        }
         resmap.put("punishToOrg",punishToOrg);
         resmap.put("punishToOrgAddress",punishToOrgAddress);
         resmap.put("punishToOrgHolder",punishToOrgHolder);
@@ -464,6 +570,18 @@ public class ParseSuZhou {
             String[] strArray2 = strArray[i].split("：");
             if(strArray2.length>1){
                 log.info(strArray2[0]+"---------------"+strArray2[1]);
+                if(strArray2[1].contains("年龄") && strArray2[1].contains("性别")){
+                    if(strArray2[1].indexOf("年龄") > strArray2[1].indexOf("性别")){
+                        strArray2[1] = strArray2[1].substring(0,strArray2[1].indexOf("性别"));
+                    }else{
+                        strArray2[1] = strArray2[1].substring(0,strArray2[1].indexOf("年龄"));
+                    }
+                }else if(strArray2[1].contains("年龄")){
+                    strArray2[1] = strArray2[1].substring(0,strArray2[1].indexOf("年龄"));
+                }else if(strArray2[1].contains("性别")){
+                    strArray2[1] = strArray2[1].substring(0,strArray2[1].indexOf("性别"));
+                }
+                log.info("-------strArray2[1]--------"+strArray2[1]);
                 // TODO 法人
                 if(strArray2[1].length()>5 && strArray2[0].trim().equalsIgnoreCase("当事人")){
                     busiPersonFlag = true;
@@ -507,10 +625,6 @@ public class ParseSuZhou {
         }
 
         resMap.put("punishDate",punishDate);
-        //中华联合财产保险股份有限公司黑龙江分公司（以下简称中华联黑龙江分公司）
-        if(punishToOrg.contains("以下简称")){
-            punishToOrg = punishToOrg.substring(0, punishToOrg.indexOf("以下简称")-1);
-        }
         resMap.put("punishToOrg",punishToOrg);
         resMap.put("punishToOrgAddress",punishToOrgAddress);
         resMap.put("punishToOrgHolder",punishToOrgHolder);
@@ -526,7 +640,7 @@ public class ParseSuZhou {
      * 获取处罚时间
      * */
     private String getPunishDate(String dateInfo){
-        int yearIndex = dateInfo.indexOf("年");
+        int yearIndex = dateInfo.lastIndexOf("年");
         String date = dateInfo.substring(yearIndex-4);
         return date;
     }

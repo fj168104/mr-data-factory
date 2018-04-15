@@ -76,6 +76,7 @@ public class SiteTaskImpl_BOIS_ShanDong{
                 .replace("住址：","地址：")
                 .replace("住 址：","地址：")
                 .replace("地 址：","地址：")
+                .replace("住   所：","地址：")
                 .replace("职　务：","职务：")
                 .replace("职 务：","职务：")
                 .replace("主要负责人：","负责人：")

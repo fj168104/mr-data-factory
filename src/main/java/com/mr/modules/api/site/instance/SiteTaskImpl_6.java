@@ -227,9 +227,12 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 		if (sTagIndex != 10000) {
 			person = person.substring(0, sTagIndex);
 		}
-		if (person.endsWith("公司")){
+		if (person.endsWith("公司")
+				|| person.endsWith("企业")
+				|| person.endsWith("计划")
+				|| person.endsWith("自有资金")) {
 			financeMonitorPunish.setPartyInstitution(filterErrInfo(person));
-		}else{
+		} else {
 			financeMonitorPunish.setPartyPerson(filterErrInfo(person));
 		}
 

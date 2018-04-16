@@ -126,7 +126,7 @@ public class SiteController extends BaseController {
 	}
 
 	/**
-	 * curl -F "file=@xxx.xlsx" http://localhost:8082/uploadFile
+	 * curl -F "file=@xxx.xlsx" http://localhost:8082/importData
 	 *
 	 * @param multiReq
 	 * @return

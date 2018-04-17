@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.framework.json.JSONArray;
 import com.mr.framework.json.JSONObject;
 import com.mr.framework.json.JSONUtil;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.sql.Struct;
 import java.util.List;
 import java.util.Objects;
 
@@ -160,6 +162,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		try {
 			financeMonitorPunish.setDetails(filterErrInfo(content));
 			extract(content, financeMonitorPunish);
+			processSpecial(financeMonitorPunish);
 			return saveOne(financeMonitorPunish, isForce);
 
 		} catch (Exception e) {
@@ -414,9 +417,15 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				} else {
 					companyFullName = insperson;
 				}
-				if (StringUtils.isNotEmpty(companyFullName))
+				if (StringUtils.isNotEmpty(companyFullName)) {
 					companyFullName = companyFullName.replace("\n", "")
 							.replace(":", "");
+					if (companyFullName.contains("一码通代码"))
+						companyFullName = companyFullName.substring(0, companyFullName.indexOf("一码通代码") - 1);
+					if (companyFullName.contains("〈以下筒称"))
+						companyFullName = companyFullName.substring(0, companyFullName.indexOf("〈以下筒称"));
+				}
+
 				//当事人为公司下个人， 不需要法人
 			} else {
 				if (fullTxt.indexOf("经查明") > sIndx) {
@@ -620,7 +629,132 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		financeMonitorPunish.setPunishResultSupplement(resultAddition);
 		financeMonitorPunish.setPunishDate(punishDate.contains("20")
 				? punishDate.substring(punishDate.indexOf("20")) : null);
+
 		return;
 	}
 
+	/**
+	 * 特殊格式处理
+	 * @param financeMonitorPunish
+	 */
+	private void processSpecial(FinanceMonitorPunish financeMonitorPunish){
+		String person = financeMonitorPunish.getPartyPerson();
+		String address = financeMonitorPunish.getDomicile();
+		String companyFullName = financeMonitorPunish.getPartyInstitution();
+
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201803/20180312092410_phjxs2yvt1.pdf")) {
+			person = "宋昊，赵艳清，徐娇";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201712/20171227171013_6cm4brmxaw.pdf")) {
+			person = "张家龙，张陈松娜";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201712/20171212163151_vot7a4fj56.pdf")) {
+			person = "曾建宁，黎振宇";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201711/20171101171207_40v0iosjag.pdf")) {
+			person = "刘通生，赵艳芳";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201710/20171012161505_pr00j8j7ib.pdf")) {
+			person = "李国勇，付桑英";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201710/20171010172331_42g7932k6k.pdf")) {
+			person = "叶振华，杭飞燕";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201709/20170905201150_80qn8i7ado.pdf")) {
+			person = "袁地保，王东海，张江华";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201708/20170817184908_gtu8bn8h22.pdf")) {
+			person = "商永强，洪波";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201708/20170803182920_urwglokob3.pdf")) {
+			person = "宋夫华，何钐";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201708/20170801175637_2uv0btkn4v.pdf")) {
+			person = "周翔，余峥，周楠";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201707/20170721181416_h2i7hr8b0i.pdf")) {
+			person = "王炳刚，宏梦伟业";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201707/20170714193202_7hxlckcpnb.pdf")) {
+			person = "陈文，申金晚";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201707/20170713172143_dp6brp1rr8.pdf")) {
+			person = "余晓曼";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201707/20170703185124_6mvf9niw33.pdf")) {
+			person = "吴介忠";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201706/20170628194222_tuw7ndwm12.pdf")) {
+			person = "董晶";
+		}
+
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201706/20170609172526_5n8wgsh07b.pdf")) {
+			person = "李君波";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201705/20170509184314_3k0q614nu0.pdf")) {
+			person = "吕尚简";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201705/20170509184129_x2t8xs1ko8.pdf")) {
+			person = "王建军，王广军";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201705/20170508172122_52tgqaxfrw.pdf")) {
+			person = "刘代城";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201705/20170505145905_1j5ehfcqbf.pdf")) {
+			person = "吴云天，李方萍";
+		}
+
+		financeMonitorPunish.setPartyPerson(person);
+
+		if (StrUtil.isNotEmpty(person = financeMonitorPunish.getPartyPerson())) {
+			person = person.replace(" ", "")
+					.replace(" ", "")
+					.replace("\n", "")
+					.replace("　", "").trim();
+			if (person.contains("投资者")) {
+				person = person.substring(0, person.indexOf("投资者"));
+			}
+			if (person.contains("实际控制人")) {
+				person = person.substring(0, person.indexOf("实际控制人"));
+			}
+
+			if (person.endsWith("公司") || person.endsWith("Ltd.")
+					|| person.endsWith("Limited")||person.endsWith("（有限合伙）")) {
+				companyFullName = person;
+				person = null;
+			}
+		}
+
+//		if(financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201804/20180412172824_mg22tlc2p6.pdf")){
+//			financeMonitorPunish.setPartySupplement("“上海永柏联投投资管理有限公司-永柏联投新三板成长优选私募证券投资基金”（一码通代码：190000912388）");
+//		}
+//		if(financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201803/20180320181710_aloexa8t74.pdf")){
+//			financeMonitorPunish.setPartySupplement("广东优泊投资合伙企业（有限合伙）（一码通代码：190001117426）");
+//			address = "佛山市顺德区容桂街道办事处荣边居委会兴华西路 93 号 1 号楼二层";
+//		}
+//		if(financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201801/20180115192730_lfynj95c06.pdf")){
+//			financeMonitorPunish.setPartySupplement("“上海璞略企业管理中心（有限合伙）”（一码通代码：190001129460）");
+//			address = "上海市松江区嘉松南路 288 号 3楼";
+//		}
+
+		if(StrUtil.isNotEmpty(financeMonitorPunish.getPartySupplement())
+				&&!financeMonitorPunish.getPartySupplement().contains("出生")){
+			financeMonitorPunish.setPartySupplement(null);
+		}
+		if(financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201801/20180117164949_9jcafdixo4.pdf")){
+			financeMonitorPunish.setPartySupplement("侯爱忠，衡阳鸿铭科技股份有限公司（证券代码：831419，证券简称：鸿铭科技）董事、总经理，住所地：湖南省株洲市芦淞区 " +
+					"雷霖，鸿铭科技董事，住所地：湖南省衡阳市衡东县。 " +
+					"李可松，鸿铭科技董事、财务总监，住所地：湖南省衡阳市蒸湘区。 单邱平，鸿铭科技监事会主席，住所地：湖南省岳阳市平江县 雷菊枚，鸿铭科技监事，住所地：湖南省衡阳市衡东县。" +
+					"刘小林， 时任鸿铭科技监事，住所地：湖南省衡阳市雁峰区。");
+		}
+
+
+
+
+		financeMonitorPunish.setDomicile(address);
+		financeMonitorPunish.setPartyInstitution(companyFullName);
+		financeMonitorPunish.setPartyPerson(person);
+		financeMonitorPunish.setCompanyFullName(companyFullName);
+
+	}
 }

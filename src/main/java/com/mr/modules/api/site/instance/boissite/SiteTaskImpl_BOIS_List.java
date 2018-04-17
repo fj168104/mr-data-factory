@@ -42,10 +42,8 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
     public List<FinanceMonitorPunish> extract(){
         //页数
         int pageAll = 1;
-        // targetUrl = "http://www.circ.gov.cn/web/site0/tab5241/";
-        String targetUrl = "http://www.circ.gov.cn/web/site0/tab5241/";
+        String targetUrl = "http://bxjg.circ.gov.cn/web/site0/tab5241/";
         String fullTxt = getData(targetUrl);
-//        log.info("\n"+fullTxt);
         pageAll = extractPage(fullTxt);
         List listMap = new ArrayList<>();
 
@@ -122,6 +120,18 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
                 mapInfo = new SiteTaskImpl_BOIS_YunNan().extractContent(getData(lh.get("herf").toString()));
             }else if(lh.get("provinceCity").toString().indexOf("浙江")>-1){//解析浙江信息
                 mapInfo = new SiteTaskImpl_BOIS_ZheJiang().extractContent(getData(lh.get("herf").toString()));
+            }else if(lh.get("provinceCity").toString().indexOf("黑龙江")>-1){//解析黑龙江信息
+                mapInfo = new SiteTaskImpl_BOIS_HeiLongJiang().extractContent(getData(lh.get("herf").toString()));
+            }else if(lh.get("provinceCity").toString().indexOf("吉林")>-1){//解析吉林信息
+                mapInfo = new SiteTaskImpl_BOIS_JiLin().extractContent(getData(lh.get("herf").toString()));
+            }else if(lh.get("provinceCity").toString().indexOf("辽宁")>-1){//解析辽宁信息
+                mapInfo = new SiteTaskImpl_BOIS_LiaoNing().extractContent(getData(lh.get("herf").toString()));
+            }else if(lh.get("provinceCity").toString().indexOf("内蒙古")>-1){//解析内蒙古信息
+                mapInfo = new SiteTaskImpl_BOIS_NeiMengGu().extractContent(getData(lh.get("herf").toString()));
+            }else if(lh.get("provinceCity").toString().indexOf("陕西")>-1){//解析陕西信息
+                mapInfo = new SiteTaskImpl_BOIS_ShaanXi().extractContent(getData(lh.get("herf").toString()));
+            }else if(lh.get("provinceCity").toString().indexOf("汕头")>-1){//解析汕头信息
+                mapInfo = new SiteTaskImpl_BOIS_ShanTou().extractContent(getData(lh.get("herf").toString()));
             }
             punishInfos.add(getObj(mapInfo,lh.get("herf").toString()));
 
@@ -151,16 +161,20 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
     }
 
     //获取总页数下的所有连接url，所属省份 provinceCity，主题title，编号Id
-    // TODO http://www.circ.gov.cn/web/site0/tab5241/module14458/page454.htm
+    // TODO http://bxjg.circ.gov.cn/web/site0/tab5241/module14458/page2.htm
     public List<LinkedHashMap> extractUrl(int pageAll){
 
         List<LinkedHashMap> listUrl = new ArrayList<>();
-        String urlfullTxt = "http://www.circ.gov.cn/web/site0/tab5241/module14458/page1.htm";
+        String urlfullTxt = "http://bxjg.circ.gov.cn/web/site0/tab5241/module14458/page1.htm";
+        int countPage =0;
+        int countUrl = 0;
         for(int i=1 ; i<=pageAll;i++){
-            urlfullTxt   = getData("http://www.circ.gov.cn/web/site0/tab5241/module14458/page"+i+".htm");
+            urlfullTxt   = getData("http://bxjg.circ.gov.cn/web/site0/tab5241/module14458/page"+i+".htm");
+
             Document doc = Jsoup.parse(urlfullTxt);
             Elements elements = doc.getElementsByClass("hui14");
             elements.size();
+            countPage++;
             for (Element element : elements){
                 LinkedHashMap map = new LinkedHashMap();
                 String[] provinceCityStr = element.text().replace(":","：").split("：");
@@ -170,7 +184,9 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
                 Element elementSpan = element.getElementById("lan1");
                 Elements element1A = elementSpan.getElementsByTag("A");
                 //Url地址
-                String href = "http://www.circ.gov.cn"+element1A.attr("href");
+                String href = "http://bxjg.circ.gov.cn"+element1A.attr("href");
+                countUrl ++;
+                log.info("页序号："+countPage +"==url序号："+countUrl+"======省市："+provinceCity+"-------区域------href:"+href);
                 //正文获取
                 String textContext = getData(href);
                 Document docText = Jsoup.parse(textContext);

@@ -242,6 +242,10 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 
 		//处罚日期***** TODO 可以中正文中提取，但是格式非阿拉伯数字类型
 		String punishDate = "";
+		//数据来源  TODO 来源（全国中小企业股转系统、地方证监局、保监会、上交所、深交所、证监会）
+		String source = "保监会";
+		//主题 TODO 主题（全国中小企业股转系统-监管公告、行政处罚决定、公司监管、债券监管、交易监管、上市公司处罚与处分记录、中介机构处罚与处分记录
+		String object = "行政处罚决定";
 		//获取正文内容
 		Document doc = Jsoup.parse(fullTxt.replace("&nbsp;","")
 				.replace("\"","")
@@ -352,9 +356,14 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 				}
             }
             for(String strObject : strList ){
+            	if(strObject.contains("当事人")&&strObject.contains("（")){
+					strObject = strObject.split("（")[0];
+				}
             	if(strObject.contains("：")){
 					String[] strObjectArr = strObject.split("：");
+
 					if(strObjectArr[0].equals("当事人")&&strObjectArr[1].length()>5){
+
 						orgPerson.add(strObjectArr[1].toString());
 						currentFlag = false;
 						if(fileType.length()==0){
@@ -393,7 +402,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 			}
 			stringBufferDetail.append(elementsSpan.text());
 		}else{//三、主题为包括： TODO 处罚实施情况内容
-			fileType ="处罚实施情况";
+			object ="处罚实施情况";
 			punishNo = title;
 			stringBufferDetail.append(elementsSpan.text());
 			punishOrg="";
@@ -449,7 +458,8 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		map.put("releaseDate",releaseDate);
 		map.put("punishOrg",punishOrg);
 		map.put("punishDate",punishDate);
-		map.put("fileType",fileType);
+		map.put("source",source);
+		map.put("object",object);
 		map.put("title",title);
 
 		return  map;
@@ -476,8 +486,8 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		financeMonitorPunish.setPartyPersonDomi(mapInfo.get("priAddress"));//自然人住址
 		financeMonitorPunish.setDetails(mapInfo.get("stringBufferDetail"));//详情
 		financeMonitorPunish.setUrl(href);
-		financeMonitorPunish.setSource("中国保险监督管理委员会");
-		financeMonitorPunish.setObject(mapInfo.get("fileType"));
+		financeMonitorPunish.setSource(mapInfo.get("source"));
+		financeMonitorPunish.setObject(mapInfo.get("object"));
 		log.info("url:"+href);
 		//保存入库
 		saveOne(financeMonitorPunish,false);

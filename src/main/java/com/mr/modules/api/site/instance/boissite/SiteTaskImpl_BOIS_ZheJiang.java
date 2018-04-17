@@ -1,7 +1,8 @@
 package com.mr.modules.api.site.instance.boissite;
 
+import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.mr.modules.api.util.ParseZheJiang;
+import com.mr.modules.api.site.instance.boissite.util.ParseZheJiang;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -99,6 +100,33 @@ public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
 
         return map;
     }
+    /**
+     * 获取Obj,并入库
+     * */
+    public FinanceMonitorPunish getObj(Map<String,String> mapInfo, String href){
 
+        FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+        financeMonitorPunish.setPunishNo(mapInfo.get("punishNo"));//处罚文号
+        financeMonitorPunish.setPunishTitle(mapInfo.get("titleStr"));//标题
+        financeMonitorPunish.setPublisher(mapInfo.get("publishOrg"));//发布机构
+        financeMonitorPunish.setPublishDate(mapInfo.get("publishDate"));//发布时间
+        financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
+        financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
+        financeMonitorPunish.setPartyInstitution(mapInfo.get("punishToOrg"));//当事人（公司）=处罚对象
+        financeMonitorPunish.setDomicile(mapInfo.get("punishToOrgAddress"));//机构住址
+        financeMonitorPunish.setLegalRepresentative(mapInfo.get("punishToOrgHolder"));//机构负责人
+        financeMonitorPunish.setPartyPerson(mapInfo.get("priPerson"));//受处罚人
+        financeMonitorPunish.setPartyPersonId(mapInfo.get("priPersonCert"));//受处罚人证件号码
+        financeMonitorPunish.setPartyPersonTitle(mapInfo.get("priJob"));//职务
+        financeMonitorPunish.setPartyPersonDomi(mapInfo.get("priAddress"));//自然人住址
+        financeMonitorPunish.setDetails(mapInfo.get("stringDetail"));//详情
+        financeMonitorPunish.setUrl(href);
+        financeMonitorPunish.setSource("证监局");
+        financeMonitorPunish.setObject("行政处罚决定书");
 
+        //保存入库
+        saveOne(financeMonitorPunish,false);
+
+        return financeMonitorPunish;
+    }
 }

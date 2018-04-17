@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.framework.json.JSONArray;
 import com.mr.framework.json.JSONObject;
 import com.mr.framework.json.JSONUtil;
@@ -197,9 +198,8 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			extractPDF(docTitleDetail, financeMonitorPunish);
 		} else {
 			extractHTML(getData(docURL), financeMonitorPunish);
-
 		}
-
+		processSpecial(financeMonitorPunish);
 		financeMonitorPunish.setPunishInstitution("上海证券交易所");
 
 		return saveOne(financeMonitorPunish, isForce);
@@ -275,7 +275,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			for (String t : tArr) {
 				if (t.indexOf("，") > -1) {
 					String s = t.substring(0, t.indexOf("，"));
-					if (s.contains("公司"))
+					if (s.contains("公司") || s.contains("工程中心") || s.contains("咨询中心")||s.contains("检验中心"))
 						partyInstitution += "," + s;
 					else
 						person += "," + s;
@@ -384,7 +384,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			for (String t : tArr) {
 				if (t.indexOf("，") > -1) {
 					String s = t.substring(0, t.indexOf("，"));
-					if (s.contains("公司"))
+					if (s.contains("公司") || s.contains("工程中心") || s.contains("咨询中心")||s.contains("检验中心"))
 						partyInstitution += "," + s;
 					else
 						person += "," + s;
@@ -402,4 +402,160 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		financeMonitorPunish.setDetails(filterErrInfo(detail));
 	}
 
+	/**
+	 * 特殊格式处理
+	 *
+	 * @param financeMonitorPunish
+	 */
+	private void processSpecial(FinanceMonitorPunish financeMonitorPunish) {
+		String person = financeMonitorPunish.getPartyPerson();
+		String partyInstitution = financeMonitorPunish.getPartyInstitution();
+		if (StrUtil.isNotEmpty(person)) {
+			person = filterErrInfo(person.replace(" ", "")
+					.replace(" ", "")
+					.replace("\n", "")
+					.replace("　", "").trim());
+		}
+		if (StrUtil.isNotEmpty(partyInstitution)) {
+			partyInstitution = filterErrInfo(partyInstitution.replace(" ", "")
+					.replace(" ", "")
+					.replace("\n", "")
+					.replace("　", "").trim());
+		}
+
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118411.shtml")) {
+			person = "太原化工股份有限公司控股股东";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118355.pdf")) {
+			partyInstitution = "北京通灵通电讯技术有限公司，上海秦砖投资管理有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118361.pdf")) {
+			person = "刘守堂、张中峰";
+			partyInstitution = "对山东和信会计师事务所（特殊普通合伙）";
+		}
+
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118395.shtml")) {
+			person = "邓强，陈洪，游晓安";
+			partyInstitution = "重庆钢铁股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/ident/c/dded5c9e-f4bc-4b71-9570-bfdf4bb5e108.pdf")) {
+			person = "李友，方中华，易梅，侯郁波，李晓勤，徐文彬，千新国，刘欲晓，朱兆庆，胡永栓，贾朝心，黄肖锋，傅林生，何明珂，王善迈，董黎明，邱泽珺，蒋艳华";
+			partyInstitution = "方正科技集团股份有限公司，北大方正集团有限公司，武汉国兴科技发展有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/ident/c/4118452.pdf")) {
+			person = "鲜言";
+			partyInstitution = "上海多伦实业股份有限公司、控股股东多伦投资（香港）有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/ident/c/4118451.pdf")) {
+			person = "鲍崇宪，王星星";
+			partyInstitution = "上海澄海企业发展股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/ident/c/4118453.pdf")) {
+			person = "韩俊良";
+			partyInstitution = "华锐风电科技（集团）股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/ident/c/4118454.pdf")) {
+			person = "张春昌";
+			partyInstitution = "海南椰岛（集团）股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118411.shtml")) {
+			person = null;
+			partyInstitution = "太原化学工业集团有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118397.pdf")) {
+			person = "毛芳亮";
+			partyInstitution = "上海新北股权投资基金合伙企业，山东江泉实业股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118355.pdf")) {
+			person = null;
+			partyInstitution = "北京通灵通电讯技术有限公司，上海秦砖投资管理有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118360.pdf")) {
+			person = "危雯，张新峰";
+			partyInstitution = "东风汽车股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118361.pdf")) {
+			person = "刘守堂，张中峰";
+			partyInstitution = "山东和信会计师事务所（特殊普通合伙）";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118358.pdf")) {
+			person = "林云，黄宇，陈焕智，都豫蒙，林鹏，郭大鸿，胡居洪，许领，陈建，徐顺付，杨继座";
+			partyInstitution = "山东金泰集团股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118396.shtml")) {
+			person = "甘肃酒钢集团宏兴钢铁股份有限公司";
+			partyInstitution = "齐晓东";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118362.pdf")) {
+			person = "陶刚，于建军，汪晓";
+			partyInstitution = "华锐风电科技（集团）股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118364.pdf")) {
+			person = "张文卿，韩家红，沈磊，朱建忠";
+			partyInstitution = "上海三毛企业（集团）股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118359.pdf")) {
+			person = "张殿华，赵启超，王班，侯淑芬，张黎明";
+			partyInstitution = "沈阳商业城股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118357.pdf")) {
+			person = null;
+			partyInstitution = "南京商贸旅游发展集团有限责任公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118363.pdf")) {
+			person = "关长文，陈阿琴，王永和";
+			partyInstitution = "安徽方兴科技股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118342.pdf")) {
+			person = "成卫文，李曙光，黄俊岩，韩海霞，成清波";
+			partyInstitution = "吉林成城集团股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118345.pdf")) {
+			person = "钱俊，窦万波，徐盛富，李晓玲";
+			partyInstitution = "安徽国通高新管业股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118340.pdf")) {
+			person = "彭辰，吴杰，万毅";
+			partyInstitution = "武汉钢铁股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118343.pdf")) {
+			person = "郭永明，马婷婷";
+			partyInstitution = "西安宏盛科技发展股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118341.pdf")) {
+			person = "李晓斌，孙丽斌";
+			partyInstitution = "山西省国新能源发展集团有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118346.pdf")) {
+			person = "张静静，罗炜岚，王承宇，张健，何婧";
+			partyInstitution = "上海新梅置业股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/4118344.pdf")) {
+			person = null;
+			partyInstitution = "上海兴盛实业发展（集团）有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/a3019d9a-e904-4b76-be5a-a4a5873977cc.pdf")) {
+			person = "庄敏，陈海昌，庄明，蒋俊杰，童爱平，王务云，王培琴，林硕奇，茅建华，费滨海，沙智慧";
+			partyInstitution = "江苏保千里视像科技集团股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/ident/c/c_20170315_4250475.shtml")) {
+			person = null;
+			partyInstitution = "永新华韵文化产业投资有限公司，宁波宏创股权投资合伙企业（有限合伙）";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118396.shtml")) {
+			person = "齐晓东";
+			partyInstitution = "甘肃酒钢集团宏兴钢铁股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118441.shtml")) {
+			person = "张文卿，沈磊";
+			partyInstitution = "上海三毛企业（集团）股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118428.shtml")) {
+			person = "刘永跃";
+			partyInstitution = "安徽四创电子股份有限公司";
+		}
+
+		financeMonitorPunish.setPartyPerson(person);
+		financeMonitorPunish.setPartyInstitution(partyInstitution);
+	}
 }

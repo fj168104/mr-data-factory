@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Assert;
@@ -184,6 +185,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 		try {
 			extract(getData(url, 1), financeMonitorPunish);
+			processSpecial(financeMonitorPunish);
 			return saveOne(financeMonitorPunish, isForce);
 		} catch (RuntimeException ex) {
 			if (ex instanceof HttpClientErrorException && ex.getMessage().trim().equals("404 Not Found"))
@@ -470,6 +472,10 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				partyInstitution = partyPerson;
 				partyPerson = null;
 			} else {
+				if (partyPerson.contains("，身份证")) {
+					partyPerson = partyPerson.substring(0, partyPerson.indexOf("，身份证"));
+				}
+
 				financeMonitorPunish.setPartyInstitution(null);
 			}
 
@@ -491,6 +497,15 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				financeMonitorPunish.setPartyPerson(partyInstitution.trim());
 				partyInstitution = null;
 			} else {
+
+				if (partyInstitution.contains("（以下简称")) {
+					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（以下简称"));
+				} else if (partyInstitution.contains("(以下简称")) {
+					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("(以下简称"));
+				}else if (partyInstitution.contains("（股票代码")) {
+					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（股票代码"));
+				}
+
 				financeMonitorPunish.setPartyPerson(null);
 			}
 
@@ -611,6 +626,118 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		financeMonitorPunish.setPunishResult(punishResult);
 		financeMonitorPunish.setListClassification(listClassification);
 
+	}
+
+	/**
+	 * 特殊格式处理
+	 *
+	 * @param financeMonitorPunish
+	 */
+	private void processSpecial(FinanceMonitorPunish financeMonitorPunish) {
+		String person = financeMonitorPunish.getPartyPerson();
+		String partyInstitution = financeMonitorPunish.getPartyInstitution();
+		if (StrUtil.isNotEmpty(person)) {
+			person = person.replace(" ", "")
+					.replace(" ", "")
+					.replace("\n", "")
+					.replace("　", "").trim();
+		}
+		if (StrUtil.isNotEmpty(partyInstitution)) {
+			partyInstitution = partyInstitution.replace(" ", "")
+					.replace(" ", "")
+					.replace("\n", "")
+					.replace("　", "").trim();
+		}
+
+
+		if (StrUtil.isEmpty(person)
+				&& StrUtil.isEmpty(partyInstitution)) {
+			String title = financeMonitorPunish.getPunishTitle().replace("（", "(")
+					.replace("）", ")");
+			if (title.contains("(") && title.contains(")")) {
+				person = title.substring(title.indexOf("(") + 1, title.indexOf(")"));
+			}
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/beijing/bjxzcf/201712/t20171227_329696.htm")) {
+			person = "曾祥颖";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanxi/xzcf/201706/t20170627_319165.htm")) {
+			person = "李坚文，王文志，张世坤，刘培喜";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/beijing/bjxzcf/201711/t20171128_327733.htm")) {
+			person = "钟湉";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/beijing/bjxzcf/201411/t20141104_262923.htm")) {
+			person = "查传忠";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/neimenggu/nmgxzcf/201708/t20170809_321870.htm")) {
+			person = "胡志勇";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/jilin/jlxzcf/201708/P020170814371890315254.pdf")) {
+			person = "吉林晋吉，张佩宏";
+			financeMonitorPunish.setPartyInstitution(null);
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201803/t20180323_335653.htm")) {
+			person = "顾乃凤";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201603/t20160318_294500.htm")) {
+			person = "鲜言，恽燕桦，向从键，曾宏翔，张红山，陈国强，金卓，史洁";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201506/t20150618_279302.htm")) {
+			person = "葛文耀，宣平，曲建宁，丁逸菁，吴英华，冯珺，管一民，张纯，童恺，周勤业，苏勇，朱倚江，刘镫中，胡大辉，汪建宁，王茁，方骅";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201506/t20150605_278568.htm")) {
+			person = "耿益民";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/jiangsu/jsxzcf/201702/t20170221_312469.htm")) {
+			person = "赵国斌，王文平";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/zhejiang/zjxzcf/201712/t20171220_329230.htm")) {
+			person = "胡建东";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/zhejiang/zjxzcf/201712/t20171215_328976.htm")) {
+			person = "胡鸣一，朱毅超";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/zhejiang/zjxzcf/201709/t20170908_323338.htm")) {
+			person = "罡玉华";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/zhejiang/zjxzcf/201709/t20170908_323336.htm")) {
+			person = "徐骏";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/anhui/ahxzcf/201801/t20180115_332574.htm")) {
+			person = "韩玉红";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/anhui/ahxzcf/201412/t20141222_265289.htm")) {
+			person = "杨建南，陈彬辉";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/hubei/hbxzcf/201804/t20180413_336619.htm")) {
+			person = "刘素芳";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/hunan/hnxzcf/201711/t20171107_326612.htm")) {
+			person = "雷霆，彭丹玉，侯爱忠，雷霖，李可松，单邱平，雷菊枚，刘小林";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/guangdong/xzcf/201611/t20161101_305226.htm")) {
+			person = "柯建斌";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201508/t20150806_282450.htm")) {
+			financeMonitorPunish.setPartyInstitution("匹凸匹（中国）有限公司");
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201501/t20150106_266130.htm")) {
+			person = "高兴";
+			financeMonitorPunish.setPartyInstitution(null);
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/jiangsu/jsxzcf/201512/t20151204_287611.htm")) {
+			financeMonitorPunish.setPartyInstitution("东源（天津）股权投资基金管理股份有限公司");
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/anhui/ahxzcf/201708/t20170824_322557.htm")) {
+			financeMonitorPunish.setPartyInstitution("香港敏丰贸易有限公司（S.&F.TRADING CO.(H.K.)LIMITED）");
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/jilin/jlxzcf/201708/t20170814_322101.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "张佩宏";
+		}
+
+		financeMonitorPunish.setPartyPerson(person);
 	}
 
 	public LinkedHashMap<String, String> initCityMap() {

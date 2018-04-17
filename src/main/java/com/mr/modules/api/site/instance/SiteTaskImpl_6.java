@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Assert;
@@ -152,6 +153,7 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 		financeMonitorPunish.setDetails(filterErrInfo(fullTxt));
 		extractTxt(fullTxt, financeMonitorPunish);
 		financeMonitorPunish.setPunishInstitution("上海证券交易所");
+		processSpecial(financeMonitorPunish);
 		return saveOne(financeMonitorPunish, isForce);
 	}
 
@@ -232,7 +234,15 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 				|| person.endsWith("计划")
 				|| person.endsWith("自有资金")) {
 			financeMonitorPunish.setPartyInstitution(filterErrInfo(person));
+			financeMonitorPunish.setCompanyFullName(filterErrInfo(person));
 		} else {
+			if (person.contains("公司")) {
+				person = person.substring(person.indexOf("公司") + 2)
+						.replace("原董事长", "")
+						.replace("董事长", "")
+						.replace("董事", "")
+						.replace("股东", "");
+			}
 			financeMonitorPunish.setPartyPerson(filterErrInfo(person));
 		}
 
@@ -253,4 +263,36 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));
 	}
 
+	/**
+	 * 特殊格式处理
+	 *
+	 * @param financeMonitorPunish
+	 */
+	private void processSpecial(FinanceMonitorPunish financeMonitorPunish) {
+		String person = financeMonitorPunish.getPartyPerson();
+		String partyInstitution = financeMonitorPunish.getPartyInstitution();
+		if (StrUtil.isNotEmpty(person)) {
+			person = filterErrInfo(person.replace(" ", "")
+					.replace(" ", "")
+					.replace("\n", "")
+					.replace("　", "").trim());
+		}
+		if (StrUtil.isNotEmpty(partyInstitution)) {
+			partyInstitution = filterErrInfo(partyInstitution.replace(" ", "")
+					.replace(" ", "")
+					.replace("\n", "")
+					.replace("　", "").trim());
+		}
+
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/regulatory/punishment/c/c_20150902_3975303.shtml")) {
+			partyInstitution = "上海中润实业发展有限公司";
+			person = null;
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/regulatory/punishment/c/c_20150902_3975302.shtml")) {
+			partyInstitution = "江阴市新理念投资有限公司";
+			person = null;
+		}
+		financeMonitorPunish.setPartyPerson(person);
+		financeMonitorPunish.setPartyInstitution(partyInstitution);
+	}
 }

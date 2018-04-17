@@ -243,7 +243,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//处罚日期***** TODO 可以中正文中提取，但是格式非阿拉伯数字类型
 		String punishDate = "";
 		//数据来源  TODO 来源（全国中小企业股转系统、地方证监局、保监会、上交所、深交所、证监会）
-		String source = "中国保监会";
+		String source = "保监会";
 		//主题 TODO 主题（全国中小企业股转系统-监管公告、行政处罚决定、公司监管、债券监管、交易监管、上市公司处罚与处分记录、中介机构处罚与处分记录
 		String object = "行政处罚决定";
 		//获取正文内容
@@ -356,9 +356,14 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 				}
             }
             for(String strObject : strList ){
+            	if(strObject.contains("当事人")&&strObject.contains("（")){
+					strObject = strObject.split("（")[0];
+				}
             	if(strObject.contains("：")){
 					String[] strObjectArr = strObject.split("：");
+
 					if(strObjectArr[0].equals("当事人")&&strObjectArr[1].length()>5){
+
 						orgPerson.add(strObjectArr[1].toString());
 						currentFlag = false;
 						if(fileType.length()==0){

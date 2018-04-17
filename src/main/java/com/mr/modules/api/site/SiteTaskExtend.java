@@ -24,6 +24,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -398,7 +400,37 @@ public abstract class SiteTaskExtend extends SiteTask {
 			financeMonitorPunish.setCreateTime(new Date());
 			financeMonitorPunish.setUpdateTime(new Date());
 		}
-		financeMonitorPunishMapper.insert(financeMonitorPunish);
+		try {
+			financeMonitorPunishMapper.insert(filterPlace(financeMonitorPunish));
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return financeMonitorPunish;
+	}
+
+	protected FinanceMonitorPunish filterPlace(FinanceMonitorPunish financeMonitorPunish) throws Exception {
+		if (Objects.isNull(financeMonitorPunish)) return financeMonitorPunish;
+		Field[] fields = FinanceMonitorPunish.class.getDeclaredFields();
+		for (Field field : fields) {
+			String fieldName = field.getName();
+			if (fieldName.toLowerCase().equals("details")) continue;
+			PropertyDescriptor prop = new PropertyDescriptor(fieldName, FinanceMonitorPunish.class);
+
+			// 获取getter方法，反射获取field值
+			Object obj = prop.getReadMethod().invoke(financeMonitorPunish);
+
+			if (Objects.isNull(obj) || obj instanceof java.util.Date) {
+				continue;
+			}
+			String str = String.valueOf(obj);
+			// 获取setter方法，反射赋值
+			prop.getWriteMethod().invoke(financeMonitorPunish,
+					str.replace(" ", "")
+						.replace(" ", "")
+						.replace("\n", "")
+						.replace("　", "").trim());
+
+		}
 		return financeMonitorPunish;
 	}
 

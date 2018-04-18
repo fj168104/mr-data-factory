@@ -504,6 +504,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("(以下简称"));
 				}else if (partyInstitution.contains("（股票代码")) {
 					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（股票代码"));
+				}else if (partyInstitution.contains("（下称")) {
+					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（下称"));
 				}
 
 				financeMonitorPunish.setPartyPerson(null);
@@ -736,7 +738,58 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			financeMonitorPunish.setPartyInstitution(null);
 			person = "张佩宏";
 		}
-
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201803/t20180321_335538.htm")) {
+			financeMonitorPunish.setPartyInstitution("上海普天邮通科技股份有限公司");
+			person = null;
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/guangdong/xzcf/201206/t20120628_212069.htm")) {
+			financeMonitorPunish.setPartyInstitution("广东银瑞投资管理有限公司");
+			person = null;
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/sichuan/scxzcf/201412/t20141225_265614.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "杨德珍";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/sichuan/scxzcf/201409/t20140902_260001.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "吴锐";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/sichuan/scxzcf/201406/t20140630_256895.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "郑舸，曾晨东，陈德，赵泽良，";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shenzhen/xzcf/201505/t20150522_277622.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "刘榕";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shenzhen/xzcf/201501/t20150119_266745.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "谢锦芬";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shenzhen/xzcf/201411/t20141128_264376.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "林志";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shenzhen/xzcf/201403/t20140307_245163.htm")) {
+			financeMonitorPunish.setPartyInstitution(null);
+			person = "冯泽良（原名何敏军）";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/qingdao/xzcf/201803/t20180314_335211.htm")) {
+			financeMonitorPunish.setPartyInstitution("青岛奥盖克化工股份有限公司");
+			person = "王在军，刘武";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/qingdao/xzcf/201801/t20180119_332850.htm")) {
+			financeMonitorPunish.setPartyInstitution("山东中城银信资产管理有限公司");
+			person = "张佩宏，申巧玲";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/guangdong/xzcf/201212/t20121225_219710.htm")) {
+			financeMonitorPunish.setPartyInstitution("广东新会美达锦纶股份有限公司");
+//			person = "梁伟东，梁少勋，梁广义，郭敏，胡振华，梁仲义";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/tianjin/xzcf/201709/t20170911_323467.htm")) {
+			financeMonitorPunish.setPartyInstitution("华益科技（英属维尔京群岛）有限公司");
+			person = null;
+		}
 		financeMonitorPunish.setPartyPerson(person);
 	}
 

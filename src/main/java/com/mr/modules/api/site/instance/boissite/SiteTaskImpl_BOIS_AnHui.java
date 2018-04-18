@@ -172,7 +172,8 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
         if(txtAll.contains("当事人：")){
             for(String arrStr : txtAllArr){
                 String[] str = arrStr.split("：");
-                if(arrStr.contains("当事人：")){
+
+                if(arrStr.contains("当事人：")&&str.length>=2){
                     if(str[1].length()<6){
                         //TODO 受处罚当时人名称（自然人）
                         priPerson.append(str[1]).append("，");
@@ -187,33 +188,33 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
                         personFlag=false;
                     }
                 }
-                if(personFlag==false&&arrStr.contains("地址：")){
+                if(personFlag==false&&arrStr.contains("地址：")&&str.length>=2){
                     //TODO 受处罚机构地址
                     punishToOrgAddress.append(str[1]).append("，");
                 }
-                if(personFlag==false&&arrStr.contains("负责人：")){
+                if(personFlag==false&&arrStr.contains("负责人：")&&str.length>=2){
                     //TODO 法定代表人或主要负责人
                     punishToOrgHolder.append(str[1]).append("，");
                 }
 
-                if(personFlag==true&&arrStr.contains("证件号码：")){
+                if(personFlag==true&&arrStr.contains("证件号码：")&&str.length>=2){
                     //TODO 受处罚当时人证件号码（自然人）
                     priPersonCert.append(str[1]).append("，");
                 }
-                if(personFlag==true&&arrStr.contains("职务：")){
+                if(personFlag==true&&arrStr.contains("职务：")&&str.length>=2){
                     //TODO 受处罚当时人职位（自然人）
                     priJob.append(str[1]).append("，");
                 }
-                if(personFlag==true&&arrStr.contains("地址：")){
+                if(personFlag==true&&arrStr.contains("地址：")&&str.length>=2){
                     //TODO 受处罚当时人地址（自然人）
                     priAddress.append(str[1]).append("，");
                 }
 
-                if(arrStr.contains("年")&&arrStr.endsWith("日")){
+                if(arrStr.contains("年")&&arrStr.endsWith("日")&&str.length>=2){
                     //TODO 处罚时间
                     punishDate=arrStr;
                 }
-                if(arrStr.contains("保监罚")&&arrStr.endsWith("号")){
+                if(arrStr.contains("保监罚")&&arrStr.endsWith("号")&&str.length>=2){
                     //TODO 处罚文号
                     punishNo=arrStr;
                 }

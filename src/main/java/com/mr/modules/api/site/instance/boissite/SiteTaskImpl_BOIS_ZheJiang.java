@@ -4,10 +4,16 @@ import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.site.instance.boissite.util.ParseZheJiang;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -15,11 +21,66 @@ import java.util.Map;
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
 
-    @Override
+   /*@Override
     protected String execute() throws Throwable {
-        String url = "http://www.circ.gov.cn/web/site0/tab5241/info151690.htm";
+        String url = "http://zhejiang.circ.gov.cn/web/site39/tab3594/info205726.htm";
         extractContent(getData(url));
         return null;
+    }*/
+
+
+   @Override
+    protected String execute() throws Throwable {
+        List<String> urlList = extractPageUrlList();
+        for(String urlResult : urlList){
+            log.info("urlResult:"+urlResult);
+            Map mapInfo = extractContent(getData(urlResult));
+            getObj(mapInfo,urlResult);
+
+        }
+        return null;
+    }
+
+    /**  xtractPageAll,URl集合
+     * @return*/
+
+    public List extractPageUrlList(){
+        List<String> urlList = new ArrayList<>();
+        //第一个页面，用于获取总页数
+        String baseUrl = "http://zhejiang.circ.gov.cn/web/site39/tab3594/module9905/page1.htm";
+        //解析第一个页面，获取这个页面上下文
+        String fullTxt = getData(baseUrl);
+        //获取页数
+        int  pageAll= extractPage(fullTxt);
+        for(int i=1;i<=pageAll;i++){
+            String url ="http://zhejiang.circ.gov.cn/web/site39/tab3594/module9905/page"+i+".htm";
+            String resultTxt = getData(url);
+            Document doc = Jsoup.parse(resultTxt);
+            Elements elementsHerf = doc.getElementsByClass("hui14");
+            for(Element element : elementsHerf){
+                Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
+                String resultUrl = "http://zhejiang.circ.gov.cn"+elementUrl.attr("href");
+                log.info("编号："+i+"==resultUrl:"+resultUrl);
+                urlList.add(resultUrl);
+            }
+        }
+        return urlList;
+    }
+    /** 获取保监会处罚列表所有页数
+     * @param fullTxt
+     * @return*/
+
+    public int extractPage(String fullTxt){
+        int pageAll = 1;
+        Document doc = Jsoup.parse(fullTxt);
+        Elements td = doc.getElementsByClass("Normal");
+        //记录元素的数量
+        int serialNo = td.size();
+        pageAll = Integer.valueOf(td.get(serialNo-1).text().split("/")[1]);
+        log.info("-------------********---------------");
+        log.info("处罚列表清单总页数为："+pageAll);
+        log.info("-------------********---------------");
+        return  pageAll;
     }
 
     public Map extractContent(String fullTxt) {
@@ -100,6 +161,7 @@ public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
 
         return map;
     }
+
     /**
      * 获取Obj,并入库
      * */
@@ -121,7 +183,7 @@ public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
         financeMonitorPunish.setPartyPersonDomi(mapInfo.get("priAddress"));//自然人住址
         financeMonitorPunish.setDetails(mapInfo.get("stringDetail"));//详情
         financeMonitorPunish.setUrl(href);
-        financeMonitorPunish.setSource("证监局");
+        financeMonitorPunish.setSource("地方证监局");
         financeMonitorPunish.setObject("行政处罚决定书");
 
         //保存入库

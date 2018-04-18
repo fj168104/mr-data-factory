@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component("")
+@Component("xinjiang")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_XinJiang extends SiteTaskExtend {
     @Override

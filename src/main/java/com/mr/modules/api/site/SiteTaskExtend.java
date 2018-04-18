@@ -429,11 +429,13 @@ public abstract class SiteTaskExtend extends SiteTask {
 			String str = String.valueOf(obj);
 			// 获取setter方法，反射赋值
 			prop.getWriteMethod().invoke(financeMonitorPunish,
-					str.replace(" ", "")
-						.replace(" ", "")
-						.replace("\n", "")
-						.replace("　", "").trim());
+					str.replaceAll("\\s*", "")
+						.replace("\n", "").trim());
 
+		}
+		if(StrUtil.isNotEmpty(financeMonitorPunish.getDetails())){
+			financeMonitorPunish.setDetails(financeMonitorPunish.getDetails()
+					.replaceAll("\\s*", ""));
 		}
 		return financeMonitorPunish;
 	}

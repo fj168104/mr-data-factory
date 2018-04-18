@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Assert;
@@ -150,25 +151,36 @@ public class SiteTaskImpl_7 extends SiteTaskExtend {
 		String partyInstitution = "";
 		//当事人（个人）
 		String partyPerson = "";
-		if (org.apache.commons.lang3.StringUtils.isNotEmpty(person)) {
+		if (StrUtil.isNotEmpty(person)) {
 			String personArray[] = person.split("、");
 			for (String psub : personArray) {
-				if (psub.contains("公司")) {
-					if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyInstitution)) {
-						partyInstitution += "、";
+				if (psub.contains("公司")||psub.contains("（有限合伙）")
+						||psub.contains("处理厂")||psub.contains("集团")
+						||psub.contains("实业有限")||psub.contains("联社")) {
+					if (StrUtil.isNotEmpty(partyInstitution)) {
+						partyInstitution += "，";
+					}
+					if(psub.contains("公司") && !psub.endsWith("公司")){
+						psub = psub.substring(0 ,psub.indexOf("公司") + 2);
+						String tmp = psub.substring(psub.indexOf("公司") + 2);
+						if (StrUtil.isNotEmpty(partyPerson)) {
+							partyPerson += "，";
+						}
+						partyPerson += tmp.replace("和", "，")
+								.replace("及其股东", "");
 					}
 					partyInstitution += psub;
 				} else {
-					if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyPerson)) {
-						partyPerson += "、";
+					if (StrUtil.isNotEmpty(partyPerson)) {
+						partyPerson += "，";
 					}
 					partyPerson += psub;
 				}
 			}
-			if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyPerson)) {
+			if (StrUtil.isNotEmpty(partyPerson)) {
 				financeMonitorPunish.setPartyPerson(partyPerson);
 			}
-			if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyInstitution)) {
+			if (StrUtil.isNotEmpty(partyInstitution)) {
 				financeMonitorPunish.setPartyInstitution(partyInstitution);
 			}
 		}
@@ -194,7 +206,39 @@ public class SiteTaskImpl_7 extends SiteTaskExtend {
 			financeMonitorPunish.setDetails(filterErrInfo(ocrUtil.getTextFromPdf(contentFile)));
 		}
 
+		financeMonitorPunish.setPunishInstitution("深圳证券交易所");
+		processSpecial(financeMonitorPunish);
 		return saveOne(financeMonitorPunish, isForce);
+	}
+
+	/**
+	 * 特殊格式处理
+	 *
+	 * @param financeMonitorPunish
+	 */
+	private void processSpecial(FinanceMonitorPunish financeMonitorPunish) {
+		String person = financeMonitorPunish.getPartyPerson();
+		String partyInstitution = financeMonitorPunish.getPartyInstitution();
+
+		if (financeMonitorPunish.getUrl().contains("http://www.szse.cn/UpFiles/cfwj/2010-09-07_002034111.doc")) {
+			partyInstitution = null;
+			person = "周信钢，圣美伦，李欣，周晨";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.szse.cn/UpFiles/cfwj/2010-03-01_000587637.doc")) {
+			partyInstitution = "光明集团股份有限公司，上海鸿扬投资管理有限公司";
+			person = null;
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.szse.cn/UpFiles/cfwj/2011-09-21_000955679.doc")) {
+			partyInstitution = "海南筑华科工贸有限公司";
+			person = null;
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.szse.cn/UpFiles/cfwj/2011-09-21_000056680.doc")) {
+			partyInstitution = "深圳茂业商厦有限公司，大华投资（中国）有限公司";
+			person = null;
+		}
+
+		financeMonitorPunish.setPartyPerson(person);
+		financeMonitorPunish.setPartyInstitution(partyInstitution);
 	}
 
 }

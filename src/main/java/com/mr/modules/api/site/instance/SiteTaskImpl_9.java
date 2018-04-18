@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Assert;
@@ -118,6 +119,9 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 				String pStock = tdElements.get(5).text();        //涉及债券
 
 				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+				if(StrUtil.isNotEmpty(punishObj) && punishObj.contains("公司")){
+					punishObj = punishObj.substring(0, punishObj.indexOf("公司") + 2);
+				}
 				financeMonitorPunish.setPartyInstitution(punishObj);
 				financeMonitorPunish.setPartyCategory(objType);
 				financeMonitorPunish.setPunishNo(pCode);
@@ -161,7 +165,33 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 				content = ocrUtil.getTextFromImg(fileName);
 			}
 		}
+		String person = "";
+		if(content.contains("当事人") && content.contains("经查明")){
+			String tmp1[] = content.substring(content.indexOf("当事人")+3, content.indexOf("经查明")).split("；");
+			for(String t1: tmp1){
+				if(t1.contains("：")){
+					String tmp2[] = t1.split("：");
+					for(String t2:tmp2){
+						if(t2.replaceAll("\\s*", "").length() <=3){
+							person += "，" + t2;
+						}
+					}
+				}else if(t1.contains("，")){
+					String tmp2[] = t1.split("，");
+					for(String t2:tmp2){
+						if(t2.replaceAll("\\s*", "").length() <=3){
+							person += "，" + t2;
+						}
+					}
+				}
+			}
+			if(StrUtil.isNotEmpty(person)){
+				person = person.substring(1);
+				financeMonitorPunish.setPartyPerson(person);
+			}
+		}
 		financeMonitorPunish.setDetails(filterErrInfo(content));
+		financeMonitorPunish.setPunishInstitution("深圳证券交易所");
 
 		return saveOne(financeMonitorPunish, isForce);
 	}

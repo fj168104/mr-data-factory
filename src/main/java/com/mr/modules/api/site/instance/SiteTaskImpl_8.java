@@ -211,6 +211,7 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 			financeMonitorPunish.setDetails(filterErrInfo(ocrUtil.getTextFromPdf(contentFile)));
 		}
 
+		financeMonitorPunish.setPunishInstitution("深圳证券交易所");
 		return saveOne(financeMonitorPunish, isForce);
 	}
 

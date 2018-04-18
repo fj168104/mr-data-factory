@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
 import com.mr.framework.core.io.FileUtil;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.mapper.FinanceMonitorPunishMapper;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.xls.export.FileExportor;
@@ -401,6 +402,9 @@ public abstract class SiteTaskExtend extends SiteTask {
 			financeMonitorPunish.setUpdateTime(new Date());
 		}
 		try {
+			if(StrUtil.isEmpty(financeMonitorPunish.getCompanyFullName())){
+				financeMonitorPunish.setCompanyFullName(financeMonitorPunish.getPartyInstitution());
+			}
 			financeMonitorPunishMapper.insert(filterPlace(financeMonitorPunish));
 		} catch (Exception e) {
 			log.error(e.getMessage());

@@ -149,6 +149,7 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtend{
                 .replace(" ","，")
                 .replace("　","，")
                 .replace("地，址：，","地址：")
+                .replace("姓名：","当事人：")
                 .replace("受处罚人：","当事人：")
                 .replace("工作单位：","当事人：")
                 .replace("所在单位：","当事人：")
@@ -180,7 +181,7 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtend{
         if(txtAll.contains("当事人：")){
             for(String arrStr : txtAllArr){
                 String[] str = arrStr.split("：");
-                if(arrStr.contains("当事人：")){
+                if(arrStr.contains("当事人：")&&str.length>=2){
                     if(str[1].length()<6){
                         //TODO 受处罚当时人名称（自然人）
                         priPerson.append(str[1]).append("，");
@@ -195,24 +196,24 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtend{
                         personFlag=false;
                     }
                 }
-                if(personFlag==false&&arrStr.contains("地址：")){
+                if(personFlag==false&&arrStr.contains("地址：")&&str.length>=2){
                     //TODO 受处罚机构地址
                     punishToOrgAddress.append(str[1]).append("，");
                 }
-                if(personFlag==false&&arrStr.contains("负责人：")){
+                if(personFlag==false&&arrStr.contains("负责人：")&&str.length>=2){
                     //TODO 法定代表人或主要负责人
                     punishToOrgHolder.append(str[1]).append("，");
                 }
 
-                if(personFlag==true&&arrStr.contains("证件号码：")){
+                if(personFlag==true&&arrStr.contains("证件号码：")&&str.length>=2){
                     //TODO 受处罚当时人证件号码（自然人）
                     priPersonCert.append(str[1]).append("，");
                 }
-                if(personFlag==true&&arrStr.contains("职务：")){
+                if(personFlag==true&&arrStr.contains("职务：")&&str.length>=2){
                     //TODO 受处罚当时人职位（自然人）
                     priJob.append(str[1]).append("，");
                 }
-                if(personFlag==true&&arrStr.contains("地址：")){
+                if(personFlag==true&&arrStr.contains("地址：")&&str.length>=2){
                     //TODO 受处罚当时人地址（自然人）
                     priAddress.append(str[1]).append("，");
                 }
@@ -248,8 +249,8 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtend{
                     fileType = "个人处罚";
                 }
                 if(!arrStr.contains("经查时任")&&arrStr.contains("（证件号码：")){
-                    priJob.append(arrStr.split("（证件号码：")[0].substring(arrStr.split("（证件号码：")[0].length()-3,arrStr.split("（证件号码：")[0].length())).append("，");
-                    priPerson.append(arrStr.split("（证件号码：")[0].substring(0,arrStr.split("（证件号码：")[0].length()-3)).append("，");
+                    priPerson.append(arrStr.split("（证件号码：")[0].substring(arrStr.split("（证件号码：")[0].length()-3,arrStr.split("（证件号码：")[0].length())).append("，");
+                    priJob.append(arrStr.split("（证件号码：")[0].substring(0,arrStr.split("（证件号码：")[0].length()-3)).append("，");
                     priPersonCert.append(arrStr.split("（证件号码：")[1].split("）")[0]).append("，");
                 }
                 if(arrStr.contains("年")&&arrStr.endsWith("日")){

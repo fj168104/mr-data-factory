@@ -142,10 +142,12 @@ public class ParseShanTou {
 
         text = text.replace((char) 12288, ' ').trim(); //去掉全角空格
         String resText = text.replace(":","：")
+
                 .replaceAll("受处罚人(公民):姓名：","当事人：")
                 .replaceAll("受处罚人：姓名：","当事人：")
                 .replaceAll("受处罚人：姓名","当事人：")
                 .replaceAll("受处罚单位：","当事人：")
+                .replaceAll("处罚单位：","当事人：")
                 .replaceAll("、","，")
                 .replaceAll(",","，")
                 .replace("(","（")
@@ -170,6 +172,7 @@ public class ParseShanTou {
                 .replaceAll("法定代表人或者主要负责人姓名","负责人：")
                 .replaceAll("法定代表人或者主要负责人姓名：","负责人：")
                 .replaceAll("主要负责人姓名：","负责人：")
+                .replaceAll("负责人姓名：","负责人：")
                 .replaceAll("受处罚人姓名：","当事人：")
                 .replaceAll("姓名：","当事人：")
                 //      .replaceAll("当(.*)事(.*)人：","当事人：")

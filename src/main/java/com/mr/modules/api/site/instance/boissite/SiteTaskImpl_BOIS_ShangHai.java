@@ -26,9 +26,9 @@ import java.util.Map;
 @Component("shanghai")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtend {
-   /* @Override
+    /*@Override
     protected String execute() throws Throwable {
-        String url = "http://shanghai.circ.gov.cn/web/site7/tab3427/info4069253.htm";
+        String url = "http://shanghai.circ.gov.cn/web/site7/tab3427/info3908219.htm";
         extractContent(getData(url));
         return null;
     }*/
@@ -203,8 +203,9 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtend {
                         childText = childText+elementsSpanChild.get(2).text();
                     }
                     log.info("-------childText------"+childText);
+                    listStr.add(childText);
                 }
-                listStr.add(childText);
+
             }
 
             //TODO 判断是否为法人
@@ -289,9 +290,9 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtend {
         map.put("punishOrg",punishOrg);
         map.put("punishDate",punishDate);
         map.put("punishNo",punishNo);
-        map.put("punishToOrg",punishToOrg);
+        map.put("punishToOrg",trimString(punishToOrg));
         map.put("punishToOrgAddress",punishToOrgAddress);
-        map.put("punishToOrgHolder",punishToOrgHolder);
+        map.put("punishToOrgHolder",trimString(punishToOrgHolder));
         map.put("priPerson",priPerson.toString());
         map.put("priPersonCert",priPersonCert.toString());
         map.put("priJob",priJob.toString());
@@ -303,6 +304,9 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtend {
         return map;
     }
 
+    public String trimString(String str){
+        return str.replace((char) 12288, ' ').trim();
+    }
     /**
      * 获取Obj,并入库
      * */

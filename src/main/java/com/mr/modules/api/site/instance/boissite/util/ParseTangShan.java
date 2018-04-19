@@ -42,6 +42,9 @@ public class ParseTangShan {
             }
             if(infoArray[j].contains("负责人：")){
                 punishToOrgHolder = infoArray[j].split("：")[1].replace("。","");
+                if(punishToOrgHolder.contains("（")){
+                    punishToOrgHolder = punishToOrgHolder.substring(0,punishToOrgHolder.indexOf("（"));
+                }
             }
         }
         log.info("*****getFaRenInfo-punishToOrg********"+punishToOrg);
@@ -66,7 +69,7 @@ public class ParseTangShan {
         if(!text.contains("身份证号：")){
             text = text.replace("身份证号","身份证号：");
         }
-
+        log.info("---getZiranRenInfo----"+text);
         String[] infoArray =  text.split("，");
         for(int k=0;k<infoArray.length;k++){
             if(infoArray[k].contains("当事人")){
@@ -80,9 +83,11 @@ public class ParseTangShan {
             }
 
         }
+
         map.put("priPerson",priPerson);
         map.put("priAddress",priAddress);
         map.put("priPersonCert",priPersonCert);
+
         return map;
     }
 
@@ -90,7 +95,7 @@ public class ParseTangShan {
      * 去除中文里的空格，保留英文里的空格
      * */
     private  String formatText(String fullTxt){
-        String resString = fullTxt;
+        String resString = fullTxt.replace((char) 12288, ' ').trim();
         resString = resString.replaceAll("(\\w) +(\\w)","$1@$2");
         resString = resString.replaceAll(" ","").replaceAll("@"," ");
         return resString.replaceAll("<br>","&&")
@@ -142,6 +147,8 @@ public class ParseTangShan {
                 .replace("单位地址：","地址：")
                 .replace("公司住址：","地址：")
                 .replace("机构住所：","地址：")
+                .replaceAll("，营业场所","，地址：")
+                .replaceAll("，机构住所","，地址：")
                 .replaceAll("营业场所：","地址：")
                 .replaceAll("营业住所：","地址：")
                 .replaceAll("个人住址：","地址：")
@@ -164,11 +171,13 @@ public class ParseTangShan {
                 //   .replaceAll("时(.*)任：","职务：")
                 .replaceAll("工作单位及职务：","职务：")
                 .replaceAll("时任：","职务：")
-                .replaceAll("，时任","，职务：")
+                //     .replaceAll("，时任","，职务：")
                 //  .replaceAll("负(.*)责(.*)人：","负责人：")
                 .replaceAll("临时负责人：","负责人：")
                 .replaceAll("总经理：","负责人：")
+                .replaceAll("，主要负责人","，负责人：")
                 .replaceAll("主要负责人：","负责人：")
+                .replaceAll("，法定代表人","，负责人：")
                 .replaceAll("法定代表人：","负责人：")
                 .replaceAll("身份证号码","身份证号")
                 .replaceAll("身份证号码：","身份证号：")
@@ -227,17 +236,10 @@ public class ParseTangShan {
             stringDetail = textTransfer(elementsSpan.text().trim());
             stringDetailSource = "span";
         }
-        String spantext = textTransfer(elementsSpan.text()).trim();
-        if(spantext.lastIndexOf("日")>spantext.lastIndexOf("月") && spantext.lastIndexOf("月")> spantext.lastIndexOf("年")){
-            punishDate =spantext.substring(spantext.lastIndexOf("年")-4,spantext.lastIndexOf("日")+1);
-        }
-
         if(textTransfer(elementsPre.text().trim()).contains("当事人：")){
             stringDetail = textTransfer(elementsPre.text().trim())+" "+stringDetail;
         }
-
         log.info("stringDetailSource---"+stringDetailSource+"---stringDetail:"+stringDetail);
-
         /*TODO 通用型*/
         //TODO 提取主题
         Element elementsTitle = elementsTD.first();
@@ -246,7 +248,6 @@ public class ParseTangShan {
         Element elementsPublishDate = elementsTD.get(1);
         String publishDateStr = elementsPublishDate.text();
         publishDate = publishDateStr.substring(publishDateStr.indexOf("发布时间：")+5,publishDateStr.indexOf("分享到："));
-
 
 
         List<String> listStr = new ArrayList();
@@ -265,6 +266,28 @@ public class ParseTangShan {
         }
 
 
+        String spantext = textTransfer(elementsSpan.text()).trim();
+        if(spantext.lastIndexOf("日")>spantext.lastIndexOf("月") && spantext.lastIndexOf("月")> spantext.lastIndexOf("年")){
+            punishDate =spantext.substring(spantext.lastIndexOf("年")-4,spantext.lastIndexOf("日")+1);
+        }
+
+        //如果正文里没有处罚文号
+        if(punishNo.equalsIgnoreCase("")){
+            //TODO 从标题中获取处罚文号
+            if(titleStr.startsWith("行政")){
+                punishNo = titleStr.substring(titleStr.indexOf("监罚")-2, titleStr.indexOf("号")+1);
+            }else{
+                String wenhao = titleStr.split("行政")[0];
+                if(wenhao.indexOf("〔")>-1 || wenhao.indexOf("[")>-1){
+                    punishNo = wenhao;
+                }else{
+                    int index = wenhao.indexOf("罚");
+                    String year = wenhao.substring(index+1,index+5);
+                    punishNo = wenhao.replaceAll(year,"["+year+"]");
+                }
+            }
+        }
+
         /*TODO 特殊型 只适合没有标明当事人的处罚文案，需要加限制条件*/
         if(stringDetail.indexOf("当事人")>-1){
             //TODO 判断是否为法人
@@ -279,6 +302,7 @@ public class ParseTangShan {
 
                     if(formatText(elementP.text()).indexOf("监罚〔")>-1 || formatText(elementP.text()).indexOf("监罚[")>-1){
                         punishNo = elementP.text().replaceAll(" ","").trim();
+                        punishNo = punishNo.substring(punishNo.indexOf("保监罚")-1, punishNo.indexOf("号")+1);
                     }
                 }
             }else if(stringDetailSource.equalsIgnoreCase("span")){
@@ -289,33 +313,9 @@ public class ParseTangShan {
                         log.info("--查看span标签text--"+elementPStr);
                         listStr.add(elementPStr);
                     }
+
                 }
             }
-            //如果正文里没有处罚文号
-            if(punishNo.equalsIgnoreCase("")){
-                //TODO 从标题中获取处罚文号
-                if(titleStr.startsWith("行政")){
-                    punishNo = titleStr.substring(titleStr.indexOf("监罚")-2, titleStr.indexOf("号")+1);
-                }else{
-                    String wenhao = titleStr.split("行政")[0];
-                    if(wenhao.indexOf("〔")>-1 || wenhao.indexOf("[")>-1){
-                        punishNo = wenhao;
-                    }else{
-                        int index = wenhao.indexOf("罚");
-                        String year = wenhao.substring(index+1,index+5);
-                        punishNo = wenhao.replaceAll(year,"["+year+"]");
-                    }
-                }
-
-
-            }else{
-                //各个省份的文号格式不一致 暂以浙江的为准
-                //浙江：浙保监罚[2010]3号
-                //云南：[按照云南保监局《行政处罚决定书》（云保监罚〔2018〕20号）内容公布] 或 云保监罚〔2013〕27号
-                punishNo = punishNo.substring(punishNo.indexOf("保监罚")-1, punishNo.indexOf("号")+1);
-            }
-
-
             //TODO 需要判断是法人还是自然人
             boolean busiPersonFlag = false;
             int m = 0;
@@ -343,21 +343,36 @@ public class ParseTangShan {
                     }
                 }
                 String textInfo = listStr.get(i);
-                if(textInfo.contains("当事人：") && textInfo.contains("地址：") && textInfo.contains("负责人：")){//此为法人
+                if((textInfo.contains("当事人：") && textInfo.contains("地址：") && textInfo.contains("负责人："))
+                        || (textInfo.contains("当事人：") && textInfo.contains("地址：") && !textInfo.contains("身份证号") && !textInfo.contains("性别")
+                        && !textInfo.contains("年龄") && !textInfo.contains("男") && !textInfo.contains("女") && !textInfo.contains("出生") && !textInfo.contains("民族"))){//此为法人
                     Map<String,String> resMap = getFaRenInfo(listStr.get(i));
-                    punishToOrg = resMap.get("punishToOrg");
-                    punishToOrgAddress = resMap.get("punishToOrgAddress");
-                    punishToOrgHolder = resMap.get("punishToOrgHolder");
+                    if(!punishToOrg.equalsIgnoreCase("")){
+                        punishToOrg = punishToOrg+"，"+resMap.get("punishToOrg");
+                    }else{
+                        punishToOrg = resMap.get("punishToOrg");
+                    }
+                    if(!punishToOrgAddress.equalsIgnoreCase("")){
+                        punishToOrgAddress = punishToOrgAddress+"，"+resMap.get("punishToOrgAddress");
+                    }else{
+                        punishToOrgAddress = resMap.get("punishToOrgAddress");
+                    }
+                    if(!punishToOrgHolder.equalsIgnoreCase("")){
+                        punishToOrgHolder = punishToOrgHolder+"，"+resMap.get("punishToOrgHolder");
+                    }else{
+                        punishToOrgHolder = resMap.get("punishToOrgHolder");
+                    }
+
                 }else if((textInfo.contains("当事人") && textInfo.contains("地址：")) || (textInfo.contains("当事人") && textInfo.contains("身份证号"))
                         || (textInfo.contains("当事人") && textInfo.contains("性别")) || (textInfo.contains("当事人") && textInfo.contains("年龄"))){//此为自然人
                     Map<String,String> map = getZiranRenInfo(textInfo);
-                    if(!map.get("priPerson").equalsIgnoreCase("")){
+                    if(!"".equalsIgnoreCase(map.get("priPerson"))){
                         priPerson.append(map.get("priPerson")).append("，");
                     }
-                    if(!map.get("priAddress").equalsIgnoreCase("")){
+                    if(!"".equalsIgnoreCase(map.get("priAddress"))){
                         priAddress.append(map.get("priAddress")).append("，");
                     }
-                    if(!map.get("priPersonCert").equalsIgnoreCase("")){
+                    if(!"".equalsIgnoreCase(map.get("priPersonCert"))){
                         priPersonCert.append(map.get("priPersonCert")).append("，");
                     }
                 }else {
@@ -365,7 +380,8 @@ public class ParseTangShan {
                     String[] currentPersonStr  = listStr.get(i).split("：");
                     log.info(currentPersonStr[0]+"-----------"+currentPersonStr[1]);
 
-                    if(currentPersonStr[1].length()>5&&currentPersonStr[0].trim().equals("当事人")){
+                    if(currentPersonStr[1].length()>5&&currentPersonStr[0].trim().equals("当事人") && !currentPersonStr[1].contains("男") &&
+                            !currentPersonStr[1].contains("女") && !currentPersonStr[1].contains("出生")){
                         m = i;
                         busiPersonFlag =true;
                         punishToOrg = currentPersonStr[1];
@@ -376,6 +392,12 @@ public class ParseTangShan {
                         punishToOrgAddress = currentPersonStr[1];
                     }
                     if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("负责人")){
+                        if(currentPersonStr[1].contains("（")){
+                            currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("（"));
+                        }
+                        if(currentPersonStr[1].contains("，")){
+                            currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("，"));
+                        }
                         punishToOrgHolder = currentPersonStr[1];
                     }else if(m!=i){
                         busiPersonFlag = false;
@@ -383,7 +405,12 @@ public class ParseTangShan {
 
                     //TODO 自然人
                     if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("当事人")){
-                        priPerson.append(currentPersonStr[1]).append("，");
+                        if(currentPersonStr[1].split("，").length>1){
+                            priPerson.append(currentPersonStr[1].split("，")[0]).append("，");
+                        }else{
+                            priPerson.append(currentPersonStr[1]).append("，");
+                        }
+
                     }
                     if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("地址")){
                         priAddress.append(currentPersonStr[1]).append("，");
@@ -392,6 +419,7 @@ public class ParseTangShan {
                         priPersonCert.append(currentPersonStr[1]).append("，");
                     }
                     if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("职务")){
+
                         priJob.append(currentPersonStr[1]).append("，");
                     }
                 }
@@ -464,6 +492,9 @@ public class ParseTangShan {
                 if(busiPersonFlag == true  && strArray2[0].trim().equalsIgnoreCase("负责人")){
                     busiPersonFlag = false;
                     k=i;
+                    if(strArray2[1].contains("（")){
+                        strArray2[1] = strArray2[1].substring(0,strArray2[1].indexOf("（"));
+                    }
                     punishToOrgHolder = strArray2[1];
                     log.info("punishToOrgHolder---"+punishToOrgHolder);
                 }else if(k!=i){//存在负责人缺失的情况，此时将标志位置为 false，便于后面解析自然人数据
@@ -510,8 +541,8 @@ public class ParseTangShan {
      * 获取处罚时间
      * */
     private String getPunishDate(String dateInfo){
-        int yearIndex = dateInfo.indexOf("年");
-        String date = dateInfo.substring(yearIndex-4);
+        int yearIndex = dateInfo.lastIndexOf("年");
+        String date = dateInfo.substring(yearIndex-4).replace("&&","").trim();
         return date;
     }
 }

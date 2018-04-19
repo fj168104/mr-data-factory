@@ -2,7 +2,6 @@ package com.mr.modules.api.site.instance.boissite;
 
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.mr.modules.api.site.instance.boissite.util.ParseDaLian;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -11,7 +10,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.util.*;
-
+/**
+ * @Auther :zjxu
+ * @DateTime：201803
+ */
 @Slf4j
 @Component("dalian")
 @Scope("prototype")
@@ -22,8 +24,11 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtend{
         List<String> urlList = extractPageUrlList();
         for(String urlResult : urlList){
             log.info("urlResult:"+urlResult);
-            Map map = extractContent(getData(urlResult));
-            getObj(map,urlResult);
+            List<Map<String,String>> mapList = extractContent(getData(urlResult));
+            for(Map<String,String> map : mapList){
+
+                getObj(map,urlResult);
+            }
         }
         return null;
     }
@@ -71,7 +76,9 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtend{
         return  pageAll;
     }
 
-    public Map extractContent(String fullTxt) {
+    public List<Map<String,String>> extractContent(String fullTxt) {
+        List<Map<String,String> > mapRecord = new ArrayList<>();
+
         //发布机构
         String publishOrg = "中国保监会大连保监局";
         //发布时间
@@ -83,11 +90,11 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtend{
         //TODO 处罚文号
         String punishNo = "";
         //TODO 受处罚机构
-        String punishToOrg = "";
+        StringBuffer punishToOrg = new StringBuffer();
         //TODO 受处罚机构地址
-        String punishToOrgAddress = "";
+        StringBuffer punishToOrgAddress = new StringBuffer();
         //TODO 法定代表人或主要负责人
-        String punishToOrgHolder = "";
+        StringBuffer punishToOrgHolder = new StringBuffer();
         //TODO 受处罚当时人名称（自然人）
         StringBuffer priPerson = new StringBuffer();
         //TODO 受处罚当时人证件号码（自然人）
@@ -105,19 +112,232 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtend{
         String object = "行政处罚决定";
         String titleStr = "";
 
-        Map resMap = new ParseDaLian().parseInfo(fullTxt);
-        publishDate = (String) resMap.get("publishDate");
-        punishDate = (String) resMap.get("punishDate");
-        punishNo = (String) resMap.get("punishNo");
-        punishToOrg = (String) resMap.get("punishToOrg");
-        punishToOrgAddress = (String) resMap.get("punishToOrgAddress");
-        punishToOrgHolder = (String) resMap.get("punishToOrgHolder");
-        priPerson = (StringBuffer) resMap.get("priPerson");
-        priPersonCert = (StringBuffer) resMap.get("priPersonCert");
-        priJob = (StringBuffer) resMap.get("priJob");
-        priAddress = (StringBuffer) resMap.get("priAddress");
-        stringDetail = (String) resMap.get("stringDetail");
-        titleStr = (String) resMap.get("titleStr");
+        Document doc = Jsoup.parse(fullTxt.replace("、","，")
+                .replace("(","（").
+                        replace(")","）")
+                .replace(":","：")
+                .replace("&nbps;","")
+                .replace(" ","")
+
+
+        );
+        Element elementsTxt = doc.getElementById("tab_content");
+
+        Elements elementsTD = elementsTxt.getElementsByTag("TD");
+        Elements elementsSpan = elementsTxt.getElementsByClass("xilanwb");
+        //TODO ********用户处理表格类文案********
+        Elements elementsTR  = elementsSpan.select("tr");
+
+        /*TODO 通用型*/
+        //TODO 提取主题
+        Element elementsTitle = elementsTD.first();
+        titleStr = elementsTitle.text();
+        //TODO 获取包含发布时间的元素
+        Element elementsPublishDate = elementsTD.get(1);
+        String publishDateStr = elementsPublishDate.text();
+        publishDate = publishDateStr.substring(publishDateStr.indexOf("发布时间：")+5,publishDateStr.indexOf("分享到："));
+
+        //全文提取
+        String txtAll = elementsTxt.text()
+                .replace("、","，")
+                .replace("(","（")
+                .replace(")","）")
+                .replace(":","：")
+                .replace("地  址：","地址：")
+                .replaceAll("地 址: ","地址：")
+                .replace("当事人： ","当事人：")
+                .replace("负责人： ","负责人：")
+                .replace("地址： ","地址：")
+                .replace("证件号码： ","证件号码：")
+                .replace("职务： ","职务：")
+                .replace("。","，")
+                .replace(" ","，")
+                .replace("　","，")
+                .replace("营业地址：","地址：")
+                .replace("地，址：，","地址：")
+                .replace("受处罚人：","当事人：")
+                .replace("法定代表人（主要负责人）： ","负责人：")
+                .replace("受处罚机构：","当事人：")
+                .replace("受罚人姓名：","当事人：")
+                .replace("受处罚人姓名：","当事人：")
+                .replace("受处罚人名称：","当事人：")
+                .replace("受处罚机构名称：","当事人：")
+                .replace("机构名称：","当事人：")
+                .replace("处罚人姓名：","当事人：")
+                .replace("主要负责人姓名：","负责人：")
+                .replace("法定代表人或负责人：","负责人：")
+                .replace("法定代表人或主要负责人：","负责人：")
+                .replace("法定代表人或主要负责人姓名：","负责人：")
+                .replace("身份证号：","证件号码：")
+                .replace("身份证号码：","证件号码：")
+                .replace("身份证号码","证件号码")
+                .replace("地  址：","地址：")
+                .replace("住址：","地址：")
+                .replace("年龄：","，年龄：")
+                .replace("地址","地址：")
+                .replace("地址：：","地址：")
+                .replace(" 号","号")
+                .replace("行为：","，")
+                .replace("法定代表人或者主要负责人姓名","法定代表人或者主要负责人姓名：")
+                .replace("：姓名，","：")
+                .replace("：名称","：")
+                .replace("：姓名：","：")
+                .replace("当事人：，","当事人：")
+                .replace("职务，","职务：")
+                .replace("经查，","经查")
+                .replace("当事人：，，姓名：","当事人：")
+                .replace("当事人：，，名称：","当事人：")
+                ;
+        String[] txtAllArr = txtAll.split("，");
+        log.info("-----------------------txtAll:\n"+txtAll);
+        //判断是法人还是自然人true为自然人，false为法人
+        Map<String,String> map = new HashMap<String,String>();
+        boolean personFlag = true;
+        if(txtAll.contains("当事人：")&&!txtAll.contains("违法违规行为")&&!txtAll.contains("备注")){
+            stringDetail =elementsSpan.text();
+            for(String arrStr : txtAllArr){
+                String[] str = arrStr.split("：");
+
+                if(arrStr.contains("当事人：")&&str.length>=2){
+                    if(str[1].trim().length()<6){
+                        //TODO 受处罚当时人名称（自然人）
+                        priPerson.append(str[1]).append("，");
+                        //TODO 判断处罚的是法人，还是自然人
+                        personFlag=true;
+                    }else{
+                        //TODO 受处罚机构
+                        punishToOrg.append(str[1]).append("，");
+                        //TODO 判断处罚的是法人，还是自然人
+                        personFlag=false;
+                    }
+                }
+                if(personFlag==false&&arrStr.contains("地址：")&&str.length>=2){
+                    //TODO 受处罚机构地址
+                    punishToOrgAddress.append(str[1]).append("，");
+                }
+                if(personFlag==false&&arrStr.contains("负责人：")&&str.length>=2){
+                    //TODO 法定代表人或主要负责人
+                    punishToOrgHolder.append(str[1]).append("，");
+                }
+
+                if(personFlag==true&&arrStr.contains("证件号码：")&&str.length>=2){
+                    //TODO 受处罚当时人证件号码（自然人）
+                    priPersonCert.append(str[1]).append("，");
+                }
+                if(personFlag==true&&arrStr.contains("职务：")&&str.length>=2){
+                    //TODO 受处罚当时人职位（自然人）
+                    priJob.append(str[1]).append("，");
+                }
+                if(personFlag==true&&arrStr.contains("地址：")&&str.length>=2){
+                    //TODO 受处罚当时人地址（自然人）
+                    priAddress.append(str[1]).append("，");
+                }
+
+                if(arrStr.contains("年")&&arrStr.endsWith("日")){
+                    //TODO 处罚时间
+                    punishDate=arrStr;
+                }
+                if(arrStr.contains("保监罚")&&arrStr.endsWith("号")){
+                    //TODO 处罚文号
+                    punishNo=arrStr;
+                }
+            }
+            if(punishOrg.equals("")){
+                punishOrg ="大连保监局";
+            }
+            map.put("titleStr",titleStr);
+            map.put("publishOrg",publishOrg);
+            map.put("publishDate",publishDate);
+            map.put("punishOrg",punishOrg);
+            map.put("punishDate",punishDate);
+            map.put("punishNo",punishNo);
+            map.put("punishToOrg",punishToOrg.toString());
+            map.put("punishToOrgAddress",punishToOrgAddress.toString());
+            map.put("punishToOrgHolder",punishToOrgHolder.toString());
+            map.put("priPerson",priPerson.toString());
+            map.put("priPersonCert",priPersonCert.toString());
+            map.put("priJob",priJob.toString());
+            map.put("priAddress",priAddress.toString());
+            map.put("source",source);
+            map.put("object",object);
+            map.put("stringDetail",stringDetail);
+            mapRecord.add(map);
+        }
+        else if(txtAll.contains("当事人")&&txtAll.contains("违法违规行为")&&txtAll.contains("备注")){
+            //TODO 表格：处罚决定文号，当事人，处罚内容，认定依据，给予行政处罚的依据，违法违规行为，备注
+            for(Element elementTR :elementsTR){
+                 if(!elementTR.text().contains("处罚决定文号")&&!elementTR.text().contains("处罚明细")){
+                     Map<String,String> mapTR = new HashMap<String,String>();
+                     Elements elementsTRTDS = elementTR.select("td");
+                     if(elementsTRTDS.get(1).text().length()>6){
+
+                         if(elementsTRTDS.get(1).text().contains("（")&&elementsTRTDS.get(1).text().split("（")[0].length()<4){
+                             mapTR.put("priPerson",elementsTRTDS.get(1).text().split("（")[0]);
+                             mapTR.put("priJob",elementsTRTDS.get(1).text().split("（")[1].replace("）",""));
+                         }else{
+                             mapTR.put("punishToOrg",elementsTRTDS.get(1).text());
+                         }
+                     }else{
+                         mapTR.put("priPerson",elementsTRTDS.get(1).text());
+                     }
+                     mapTR.put("titleStr",titleStr);
+                     mapTR.put("publishOrg",publishOrg);
+                     mapTR.put("publishDate",publishDate);
+                     mapTR.put("punishOrg",punishOrg);
+                     mapTR.put("punishDate",punishDate);
+                     mapTR.put("punishNo",elementsTRTDS.get(0).text());
+                     mapTR.put("punishToOrgAddress",punishToOrgAddress.toString());
+                     mapTR.put("punishToOrgHolder",punishToOrgHolder.toString());
+                     mapTR.put("priPersonCert",priPersonCert.toString());
+                     mapTR.put("priAddress",priAddress.toString());
+                     mapTR.put("source",source);
+                     mapTR.put("object",object);
+                     mapTR.put("stringDetail",elementTR.text());
+                     mapRecord.add(mapTR);
+
+                 }
+
+             }
+
+        }else{
+            stringDetail =elementsSpan.text();
+            //标记公司：companyFlag第一次出现
+            boolean companyFlag= false;
+            for(String arrStr : txtAllArr){
+                if(arrStr.contains("公司：")&&companyFlag==false){
+                    punishToOrg.append(arrStr.split("公司")[0]+"公司");
+                    companyFlag = true;
+                }
+                if(arrStr.contains("年")&&arrStr.endsWith("日")){
+                    //TODO 处罚时间
+                    punishDate=arrStr;
+                }
+                if(arrStr.contains("保监罚")&&arrStr.endsWith("号")){
+                    //TODO 处罚文号
+                    punishNo=arrStr;
+                }
+            }
+            if(punishOrg.equals("")){
+                punishOrg ="大连保监局";
+            }
+            map.put("titleStr",titleStr);
+            map.put("publishOrg",publishOrg);
+            map.put("publishDate",publishDate);
+            map.put("punishOrg",punishOrg);
+            map.put("punishDate",punishDate);
+            map.put("punishNo",punishNo);
+            map.put("punishToOrg",punishToOrg.toString());
+            map.put("punishToOrgAddress",punishToOrgAddress.toString());
+            map.put("punishToOrgHolder",punishToOrgHolder.toString());
+            map.put("priPerson",priPerson.toString());
+            map.put("priPersonCert",priPersonCert.toString());
+            map.put("priJob",priJob.toString());
+            map.put("priAddress",priAddress.toString());
+            map.put("source",source);
+            map.put("object",object);
+            map.put("stringDetail",stringDetail);
+            mapRecord.add(map);
+        }
 
         log.info("发布主题：" + titleStr);
         log.info("发布机构：" + publishOrg);
@@ -135,25 +355,7 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtend{
         log.info("来源："+source);
         log.info("主题："+object);
         log.info("正文：" + stringDetail);
-
-        Map<String,String> map = new HashMap<String,String>();
-        map.put("titleStr",titleStr);
-        map.put("publishOrg",publishOrg);
-        map.put("publishDate",publishDate);
-        map.put("punishOrg",punishOrg);
-        map.put("punishDate",punishDate);
-        map.put("punishNo",punishNo);
-        map.put("punishToOrg",punishToOrg);
-        map.put("punishToOrgAddress",punishToOrgAddress);
-        map.put("punishToOrgHolder",punishToOrgHolder);
-        map.put("priPerson",priPerson.toString());
-        map.put("priPersonCert",priPersonCert.toString());
-        map.put("priJob",priJob.toString());
-        map.put("priAddress",priAddress.toString());
-        map.put("source",source);
-        map.put("object",object);
-        map.put("stringDetail",stringDetail);
-        return map;
+        return mapRecord;
     }
     /**
      * 获取Obj,并入库

@@ -133,7 +133,7 @@ public class ParseXinJiang {
                 .replace("受处罚人：姓名","当事人：")
                 .replace("受处罚人(机构)：","当事人：")
                 .replaceAll("受处罚单位：","当事人：")
-                .replaceAll("、","，")
+             //   .replaceAll("、","，")
                 .replaceAll(",","，")
                 .replaceAll("当事人[\u4e00-\u9fa5]{0,3}：", "当事人：")  //对存在多个当事人做处理
                 .replace("&nbsp;","")
@@ -469,6 +469,27 @@ public class ParseXinJiang {
             }
         }
 
+        String spantext = textTransfer(elementsSpan.text().trim());
+
+        if(punishDate.equalsIgnoreCase("")){
+            spantext = textTransfer(elementsSpan.text()).trim();
+            if(spantext.lastIndexOf("日")>spantext.lastIndexOf("月") && spantext.lastIndexOf("月")> spantext.lastIndexOf("年")){
+                punishDate =spantext.substring(spantext.lastIndexOf("年")-4,spantext.lastIndexOf("日")+1);
+            }
+        }
+        if(stringDetail.replaceAll("&&","").contains("各保险公司、保险中介公司、保险行业协会")){
+            String name = titleStr.substring(titleStr.indexOf("关于对")+3,titleStr.indexOf("实施行政处罚")).replace("和","，");
+            punishToOrg = name;
+        }
+
+        if(punishNo.equalsIgnoreCase("") && spantext.contains("新保监罚")){
+            punishNo = spantext.substring(spantext.indexOf("新保监罚"),spantext.indexOf("号")+1);
+        }
+
+        if(stringDetail.replaceAll("&&","").contains("各保险公司、保险中介机构、保险行业协会")){
+            priPerson.append("刘孝虎").append("，");
+            priJob.append("中国人寿米泉支公司保险营销员").append("，");
+        }
         resmap.put("publishDate",publishDate);
         resmap.put("punishDate",punishDate);
         resmap.put("punishNo",punishNo);

@@ -201,7 +201,7 @@ public class ParseChongQing {
         Elements elementsSpan = elementsTxt.getElementsByClass("xilanwb");
         Elements elementsP = elementsTxt.getElementsByTag("P");
         Elements elementsA = elementsTxt.getElementsByTag("A");
-        Elements elementsPre = elementsTxt.getElementsByTag("Pre");
+        Elements elementsPre = elementsTxt.getElementsByTag("Pre").tagName("span");
 
         //TODO 正文
         stringDetail = textTransfer(elementsP.text().trim());
@@ -213,7 +213,6 @@ public class ParseChongQing {
         if(textTransfer(elementsPre.text().trim()).contains("当事人：")){
             stringDetail = textTransfer(elementsPre.text().trim())+" "+stringDetail;
         }
-        log.info("stringDetailSource---"+stringDetailSource+"---stringDetail:"+stringDetail);
 
         /*TODO 通用型*/
         //TODO 提取主题
@@ -247,7 +246,6 @@ public class ParseChongQing {
                     String elementPStr =  elementP.text().replaceAll("\\s*", "");
                     elementPStr = textTransfer(elementPStr);
                     if(elementPStr.indexOf("：")>-1&&elementPStr.split("：").length>1){
-                        log.info("--查看p标签text--"+elementPStr);
                         listStr.add(elementPStr);
                     }
                     if(elementPStr.indexOf("年")>-1 && elementPStr.indexOf("月")>-1&&elementPStr.indexOf("日")>-1 &&elementPStr.endsWith("日")){
@@ -275,7 +273,6 @@ public class ParseChongQing {
                     String elementPStr =  elementPan.text().replaceAll("\\s*", "");
                     elementPStr = textTransfer(elementPStr);
                     if(elementPStr.indexOf("：")>-1&&elementPStr.split("：").length>1){
-                        log.info("--查看span标签text--"+elementPStr);
                         listStr.add(elementPStr);
                     }
                     if(elementPStr.indexOf("年")>-1 && elementPStr.indexOf("月")>-1&&elementPStr.indexOf("日")>-1 &&elementPStr.endsWith("日")){

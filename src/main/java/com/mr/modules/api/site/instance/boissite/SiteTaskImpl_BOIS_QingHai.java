@@ -26,9 +26,9 @@ import java.util.Map;
 @Component("qinghai")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
-   /* @Override
+    /*@Override
     protected String execute() throws Throwable {
-        String url = "http://qinghai.circ.gov.cn/web/site41/tab3428/info116393.htm";
+        String url = "http://qinghai.circ.gov.cn/web/site41/tab3428/info4079520.htm";
         extractContent(getData(url));
         return null;
     }*/
@@ -127,7 +127,10 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
                 .replace("&nbsp;","")
                 .replace(" ","")
                 .replace("当 事 人：","当事人：")
+                .replace("受处罚人：姓名：","当事人：")
+                .replace("受处罚人：","当事人：")
                 .replace("受处罚人姓名：","当事人：")
+                .replace("受处罚人姓名","当事人")
                 .replace("受处罚人名称：","当事人：")
                 .replace("受处罚人名称","当事人")
                 .replace("受处罚机构名称：","当事人：")
@@ -152,7 +155,7 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
                 .replace("法定代表人：","负责人：")
                 .replace("法定代表人或主要负责人姓名：","负责人：")
                 .replace("主要负责人姓名：","负责人：")
-                .replace("主要负责人姓名","负责人：")
+                .replace("主要负责人姓名","负责人")
                 .replace("法定代表人姓名","负责人：")
                 .replace("姓名：","当事人：")
                 .replace("单位负责人：","负责人：")
@@ -205,11 +208,27 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
             boolean moreOrgFlag = false; //是否有多个机构
             log.info("listStr:-------"+listStr.toString());
             for(int i=0;i<listStr.size();i++ ){
-                String[] currentPersonStr  = listStr.get(i).split("：");
 
-                if(i==0&&currentPersonStr[1].length()>5&&currentPersonStr[0].equals("当事人")){
+                String[] currentPersonStr  = listStr.get(i).split("：");
+                currentPersonStr[0] = currentPersonStr[0].replace(" ","").trim();
+                log.info("----currentPersonStr[0]"+currentPersonStr[0]+"-----currentPersonStr[1]----"+currentPersonStr[1]);
+                if(currentPersonStr[0].contains("青保监罚") && currentPersonStr[0].contains("当事人")){
+                    currentPersonStr[0] = "当事人";
+                }
+                if(i==0&&currentPersonStr[1].length()>5&&currentPersonStr[0].equals("当事人") && !currentPersonStr[1].contains("地址") && !currentPersonStr[1].contains("年龄")){
                     busiPersonFlag =true;
+
                     punishToOrg = currentPersonStr[1];
+                }
+                if(currentPersonStr[1].length()>5&&currentPersonStr[0].equals("当事人") && currentPersonStr[1].contains("地址")){
+                    String name = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("地址"));
+                    if(name.length()>5){
+                        busiPersonFlag =true;
+                        punishToOrg = name;
+                        if(currentPersonStr.length>2){
+                            punishToOrgAddress = currentPersonStr[2];
+                        }
+                    }
                 }
                 // TODO 法人
                 if(i==1&&busiPersonFlag==true&&currentPersonStr[0].trim().equals("地址")){
@@ -238,8 +257,8 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
                     moreOrgFlag = false;
                 }
 
-                if(i>2&&busiPersonFlag==true&&currentPersonStr[0].trim().equals("地址")&&moreOrgFlag==false){
-                    priAddress.append(currentPersonStr[1]).append("，");
+                if(i>2&&busiPersonFlag==true&&(currentPersonStr[0].trim().equals("地址") || currentPersonStr[0].trim().equals("住址"))&&moreOrgFlag==false){
+                    priAddress.append(currentPersonStr[1].trim()).append("，");
                 }
                 if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("身份证号")&&moreOrgFlag==false){
                     priPersonCert.append(currentPersonStr[1]).append("，");
@@ -249,10 +268,24 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
                 }
                 //TODO 自然人
                 if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("当事人")&&moreOrgFlag==false){
+                    if(currentPersonStr[1].contains("地址")){
+                        currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("地址")).trim();
+                        if(currentPersonStr.length>2){
+                            if(currentPersonStr[2].contains("经查")){
+                                String address = currentPersonStr[2].substring(0,currentPersonStr[2].indexOf("经查")).trim();
+                                priAddress.append(address).append("，");
+                            }else{
+                                priAddress.append(currentPersonStr[2].trim()).append("，");
+                            }
+
+                        }
+                    }else if(currentPersonStr[1].contains("年龄")){
+                        currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("年龄")).trim();
+                    }
                     priPerson.append(currentPersonStr[1]).append("，");
                 }
-                if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("地址")&&moreOrgFlag==false){
-                    priAddress.append(currentPersonStr[1]).append("，");
+                if(busiPersonFlag==false&&(currentPersonStr[0].trim().equals("地址") || currentPersonStr[0].trim().equals("住址"))&&moreOrgFlag==false){
+                    priAddress.append(currentPersonStr[1].trim()).append("，");
                 }
                 if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("身份证号")&&moreOrgFlag==false){
                     priPersonCert.append(currentPersonStr[1]).append("，");
@@ -262,24 +295,37 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
                 }
             }
         }else{
+            log.info("------else--------");
             boolean flag = false;
+
             if(spantext.contains("当事人：") && spantext.contains("地址：")){
-                String name = spantext.substring(spantext.indexOf("当事人：")+4,spantext.indexOf("地址："));
+                String name = spantext.substring(spantext.indexOf("当事人：")+4,spantext.indexOf("地址：")).trim();
                 if(name.length()>5){
-                    publishOrg = name;
+                    punishToOrg = name;
                     flag = true;
+                    if( spantext.contains("经查") && !spantext.contains("负责人：")){
+                        String address = spantext.substring(spantext.indexOf("地址：")+3,spantext.indexOf("经查"));
+                        punishToOrgAddress = address.trim();
+                    }
                 }else{
                     priPerson.append(name).append("，");
                 }
                 if(spantext.contains("负责人：") && flag==true && spantext.contains("经查")){
                     String address = spantext.substring(spantext.indexOf("地址：")+3,spantext.indexOf("负责人："));
-                    punishToOrgAddress = address;
+                    punishToOrgAddress = address.trim();
                     String orgHolder = spantext.substring(spantext.indexOf("负责人：")+4,spantext.indexOf("经查"));
                 }else if(flag==false && spantext.contains("经查")){
-                    String address = spantext.substring(spantext.indexOf("地址：")+3,spantext.indexOf("经查"));
+                    String address = spantext.substring(spantext.indexOf("地址：")+3,spantext.indexOf("经查")).trim();
+                    if(address.contains("邓贤平")){ //特殊处理
+                        address = address.substring(0,address.indexOf("邓贤平")).trim();
+                    }
                     priAddress.append(address).append("，");
                 }
             }
+        }
+
+        if(spantext.length() > stringDetail.length()){
+            stringDetail = spantext;
         }
         log.info("发布主题："+titleStr);
         log.info("发布机构："+publishOrg);
@@ -296,7 +342,7 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
         log.info("受处罚人地址："+priAddress);
         log.info("来源："+source);
         log.info("主题："+object);
-        log.info("正文："+spantext);
+        log.info("正文："+stringDetail);
 
         Map<String,String> map = new HashMap<String,String>();
         map.put("titleStr",titleStr);
@@ -314,7 +360,7 @@ public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtend{
         map.put("priAddress",priAddress.toString());
         map.put("source",source);
         map.put("object",object);
-        map.put("stringDetail",spantext);
+        map.put("stringDetail",stringDetail);
 
         return map;
     }

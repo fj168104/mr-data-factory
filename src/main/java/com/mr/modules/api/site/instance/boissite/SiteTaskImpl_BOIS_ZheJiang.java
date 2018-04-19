@@ -21,15 +21,15 @@ import java.util.Map;
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
 
-   /*@Override
+  /* @Override
     protected String execute() throws Throwable {
-        String url = "http://zhejiang.circ.gov.cn/web/site39/tab3594/info205726.htm";
+        String url = "http://zhejiang.circ.gov.cn/web/site39/tab3594/info3949847.htm";
         extractContent(getData(url));
         return null;
     }*/
 
 
-   @Override
+    @Override
     protected String execute() throws Throwable {
         List<String> urlList = extractPageUrlList();
         for(String urlResult : urlList){
@@ -110,6 +110,10 @@ public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
         StringBuffer priAddress = new StringBuffer();
         //TODO 判断处罚的是法人，还是自然人
         String priBusiType = "";
+        //数据来源  TODO 来源（全国中小企业股转系统、地方证监局、保监会、上交所、深交所、证监会）
+        String source = "保监局";
+        //主题 TODO 主题（全国中小企业股转系统-监管公告、行政处罚决定、公司监管、债券监管、交易监管、上市公司处罚与处分记录、中介机构处罚与处分记录
+        String object = "行政处罚决定";
         String stringDetail ="";
 
         String titleStr = "";
@@ -156,7 +160,9 @@ public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
         map.put("priPerson",priPerson.toString());
         map.put("priPersonCert",priPersonCert.toString());
         map.put("priJob",priJob.toString());
-        map.put("priAddress","");
+        map.put("priAddress",priAddress.toString());
+        map.put("source",source);
+        map.put("object",object);
         map.put("stringDetail",stringDetail);
 
         return map;
@@ -183,8 +189,8 @@ public class SiteTaskImpl_BOIS_ZheJiang extends SiteTaskExtend {
         financeMonitorPunish.setPartyPersonDomi(mapInfo.get("priAddress"));//自然人住址
         financeMonitorPunish.setDetails(mapInfo.get("stringDetail"));//详情
         financeMonitorPunish.setUrl(href);
-        financeMonitorPunish.setSource("地方证监局");
-        financeMonitorPunish.setObject("行政处罚决定书");
+        financeMonitorPunish.setSource(mapInfo.get("source"));
+        financeMonitorPunish.setObject(mapInfo.get("object"));
 
         //保存入库
         saveOne(financeMonitorPunish,false);

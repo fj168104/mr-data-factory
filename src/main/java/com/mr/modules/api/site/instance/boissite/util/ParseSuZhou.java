@@ -245,6 +245,8 @@ public class ParseSuZhou {
         //TODO 提取主题
         Element elementsTitle = elementsTD.first();
         String titleStr = elementsTitle.text();
+        punishNo = titleStr.substring(titleStr.indexOf("苏州保监"),titleStr.indexOf("号")+1);
+
         //TODO 获取包含发布时间的元素
         Element elementsPublishDate = elementsTD.get(1);
         String publishDateStr = elementsPublishDate.text();
@@ -282,9 +284,6 @@ public class ParseSuZhou {
                         listStr.add(elementPStr);
                     }
 
-                    if(formatText(elementP.text()).indexOf("监罚〔")>-1 || formatText(elementP.text()).indexOf("监罚[")>-1){
-                        punishNo = elementP.text().replaceAll(" ","").trim().replace("&&","");
-                    }
                 }
             }else if(stringDetailSource.equalsIgnoreCase("span")){
                 for(Element elementPan : elementsSpan){
@@ -348,7 +347,6 @@ public class ParseSuZhou {
                     String info_0 = currentPersonStr[0].replaceAll("&&","").trim();
                     String info_1 = currentPersonStr[1].replaceAll("&&","").trim();
 
-                    log.info(info_0+"-----------"+info_1);
                     if(info_1.length()>5 && info_0.equals("当事人")){
                         m = i;
                         busiPersonFlag =true;

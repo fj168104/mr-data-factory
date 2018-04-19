@@ -24,6 +24,15 @@ import java.util.Map;
 @Component("shaanxi")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_ShaanXi extends SiteTaskExtend {
+
+
+    /*  @Override
+    protected String execute() throws Throwable {
+        String url = "http://shaanxi.circ.gov.cn/web/site44/tab3597/info79094.htm";
+        extractContent(getData(url));
+        return null;
+    }*/
+
     @Override
     protected String execute() throws Throwable {
 //        String url = "http://shaanxi.circ.gov.cn/web/site44/tab3597/module9878/page2.htm";

@@ -2,7 +2,6 @@ package com.mr.modules.api.site.instance.boissite;
 
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.mr.modules.api.site.instance.boissite.util.ParseFuJian;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -12,6 +11,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.util.*;
 
+/**
+ * @Auther zjxu
+ * @Date 201804
+ * 福建保监局处罚信息提取
+ */
 @Slf4j
 @Component("fujian")
 @Scope("prototype")
@@ -84,11 +88,11 @@ public class SiteTaskImpl_BOIS_FuJian extends SiteTaskExtend{
         //TODO 处罚文号
         String punishNo = "";
         //TODO 受处罚机构
-        String punishToOrg = "";
+        StringBuffer punishToOrg = new StringBuffer();
         //TODO 受处罚机构地址
-        String punishToOrgAddress = "";
+        StringBuffer punishToOrgAddress = new StringBuffer();
         //TODO 法定代表人或主要负责人
-        String punishToOrgHolder = "";
+        StringBuffer punishToOrgHolder = new StringBuffer();
         //TODO 受处罚当时人名称（自然人）
         StringBuffer priPerson = new StringBuffer();
         //TODO 受处罚当时人证件号码（自然人）
@@ -105,20 +109,140 @@ public class SiteTaskImpl_BOIS_FuJian extends SiteTaskExtend{
         //主题 TODO 主题（全国中小企业股转系统-监管公告、行政处罚决定、公司监管、债券监管、交易监管、上市公司处罚与处分记录、中介机构处罚与处分记录
         String object = "行政处罚决定";
         String titleStr = "";
+        Document doc = Jsoup.parse(fullTxt.replace("、","，")
+                .replace("(","（").
+                        replace(")","）")
+                .replace(":","：")
+                .replace("&nbps;","")
+                .replace(" ","")
 
-        Map resMap = new ParseFuJian().parseInfo(fullTxt);
-        publishDate = (String) resMap.get("publishDate");
-        punishDate = (String) resMap.get("punishDate");
-        punishNo = (String) resMap.get("punishNo");
-        punishToOrg = (String) resMap.get("punishToOrg");
-        punishToOrgAddress = (String) resMap.get("punishToOrgAddress");
-        punishToOrgHolder = (String) resMap.get("punishToOrgHolder");
-        priPerson = (StringBuffer) resMap.get("priPerson");
-        priPersonCert = (StringBuffer) resMap.get("priPersonCert");
-        priJob = (StringBuffer) resMap.get("priJob");
-        priAddress = (StringBuffer) resMap.get("priAddress");
-        stringDetail = (String) resMap.get("stringDetail");
-        titleStr = (String) resMap.get("titleStr");
+
+        );
+        Element elementsTxt = doc.getElementById("tab_content");
+
+        Elements elementsTD = elementsTxt.getElementsByTag("TD");
+        Elements elementsSpan = elementsTxt.getElementsByClass("xilanwb");
+        stringDetail =elementsSpan.text();
+        /*TODO 通用型*/
+        //TODO 提取主题
+        Element elementsTitle = elementsTD.first();
+        titleStr = elementsTitle.text();
+        //TODO 获取包含发布时间的元素
+        Element elementsPublishDate = elementsTD.get(1);
+        String publishDateStr = elementsPublishDate.text();
+        publishDate = publishDateStr.substring(publishDateStr.indexOf("发布时间：")+5,publishDateStr.indexOf("分享到："));
+        String txtAll= elementsTxt.text().replace(":","：")
+                .replace("受处罚人(公民):姓名：","当事人：")
+                .replaceAll("、","，")
+                .replace("(","（")
+                .replace(")","）")
+                .replaceAll("当 事 人：", "当事人：")  //对存在多个当事人做处理
+                .replace("&nbsp;","")
+                .replace(" ","")
+                .replace("当事 人：","当事人：")
+                .replace("被处罚单位：","当事人：")
+                .replace("受罚人名称：","当事人：")
+                .replace("受罚单位名称：","当事人：")
+                .replace("被处罚人名称：","当事人：")
+                .replaceAll("受处罚机构名称：","当事人：")
+                .replaceAll("受处罚人名称：","当事人：")
+                .replaceAll("名称：","当事人：")
+                .replaceAll("当 事人：","当事人：")
+                .replace("被告知人：","当事人：")
+                .replace("被处罚人：","当事人：")
+                .replaceAll("法定代表人或主要负责人姓名：","负责人：")
+                .replaceAll("主要负责人姓名：","负责人：")
+                .replaceAll("主要负责 人：","负责人：")
+                .replace("受处罚人姓名：","当事人：")
+                .replace("姓名：","当事人：")
+                .replace("受处罚人：","当事人：")
+                .replace("受处理人：","当事人：")
+                .replace("受 处 罚 人：","当事人：")
+                .replace("营业地址：","地址：")
+                .replace("工作单位：","地址：")
+                .replace("受处罚机构地址：","地址：")
+                .replace("单位地址：","地址：")
+                .replace("公司住址：","地址：")
+                .replace("机构住所：","地址：")
+                .replaceAll("家庭住址：","地址：")
+                .replaceAll("住所：","地址：")
+                .replaceAll("地 址：","地址：") //存在有些为英文格式的:
+                .replaceAll("地    址：","地址：")
+                .replaceAll("住所地：","地址：")
+                .replaceAll("住址：","地址：")
+                .replaceFirst("，住所地","，地址：")
+                .replaceFirst("；住所地","，地址：")
+                .replaceFirst("机构负责人：","负责人：")
+                .replaceFirst("，负责人","，负责人：")
+                .replaceAll("，负责人：：","，负责人：")
+                .replaceFirst("地 址：","，地址：")
+                .replaceAll("职 务：","职务：")
+                .replaceAll("时任：","职务：")
+                .replaceAll("临时负责人：","负责人：")
+                .replaceAll("主要负责人：","负责人：")
+                .replaceAll("法定代表人：","负责人：")
+                .replaceAll("身份证号：","证件号码：")
+                .replaceAll("身份证号码：","证件号码：")
+                .replaceAll("： ","：")
+                .replaceAll(" ","，")
+                .replaceAll("。","，")
+                .replaceAll("受，处，罚，人：","当事人：");
+
+        log.info("txtAll:"+txtAll);
+        String[] txtAllArr = txtAll.split("，");
+        //判断是法人还是自然人true为自然人，false为法人
+        boolean personFlag = true;
+        if(txtAll.contains("当事人：")){
+            for(String arrStr : txtAllArr){
+                String[] str = arrStr.split("：");
+                if(arrStr.contains("当事人：")&&str.length>=2){
+                    if(str[1].length()<6){
+                        //TODO 受处罚当时人名称（自然人）
+                        priPerson.append(str[1]).append("，");
+                        //TODO 判断处罚的是法人，还是自然人
+                        personFlag=true;
+                    }else{
+                        //TODO 受处罚机构
+                        punishToOrg.append(str[1]).append("，");
+                        //TODO 判断处罚的是法人，还是自然人
+                        personFlag=false;
+                    }
+                }
+                if(personFlag==false&&arrStr.contains("地址：")&&str.length>=2){
+                    //TODO 受处罚机构地址
+                    punishToOrgAddress.append(str[1]).append("，");
+                }
+                if(personFlag==false&&arrStr.contains("负责人：")&&str.length>=2){
+                    //TODO 法定代表人或主要负责人
+                    punishToOrgHolder.append(str[1]).append("，");
+                }
+
+                if(personFlag==true&&arrStr.contains("证件号码：")&&str.length>=2){
+                    //TODO 受处罚当时人证件号码（自然人）
+                    priPersonCert.append(str[1]).append("，");
+                }
+                if(personFlag==true&&arrStr.contains("职务：")&&str.length>=2){
+                    //TODO 受处罚当时人职位（自然人）
+                    priJob.append(str[1]).append("，");
+                }
+                if(personFlag==true&&arrStr.contains("地址：")&&str.length>=2){
+                    //TODO 受处罚当时人地址（自然人）
+                    priAddress.append(str[1]).append("，");
+                }
+
+                if(arrStr.contains("年")&&arrStr.endsWith("日")){
+                    //TODO 处罚时间
+                    punishDate=arrStr;
+                }
+                if(arrStr.contains("保监罚")&&arrStr.endsWith("号")){
+                    //TODO 处罚文号
+                    punishNo=arrStr;
+                }
+            }
+            if(punishOrg.equals("")){
+                punishOrg ="闽保监局";
+            }
+        }
 
         log.info("发布主题：" + titleStr);
         log.info("发布机构：" + publishOrg);
@@ -144,9 +268,9 @@ public class SiteTaskImpl_BOIS_FuJian extends SiteTaskExtend{
         map.put("punishOrg",punishOrg);
         map.put("punishDate",punishDate);
         map.put("punishNo",punishNo);
-        map.put("punishToOrg",punishToOrg);
-        map.put("punishToOrgAddress",punishToOrgAddress);
-        map.put("punishToOrgHolder",punishToOrgHolder);
+        map.put("punishToOrg",punishToOrg.toString());
+        map.put("punishToOrgAddress",punishToOrgAddress.toString());
+        map.put("punishToOrgHolder",punishToOrgHolder.toString());
         map.put("priPerson",priPerson.toString());
         map.put("priPersonCert",priPersonCert.toString());
         map.put("priJob",priJob.toString());

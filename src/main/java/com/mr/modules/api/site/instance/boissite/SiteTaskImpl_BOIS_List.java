@@ -66,9 +66,9 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
                 mapInfo = new SiteTaskImpl_BOIS_AnHui().extractContent(getData(lh.get("herf").toString()));
             }else if(lh.get("provinceCity").toString().indexOf("重庆")>-1){//解析重庆信息
                 mapInfo = new SiteTaskImpl_BOIS_ChongQing().extractContent(getData(lh.get("herf").toString()));
-            }else if(lh.get("provinceCity").toString().indexOf("大连")>-1){//解析大连信息
+            }/*else if(lh.get("provinceCity").toString().indexOf("大连")>-1){//解析大连信息
                 mapInfo = new SiteTaskImpl_BOIS_DaLian().extractContent(getData(lh.get("herf").toString()));
-            }else if(lh.get("provinceCity").toString().indexOf("福建")>-1){//解析福建信息
+            }*/else if(lh.get("provinceCity").toString().indexOf("福建")>-1){//解析福建信息
                 mapInfo = new SiteTaskImpl_BOIS_FuJian().extractContent(getData(lh.get("herf").toString()));
             }else if(lh.get("provinceCity").toString().indexOf("甘肃")>-1){//解析甘肃信息
                 mapInfo = new SiteTaskImpl_BOIS_GanSu().extractContent(getData(lh.get("herf").toString()));
@@ -76,9 +76,9 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
                 mapInfo = new SiteTaskImpl_BOIS_GuangDong().extractContent(getData(lh.get("herf").toString()));
             }else if(lh.get("provinceCity").toString().indexOf("广西")>-1){//解析广西信息
                 mapInfo = new SiteTaskImpl_BOIS_GuangXi().extractContent(getData(lh.get("herf").toString()));
-            }else if(lh.get("provinceCity").toString().indexOf("贵州")>-1){//解析贵州
+            }/*else if(lh.get("provinceCity").toString().indexOf("贵州")>-1){//解析贵州
                 mapInfo = new SiteTaskImpl_BOIS_GuiZhou().extractContent(getData(lh.get("herf").toString()));
-            }else if(lh.get("provinceCity").toString().indexOf("海南")>-1){//解析海南
+            }*/else if(lh.get("provinceCity").toString().indexOf("海南")>-1){//解析海南
                 mapInfo = new SiteTaskImpl_BOIS_HaiNan().extractContent(getData(lh.get("herf").toString()));
             }else if(lh.get("provinceCity").toString().indexOf("河南")>-1){//解析河南
                 mapInfo = new SiteTaskImpl_BOIS_HeNan().extractContent(getData(lh.get("herf").toString()));
@@ -355,9 +355,9 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
             mapInfo = new SiteTaskImpl_BOIS_AnHui().extractContent(getData(url));
         }else if(url.contains("chongqing")){//解析重庆信息
             mapInfo = new SiteTaskImpl_BOIS_ChongQing().extractContent(getData(url));
-        }else if(url.contains("dalian")){//解析大连信息
+        }/*else if(url.contains("dalian")){//解析大连信息
             mapInfo = new SiteTaskImpl_BOIS_DaLian().extractContent(getData(url));
-        }else if(url.contains("fujian")){//解析福建信息
+        }*/else if(url.contains("fujian")){//解析福建信息
             mapInfo = new SiteTaskImpl_BOIS_FuJian().extractContent(getData(url));
         }else if(url.contains("gansu")){//解析甘肃信息
             mapInfo = new SiteTaskImpl_BOIS_GanSu().extractContent(getData(url));
@@ -365,9 +365,9 @@ public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
             mapInfo = new SiteTaskImpl_BOIS_GuangDong().extractContent(getData(url));
         }else if(url.contains("guangxi")){//解析广西信息
             mapInfo = new SiteTaskImpl_BOIS_GuangXi().extractContent(getData(url));
-        }else if(url.contains("guizhou")){//解析贵州
+        }/*else if(url.contains("guizhou")){//解析贵州
             mapInfo = new SiteTaskImpl_BOIS_GuiZhou().extractContent(getData(url));
-        }else if(url.contains("hainan")){//解析海南
+        }*/else if(url.contains("hainan")){//解析海南
             mapInfo = new SiteTaskImpl_BOIS_HaiNan().extractContent(getData(url));
         }else if(url.contains("henan")){//解析河南
             mapInfo = new SiteTaskImpl_BOIS_HeNan().extractContent(getData(url));

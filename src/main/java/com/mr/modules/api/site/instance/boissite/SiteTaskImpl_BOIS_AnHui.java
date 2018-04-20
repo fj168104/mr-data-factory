@@ -140,6 +140,10 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
 
         //全文提取
         String txtAll = elementsTxt.text()
+                .replace("、","，")
+                .replace("(","（")
+                .replace(")","）")
+                .replace(":","：")
                 .replace("地  址：","地址：")
                 .replaceAll("地 址: ","地址：")
                 .replace("当事人： ","当事人：")
@@ -153,6 +157,7 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
                 .replace("地，址：，","地址：")
                 .replace("受处罚人：","当事人：")
                 .replace("法定代表人（主要负责人）： ","负责人：")
+                .replace("受罚人姓名：","当事人：")
                 .replace("受处罚人姓名：","当事人：")
                 .replace("受处罚人名称：","当事人：")
                 .replace("受处罚机构名称：","当事人：")
@@ -165,6 +170,9 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
                 .replace("身份证号码","证件号码")
                 .replace("地  址：","地址：")
                 .replace("住址：","地址：")
+                .replace("年龄：","，年龄：")
+                .replace(" 号","号")
+                .replace("行为：","，")
                 ;
         String[] txtAllArr = txtAll.split("，");
         //判断是法人还是自然人true为自然人，false为法人
@@ -174,7 +182,7 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
                 String[] str = arrStr.split("：");
 
                 if(arrStr.contains("当事人：")&&str.length>=2){
-                    if(str[1].length()<6){
+                    if(str[1].trim().length()<6){
                         //TODO 受处罚当时人名称（自然人）
                         priPerson.append(str[1]).append("，");
                         //TODO 判断处罚的是法人，还是自然人
@@ -210,11 +218,11 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
                     priAddress.append(str[1]).append("，");
                 }
 
-                if(arrStr.contains("年")&&arrStr.endsWith("日")&&str.length>=2){
+                if(arrStr.contains("年")&&arrStr.endsWith("日")){
                     //TODO 处罚时间
                     punishDate=arrStr;
                 }
-                if(arrStr.contains("保监罚")&&arrStr.endsWith("号")&&str.length>=2){
+                if(arrStr.contains("保监罚")&&arrStr.endsWith("号")){
                     //TODO 处罚文号
                     punishNo=arrStr;
                 }

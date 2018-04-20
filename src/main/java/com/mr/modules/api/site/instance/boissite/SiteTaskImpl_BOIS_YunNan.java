@@ -21,6 +21,13 @@ import java.util.Map;
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_YunNan extends SiteTaskExtend {
 
+    /* @Override
+    protected String execute() throws Throwable {
+        String url = "http://yunnan.circ.gov.cn/web/site38/tab3458/info147198.htm";
+        extractContent(getData(url));
+        return null;
+    }*/
+
     @Override
     protected String execute() throws Throwable {
 //        String url = "http://yunnan.circ.gov.cn/web/site38/tab3458/module9879/page2.htm";

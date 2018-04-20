@@ -23,7 +23,7 @@ public class SiteTaskImpl_BOIS_ShanTou extends SiteTaskExtend {
 
     /*@Override
     protected String execute() throws Throwable {
-        String url = "http://liaoning.circ.gov.cn/web/site43/tab3418/info4089119.htm";
+        String url = "http://guangdong.circ.gov.cn/web/site53/tab4679/info3960502.htm";
         extractContent(getData(url));
         return null;
     }*/

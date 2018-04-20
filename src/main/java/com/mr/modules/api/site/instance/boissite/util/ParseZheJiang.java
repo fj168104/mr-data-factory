@@ -42,6 +42,9 @@ public class ParseZheJiang {
             }
             if(infoArray[j].contains("负责人：")){
                 punishToOrgHolder = infoArray[j].split("：")[1].replace("。","");
+                if(punishToOrgHolder.contains("（")){
+                    punishToOrgHolder = punishToOrgHolder.substring(0,punishToOrgHolder.indexOf("（"));
+                }
             }
         }
         log.info("*****getFaRenInfo-punishToOrg********"+punishToOrg);
@@ -434,6 +437,9 @@ public class ParseZheJiang {
                         punishToOrgAddress = currentPersonStr[1];
                     }
                     if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("负责人")){
+                        if(currentPersonStr[1].contains("（")){
+                            currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("（"));
+                        }
                         punishToOrgHolder = currentPersonStr[1];
                     }else if(m!=i){
                         busiPersonFlag = false;
@@ -455,6 +461,9 @@ public class ParseZheJiang {
                         priPersonCert.append(currentPersonStr[1]).append("，");
                     }
                     if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("职务")){
+                        if(currentPersonStr[1].contains("富德生命人寿保险股份有限公司金华中心支公司浦") && !currentPersonStr[1].contains("江县营销服务部经理") ){
+                            currentPersonStr[1] = currentPersonStr[1]+"江县营销服务部经理";
+                        }
                         priJob.append(currentPersonStr[1]).append("，");
                     }
                 }
@@ -477,6 +486,12 @@ public class ParseZheJiang {
             }
         }
 
+        if(punishToOrg.contains("富德生命人寿保险股份有限公司金华中心支公司浦")){
+            punishToOrg = punishToOrg+"江县营销服务部";
+        }
+        if(punishToOrg.contains("以下简称")){
+            punishToOrg = punishToOrg.substring(0,punishToOrg.indexOf("以下简称")-1);
+        }
         resmap.put("publishDate",publishDate);
         resmap.put("punishDate",punishDate);
         resmap.put("punishNo",punishNo);
@@ -541,6 +556,9 @@ public class ParseZheJiang {
                 if(busiPersonFlag == true  && strArray2[0].trim().equalsIgnoreCase("负责人")){
                     busiPersonFlag = false;
                     k=i;
+                    if(strArray2[1].contains("（")){
+                        strArray2[1] = strArray2[1].substring(0,strArray2[1].indexOf("（"));
+                    }
                     punishToOrgHolder = strArray2[1];
                     log.info("punishToOrgHolder---"+punishToOrgHolder);
                 }else if(k!=i){//存在负责人缺失的情况，此时将标志位置为 false，便于后面解析自然人数据
@@ -588,7 +606,7 @@ public class ParseZheJiang {
      * */
     private String getPunishDate(String dateInfo){
         int yearIndex = dateInfo.lastIndexOf("年");
-        String date = dateInfo.substring(yearIndex-4).trim();
+        String date = dateInfo.substring(yearIndex-4).replace("&&","").trim();
         return date;
     }
 }

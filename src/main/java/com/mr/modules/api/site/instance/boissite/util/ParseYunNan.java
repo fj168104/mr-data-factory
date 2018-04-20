@@ -124,6 +124,7 @@ public class ParseYunNan {
                 .replaceAll("受处罚机构：","当事人：")
                 .replaceAll("受处罚机构名称：","当事人：")
                 .replaceAll("受处罚人名称：","当事人：")
+                .replaceAll("被处罚人姓名：","当事人：")
                 .replaceAll("机构名称：","当事人：")
                 .replaceAll("名称：","当事人：")
                 .replace("被告知人：","当事人：")
@@ -433,6 +434,9 @@ public class ParseYunNan {
                         if(currentPersonStr[1].contains("曾用名")){
                             currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("曾用名")-1);
                         }
+                        if(currentPersonStr[1].contains("吴立铨经")){//特殊处理
+                            currentPersonStr[1] = "吴立铨";
+                        }
                         priPerson.append(currentPersonStr[1]).append("，");
                     }
                     if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("地址")){
@@ -451,6 +455,16 @@ public class ParseYunNan {
         }
         if(punishToOrg.contains("以下简称")){
             punishToOrg = punishToOrg.substring(0, punishToOrg.indexOf("以下简称")-1);
+        }
+
+        if(punishToOrgHolder.contains("（")){
+            punishToOrgHolder = punishToOrgHolder.substring(0,punishToOrgHolder.indexOf("（"));
+        }
+        if(punishNo.equalsIgnoreCase("")){
+            String allText = textTransfer(elementsSpan.text().trim()).replaceAll("&&","");
+            if(allText.contains("《行政处罚决定书》") && allText.contains("内容公布")){
+                punishNo = allText.substring(allText.indexOf("决定书》")+4,allText.indexOf("内容公布"));
+            }
         }
 
         resmap.put("publishDate",publishDate);

@@ -155,21 +155,35 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtend {
                 .replace("受处罚机构名称：","，当事人：")
                 .replace("受处罚人：姓名","，当事人：")
                 .replace("受处罚人：名称","，当事人：")
+                .replace("受处罚机构：名称","，当事人：")
+                .replace("受处罚机构：名称","，当事人：")
                 .replace("处罚人姓名：","，当事人：")
                 .replace("主要负责人姓名：","，负责人：")
                 .replace("法定代表人或负责人：","，负责人：")
                 .replace("法定代表人或主要负责人：","，负责人：")
                 .replace("法定代表人或主要负责人姓名：","，负责人：")
+
                 .replace("身份证号码：","，证件号码：")
                 .replace("身份证号码","，证件号码")
                 .replace("身份证号：","，证件号码：")
                 .replace("地  址：","，地址：")
+                .replace("地址","，地址：")
                 .replace("住址","，地址：")
                 .replace("地址：：","，地址：")
                 .replace("年龄","，年龄：")
                 .replace(" 号","号")
                 .replace("行为：","，")
+                .replace("王，莹","王莹")
+                .replace("马，明","马明")
+                .replace("：名称，","：")
+                .replace("：姓名，","：")
+                .replace("地址：，","，地址：")
+                .replace("当事人：，","，当事人：")
+                .replace("当事人：姓名","，当事人：")
+                .replace("法定代表人或者主要负责人姓名，","，负责人：")
+
                 ;
+        log.info("txtAll:"+txtAll);
         String[] txtAllArr = txtAll.split("，");
         //判断是法人还是自然人true为自然人，false为法人
         boolean personFlag = true;

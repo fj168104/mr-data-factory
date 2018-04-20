@@ -167,7 +167,7 @@ public class SiteTaskImpl_BOIS_HaiNan extends SiteTaskExtend{
                 .replace("：，，，我","：经查，")
                 .replace("：，，，根","：经查，")
                 .replace("：，，，经","：经查，")
-                .replace(" ","：经查，")
+                .replace(" ","，")
                 ;
         log.info("txtAll:"+txtAll);
         String[] txtAllArr = txtAll.split("，");

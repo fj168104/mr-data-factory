@@ -165,6 +165,7 @@ public class SiteTaskImpl_BOIS_HaiNan extends SiteTaskExtend{
                 .replace(" 号","号")
                 .replace("行为：","，")
                 .replace("：，，，我","：经查，")
+                .replace("：，，，你","：经查，")
                 .replace("：，，，根","：经查，")
                 .replace("：，，，经","：经查，")
                 .replace(" ","，")
@@ -278,7 +279,9 @@ public class SiteTaskImpl_BOIS_HaiNan extends SiteTaskExtend{
         if(punishOrg.equals("")){
             punishOrg ="琼保监局";
         }
-
+        if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+            punishNo = "无文号"+new Date().getTime();
+        }
         log.info("发布主题：" + titleStr);
         log.info("发布机构：" + publishOrg);
         log.info("发布时间：" + publishDate);

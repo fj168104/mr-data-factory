@@ -125,6 +125,7 @@ public class SiteTaskImpl_BOIS_XiaMen extends SiteTaskExtend {
                 .replace(" ","")
                 .replace("姓名：","当事人：")
                 .replaceAll("当(.*)事(.*)人：","当事人：")
+                .replace("受处罚人当事人：","当事人：")
                 .replace("受处罚人：","当事人：")
                 .replace("受处理人：","当事人：")
                 .replace("受处罚人名称：","当事人：")

@@ -77,7 +77,7 @@ public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtend{
 
     public Map extractContent(String fullTxt) {
         //发布机构
-        String publishOrg = "中国保监会河北保监局行政处";
+        String publishOrg = "中国保监会河北保监局唐山分局行政处";
         //发布时间
         String publishDate = "";
         //TODO 处罚机关（由于有些页面没有，所以暂且给予默认值）

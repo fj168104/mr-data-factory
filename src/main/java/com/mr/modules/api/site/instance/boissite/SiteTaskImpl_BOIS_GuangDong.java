@@ -223,7 +223,8 @@ public class SiteTaskImpl_BOIS_GuangDong extends SiteTaskExtend{
                 .replace("当，事，人，：","当事人：")
                 .replace("当事人：姓名，","当事人：")
                 .replace("处罚单位：","当事人：")
-                .replace("：姓名：","：");
+                .replace("：姓名：","：")
+                .replace(" ","，");
 
 
         log.info("txtAll:"+txtAll);

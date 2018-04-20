@@ -10,10 +10,7 @@ import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component("heilongjiang")
@@ -151,11 +148,12 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtend {
                 .replace("法定代表人（主要负责人）： ","，负责人：")
                 .replace("受罚人姓名：","，当事人：")
                 .replace("受处罚人姓名：","，当事人：")
+                .replace("受处罚单位：","，当事人：")
                 .replace("受处罚人名称：","，当事人：")
                 .replace("受处罚机构名称：","，当事人：")
                 .replace("受处罚人：姓名","，当事人：")
                 .replace("受处罚人：名称","，当事人：")
-                .replace("受处罚机构：名称","，当事人：")
+                .replace("受处罚机构：","，当事人：")
                 .replace("受处罚机构：名称","，当事人：")
                 .replace("处罚人姓名：","，当事人：")
                 .replace("主要负责人姓名：","，负责人：")
@@ -167,6 +165,7 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtend {
                 .replace("身份证号码","，证件号码")
                 .replace("身份证号：","，证件号码：")
                 .replace("地  址：","，地址：")
+                .replace("住所：","，地址：")
                 .replace("地址","，地址：")
                 .replace("住址","，地址：")
                 .replace("地址：：","，地址：")
@@ -180,8 +179,14 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtend {
                 .replace("地址：，","，地址：")
                 .replace("当事人：，","，当事人：")
                 .replace("当事人：姓名","，当事人：")
+                .replace("当事人：名称：","，当事人：")
+                .replace("当事人：：","，当事人：")
+                .replace("受处罚人（机构）：名称：，","，当事人：")
                 .replace("法定代表人或者主要负责人姓名，","，负责人：")
-
+                .replace("法定代表人或者主要负责人姓名＿","，负责人：")
+                .replace("法定代表人：","，负责人：")
+                .replace("＿","")
+                .replace(" ","，")
                 ;
         log.info("txtAll:"+txtAll);
         String[] txtAllArr = txtAll.split("，");
@@ -243,7 +248,9 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtend {
         if(titleStr.contains("黑保监罚")&&titleStr.contains("号")){
             punishNo =titleStr.substring(titleStr.indexOf("黑保监罚"),titleStr.indexOf("号")+1);
         }
-
+        if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+            punishNo = "无文号"+new Date().getTime();
+        }
         log.info("发布主题：" + titleStr);
         log.info("发布机构：" + publishOrg);
         log.info("发布时间：" + publishDate);

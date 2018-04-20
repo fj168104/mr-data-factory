@@ -187,6 +187,7 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtend{
                 .replace("经查，","经查")
                 .replace("当事人：，，姓名：","当事人：")
                 .replace("当事人：，，名称：","当事人：")
+                .replace(" ","，")
                 ;
         String[] txtAllArr = txtAll.split("，");
         log.info("-----------------------txtAll:\n"+txtAll);
@@ -319,6 +320,9 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtend{
             }
             if(punishOrg.equals("")){
                 punishOrg ="大连保监局";
+            }
+            if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+                punishNo = "无文号"+new Date().getTime();
             }
             map.put("titleStr",titleStr);
             map.put("publishOrg",publishOrg);

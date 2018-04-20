@@ -186,7 +186,8 @@ public class SiteTaskImpl_BOIS_FuJian extends SiteTaskExtend{
                 .replaceAll("： ","：")
                 .replaceAll(" ","，")
                 .replaceAll("。","，")
-                .replaceAll("受，处，罚，人：","当事人：");
+                .replaceAll("受，处，罚，人：","当事人：")
+                .replace(" ","，");
 
         log.info("txtAll:"+txtAll);
         String[] txtAllArr = txtAll.split("，");
@@ -243,7 +244,9 @@ public class SiteTaskImpl_BOIS_FuJian extends SiteTaskExtend{
                 punishOrg ="闽保监局";
             }
         }
-
+        if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+            punishNo = "无文号"+new Date().getTime();
+        }
         log.info("发布主题：" + titleStr);
         log.info("发布机构：" + publishOrg);
         log.info("发布时间：" + publishDate);

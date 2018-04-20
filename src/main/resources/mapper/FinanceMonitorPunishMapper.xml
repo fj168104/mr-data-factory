@@ -48,27 +48,27 @@
 
     <!--通过业务主键删除-->
     <delete id="deleteByBizKey" parameterType="java.lang.String">
-      DELETE FROM finance_monitor_punish WHERE PRIMARY_KEY = #{primaryKey}
+      DELETE FROM FINANCE_MONITOR_PUNISH WHERE PRIMARY_KEY = #{primaryKey}
     </delete>
 
     <!--通过业务主键查找-->
     <select id="selectByBizKey" resultMap="BaseResultMap">
-        SELECT * FROM finance_monitor_punish c WHERE c.PRIMARY_KEY = #{primaryKey}
+        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.PRIMARY_KEY = #{primaryKey}
     </select>
 
     <!--通过链接地址删除-->
     <delete id="deleteByUrl" parameterType="java.lang.String">
-        DELETE FROM finance_monitor_punish WHERE URL = #{url}
+        DELETE FROM FINANCE_MONITOR_PUNISH WHERE URL = #{url}
     </delete>
 
     <!--通过链接地址查找-->
     <select id="selectByUrl" resultMap="BaseResultMap">
-        SELECT * FROM finance_monitor_punish c WHERE c.URL = #{url}
+        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.URL = #{url}
     </select>
 
     <!--通过业务来源删除-->
     <delete id="deleteBySource" parameterType="java.lang.String">
-        DELETE FROM finance_monitor_punish WHERE SOURCE = #{source}
+        DELETE FROM FINANCE_MONITOR_PUNISH WHERE SOURCE = #{source}
     </delete>
 
 </mapper>

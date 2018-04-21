@@ -10,10 +10,7 @@ import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Auther :zjxu
@@ -173,6 +170,7 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
                 .replace("年龄：","，年龄：")
                 .replace(" 号","号")
                 .replace("行为：","，")
+                .replace(" ","，")
                 ;
         String[] txtAllArr = txtAll.split("，");
         //判断是法人还是自然人true为自然人，false为法人
@@ -265,7 +263,9 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtend{
                 punishOrg ="安徽保监局";
             }
         }
-
+        if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+            punishNo = "无文号"+new Date().getTime();
+        }
 
 
 

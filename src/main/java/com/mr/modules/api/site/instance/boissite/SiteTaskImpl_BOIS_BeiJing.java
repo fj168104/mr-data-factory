@@ -172,6 +172,7 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtend{
                 .replace("单位地址：","地址：")
                 .replace("住址：","地址：")
                 .replace("经查，","经查")
+                .replace(" ","，")
                 ;
         log.info("txtAll:"+txtAll);
         String[] txtAllArr = txtAll.split("，");
@@ -255,17 +256,17 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtend{
                 }
                 if(arrStr.contains("年")&&arrStr.endsWith("日")){
                     //TODO 处罚时间
-                    punishDate=arrStr;
+                    punishDate=arrStr.trim();
                 }
                 if(arrStr.contains("保监罚")&&arrStr.contains("号")){
                     //TODO 处罚文号
                     if(arrStr.contains("作出")&&arrStr.contains("处罚决定")){
-                        punishNo = arrStr.split("作出")[1].split("处罚决定")[0];
+                        punishNo = arrStr.split("作出")[1].split("处罚决定")[0].trim();
                         if(punishDate.equals("")&&arrStr.contains("于")){
-                            punishDate = arrStr.split("作出")[0].split("于")[1];
+                            punishDate = arrStr.split("作出")[0].split("于")[1].trim();
                         }
                     }else{
-                        punishNo=arrStr;
+                        punishNo=arrStr.trim();
                     }
                 }
             }
@@ -274,7 +275,9 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtend{
             }
         }
 
-
+        if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+            punishNo = "无文号"+new Date().getTime();
+        }
 
 
         log.info("发布主题："+titleStr);

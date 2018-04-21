@@ -185,21 +185,26 @@ public class SiteTaskImpl_BOIS_GuiZhou  extends SiteTaskExtend{
                 .replace("：姓名：","：")
                 .replace("当事人：，","当事人：")
                 .replace("职务，","，职务：")
-                .replace("经查，","经查")
                 .replace("当事人：，，姓名：","当事人：")
                 .replace("当事人：，，名称：","当事人：")
                 .replace("经查,","经查")
+                .replace("经查，","经查")
                 .replace("负责人：","，负责人：")
                 .replace("当，事，人：","，当事人：")
                 .replace("当事人：：","，当事人：")
                 .replace("住，址：","，地址：")
+                .replace("：，，，我","：经查，")
+                .replace("：，，，你","：经查，")
+                .replace("：，，，根","：经查，")
+                .replace("：，，，经","：经查，")
+                .replace(" ","，")
                 ;
         String[] txtAllArr = txtAll.split("，");
         log.info("-----------------------txtAll:\n"+txtAll);
         //判断是法人还是自然人true为自然人，false为法人
         Map<String,String> map = new HashMap<String,String>();
         boolean personFlag = true;
-        if(txtAll.contains("当事人：")&&!txtAll.contains("违法违规行为")&&!txtAll.contains("备注")){
+        if((txtAll.contains("当事人：")&&!txtAll.contains("违法违规行为")&&!txtAll.contains("备注"))||txtAll.contains("遵义市邮政局")||txtAll.contains("遵义县邮政局")){
             stringDetail =elementsSpan.text();
             for(String arrStr : txtAllArr){
                 String[] str = arrStr.split("：");
@@ -247,12 +252,21 @@ public class SiteTaskImpl_BOIS_GuiZhou  extends SiteTaskExtend{
                     //TODO 处罚文号
                     punishNo=arrStr;
                 }
+                if(arrStr.contains("时任")&&!arrStr.contains("时任人")){
+                    priJob.append(arrStr.substring(arrStr.indexOf("时任")+2,arrStr.length())).append("，");
+                }
+                if(arrStr.contains("时任人")){
+                    priJob.append(arrStr.substring(arrStr.indexOf("时任人")+3,arrStr.length())).append("，");
+                }
             }
             if(punishOrg.equals("")){
                 punishOrg ="黔保监局";
             }
             if(titleStr.contains("保监罚")&&titleStr.contains("）")&&titleStr.contains("（")){
                 punishNo =titleStr.split("（")[1].split("）")[0];
+            }
+            if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+                punishNo = "无文号"+new Date().getTime();
             }
             map.put("titleStr",titleStr);
             map.put("publishOrg",publishOrg);
@@ -289,6 +303,9 @@ public class SiteTaskImpl_BOIS_GuiZhou  extends SiteTaskExtend{
                     }else{
                         mapTR.put("priPerson",elementsTRTDS.get(1).text());
                     }
+                    if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+                        punishNo = "无文号"+new Date().getTime();
+                    }
                     mapTR.put("titleStr",titleStr);
                     mapTR.put("publishOrg",publishOrg);
                     mapTR.put("publishDate",publishDate);
@@ -308,14 +325,99 @@ public class SiteTaskImpl_BOIS_GuiZhou  extends SiteTaskExtend{
 
             }
 
+        }else if(!txtAll.contains("当事人：")&&txtAll.contains("：经查")){
+            for(String arrStr : txtAllArr) {
+                String[] str = arrStr.split("：");
+
+                if (arrStr.contains("：经查") && str.length >= 2) {
+                    if (str[0].trim().length() < 6) {
+                        //TODO 受处罚当时人名称（自然人）
+                        priPerson.append(str[0]).append("，");
+                        //TODO 判断处罚的是法人，还是自然人
+                        personFlag = true;
+                    } else {
+                        //TODO 受处罚机构
+                        punishToOrg.append(str[0]).append("，");
+                        //TODO 判断处罚的是法人，还是自然人
+                        personFlag = false;
+                    }
+                }
+                if (personFlag == false && arrStr.contains("地址：") && str.length >= 2) {
+                    //TODO 受处罚机构地址
+                    punishToOrgAddress.append(str[1]).append("，");
+                }
+                if (personFlag == false && arrStr.contains("负责人：") && str.length >= 2) {
+                    //TODO 法定代表人或主要负责人
+                    punishToOrgHolder.append(str[1]).append("，");
+                }
+
+                if (personFlag == true && arrStr.contains("证件号码：") && str.length >= 2) {
+                    //TODO 受处罚当时人证件号码（自然人）
+                    priPersonCert.append(str[1]).append("，");
+                }
+                if (personFlag == true && arrStr.contains("职务：") && str.length >= 2) {
+                    //TODO 受处罚当时人职位（自然人）
+                    priJob.append(str[1]).append("，");
+                }
+                if (personFlag == true && arrStr.contains("地址：") && str.length >= 2) {
+                    //TODO 受处罚当时人地址（自然人）
+                    priAddress.append(str[1]).append("，");
+                }
+
+                if (arrStr.contains("年") && arrStr.endsWith("日")) {
+                    //TODO 处罚时间
+                    punishDate = arrStr.trim();
+                }
+                if (arrStr.contains("保监罚") && arrStr.endsWith("号")) {
+                    //TODO 处罚文号
+                    punishNo = arrStr.trim();
+                }
+            }
+            map.put("titleStr",titleStr);
+            map.put("publishOrg",publishOrg);
+            map.put("publishDate",publishDate);
+            map.put("punishOrg",punishOrg);
+            map.put("punishDate",punishDate);
+            map.put("punishNo",punishNo);
+            map.put("punishToOrg",punishToOrg.toString());
+            map.put("punishToOrgAddress",punishToOrgAddress.toString());
+            map.put("punishToOrgHolder",punishToOrgHolder.toString());
+            map.put("priPerson",priPerson.toString());
+            map.put("priPersonCert",priPersonCert.toString());
+            map.put("priJob",priJob.toString());
+            map.put("priAddress",priAddress.toString());
+            map.put("source",source);
+            map.put("object",object);
+            map.put("stringDetail",stringDetail);
+            mapRecord.add(map);
         }else{
             stringDetail =elementsSpan.text();
-            //标记公司：companyFlag第一次出现
-            boolean companyFlag= false;
+            if(stringDetail.contains("存在")&&stringDetail.contains("经查")&&!titleStr.contains("保监罚")&&titleStr.contains("）")&&titleStr.contains("（")){
+                String[] titleNames = titleStr.replace(",","，").replace("（","（，").replace("）","，）").split("（")[1].split("）")[0].split("，");
+                if(titleNames.length>1){
+                    for(String titleName : titleNames){
+                        if(!titleName.equals("")){
+                            if(titleName.trim().length()<6){
+                                //TODO 受处罚当时人名称（自然人）
+                                priPerson.append(titleName).append("，");
+                                //TODO 判断处罚的是法人，还是自然人
+                                personFlag=true;
+                            }else{
+                                //TODO 受处罚机构
+                                punishToOrg.append(titleName).append("，");
+                                //TODO 判断处罚的是法人，还是自然人
+                                personFlag=false;
+                            }
+                        }
+                    }
+                }
+            }
             for(String arrStr : txtAllArr){
-                if(arrStr.contains("存在")&&arrStr.contains("经查")&&companyFlag==false){
-                    punishToOrg.append(arrStr.substring(arrStr.indexOf("经查")+1,arrStr.indexOf("存在")));
-                    companyFlag = true;
+                if(arrStr.contains("时任")&&!arrStr.contains("时任人")){
+                    priJob.append(arrStr.substring(arrStr.indexOf("时任")+2,arrStr.length())).append("，");
+                }
+                if(arrStr.contains("时任人")){
+                    priJob.append(arrStr.substring(arrStr.indexOf("时任人")+3,arrStr.length())).append("，");
                 }
                 if(arrStr.contains("年")&&arrStr.endsWith("日")){
                     //TODO 处罚时间
@@ -325,12 +427,12 @@ public class SiteTaskImpl_BOIS_GuiZhou  extends SiteTaskExtend{
                     //TODO 处罚文号
                     punishNo=arrStr;
                 }
-                if(titleStr.contains("保监罚")&&titleStr.contains("）")&&titleStr.contains("（")){
-                    punishNo =titleStr.split("（")[1].split("）")[0];
-                }
             }
             if(punishOrg.equals("")){
                 punishOrg ="黔保监局";
+            }
+            if(punishNo.equals("")||punishNo.equals("null")||punishNo.equals("NULL")||punishNo==null){
+                punishNo = "无文号"+new Date().getTime();
             }
             map.put("titleStr",titleStr);
             map.put("publishOrg",publishOrg);

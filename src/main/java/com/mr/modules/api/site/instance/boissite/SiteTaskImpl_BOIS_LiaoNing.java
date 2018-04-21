@@ -156,7 +156,9 @@ public class SiteTaskImpl_BOIS_LiaoNing extends SiteTaskExtend {
         map.put("priPerson",priPerson.toString());
         map.put("priPersonCert",priPersonCert.toString());
         map.put("priJob",priJob.toString());
-        map.put("priAddress","");
+        map.put("priAddress",priAddress.toString());
+        map.put("source",source);
+        map.put("object",object);
         map.put("stringDetail",stringDetail);
 
         return map;

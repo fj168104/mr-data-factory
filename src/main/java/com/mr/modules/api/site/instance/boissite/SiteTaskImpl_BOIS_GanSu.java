@@ -193,7 +193,8 @@ public class SiteTaskImpl_BOIS_GanSu extends SiteTaskExtend{
                 .replace("住，所：","地址：")
                 .replace("总，经，理：","负责人：")
                 .replace("当，事，人，：","当事人：")
-                .replace("当事人：姓名，","当事人：");
+                .replace("当事人：姓名，","当事人：")
+                .replace(" ","，");
 
 
         log.info("txtAll:"+txtAll);

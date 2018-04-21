@@ -206,7 +206,8 @@ public class SiteTaskImpl_BOIS_GuangXi extends SiteTaskExtend{
                 .replace("当，事，人，：","当事人：")
                 .replace("时任：","职务：")
                 .replace("职务：","，职务：")
-                .replace("当事人：姓名，","当事人：");
+                .replace("当事人：姓名，","当事人：")
+                .replace(" ","，");
 
 
         log.info("txtAll:"+txtAll);

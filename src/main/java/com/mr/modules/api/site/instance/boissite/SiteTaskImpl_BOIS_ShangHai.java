@@ -156,7 +156,8 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtend {
                 .replace("护照号：","身份证号：")
                 .replace("当事人：","当事人")//解除部分当事人中没有“：”的情况
                 .replace("当事人","当事人：")
-
+                .replace("受处罚机构名称：","当事人：")
+                .replace("地址： ","地址：")
 
         );
         //TODO 全文

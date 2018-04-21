@@ -78,6 +78,7 @@ public class SiteServiceImpl implements SiteService {
 			return "SiteTask object instance not found";
 		}
 
+		task.setSaveErrKeyWords(String.format("%s/%s occur Data_Saving_Error", groupIndex, callId));
 		EhCacheUtils.put(callId, task);
 		return TaskStatus.getName(task.start());
 	}
@@ -99,6 +100,7 @@ public class SiteServiceImpl implements SiteService {
 			return "SiteTask object instance not found";
 		}
 
+		task.setSaveErrKeyWords(String.format("%s/%s occur Data_Saving_Error", groupIndex, callId));
 		EhCacheUtils.put(callId, task);
 		return TaskStatus.getName(task.start());
 	}

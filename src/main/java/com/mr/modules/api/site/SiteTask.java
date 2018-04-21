@@ -24,6 +24,7 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	private String throwableInfo;
 	private Future<String> future;
 	private SiteVisitor<Integer> startVisitor;
+	protected String keyWords;
 
 	//单条处理时使用, 接受外部参数
 	protected FinanceMonitorPunish oneFinanceMonitorPunish;
@@ -31,6 +32,11 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 	@Override
 	public void setFinanceMonitorPunish(FinanceMonitorPunish oneFinanceMonitorPunish) {
 		this.oneFinanceMonitorPunish = oneFinanceMonitorPunish;
+	}
+
+	@Override
+	public void setSaveErrKeyWords(String keyWords) {
+		this.keyWords = keyWords;
 	}
 
 	private static BlockingQueue<String> finishQueue = new LinkedBlockingQueue<>();

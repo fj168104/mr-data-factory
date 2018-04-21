@@ -26,6 +26,7 @@ public class SiteController extends BaseController {
 
 	@Autowired
 	private HttpServletRequest request;
+
 	/**
 	 * path /{indexId}/{callId}
 	 *
@@ -35,29 +36,29 @@ public class SiteController extends BaseController {
 	public ModelMap start(@PathVariable("indexId") String indexId, @PathVariable("callId") String callId) throws Exception {
 		ModelMap map = new ModelMap();
 		String code = "";
-		if(request.getQueryString()== null){//没有传参
+		if (request.getQueryString() == null) {//没有传参
 			code = siteService.start(indexId, callId);
-		}else{
+		} else {
 			Map mapParams = new HashMap();
-			if(request.getQueryString().contains("region=")){
+			if (request.getQueryString().contains("region=")) {
 				String region = request.getParameter("region");
-				mapParams.put("region",region);
-				code = siteService.startByParams(indexId,callId,mapParams);
-			}else if(request.getQueryString().contains("publishDate=")){
+				mapParams.put("region", region);
+				code = siteService.startByParams(indexId, callId, mapParams);
+			} else if (request.getQueryString().contains("publishDate=")) {
 				String publishDate = request.getParameter("publishDate");
-				mapParams.put("publishDate",publishDate);
-				code = siteService.startByParams(indexId,callId,mapParams);
-			}else if(request.getQueryString().contains("url=")){
+				mapParams.put("publishDate", publishDate);
+				code = siteService.startByParams(indexId, callId, mapParams);
+			} else if (request.getQueryString().contains("url=")) {
 				String url = request.getParameter("url");
-				log.info("---------url-----------"+url);
-				mapParams.put("url",url);
-				code = siteService.startByParams(indexId,callId,mapParams);
-			}else{
+				log.info("---------url-----------" + url);
+				mapParams.put("url", url);
+				code = siteService.startByParams(indexId, callId, mapParams);
+			} else {
 				code = "params-error";
 			}
 
 		}
-		map.addAttribute("code",code);
+		map.addAttribute("code", code);
 		return map;
 	}
 

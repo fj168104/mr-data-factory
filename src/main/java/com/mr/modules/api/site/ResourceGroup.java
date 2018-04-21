@@ -34,4 +34,8 @@ public interface ResourceGroup{
 	 */
 	void setFinanceMonitorPunish(FinanceMonitorPunish oneFinanceMonitorPunish);
 
+	/**
+	 * 持久化error log 关键字设置
+	 */
+	void setSaveErrKeyWords(String keyWords);
 }

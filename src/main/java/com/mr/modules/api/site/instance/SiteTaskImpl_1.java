@@ -53,14 +53,22 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	protected String executeOne() throws Throwable {
 		log.info("*******************call site1 task for One Record**************");
 
-		Assert.notNull(Objects.isNull(oneFinanceMonitorPunish.getPartyInstitution())
-				? oneFinanceMonitorPunish.getPartyPerson() : oneFinanceMonitorPunish.getPartyInstitution());
-
 		Assert.notNull(oneFinanceMonitorPunish.getUrl());
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
+
+		String punishTitle = oneFinanceMonitorPunish.getPunishTitle();
+		if (punishTitle.contains("撤销")) return null;
+		punishTitle = punishTitle.replace("\\u201c", "“")
+				.replace("\\u201d", "”");
+		//当事人 从链接中提取
+		String person = getPartyByTitle(punishTitle);
 		oneFinanceMonitorPunish.setObject("全国中小企业股转系统-监管公告");
 		oneFinanceMonitorPunish.setSource("全国中小企业股转系统");
+		oneFinanceMonitorPunish.setPartyPerson(person);
+		oneFinanceMonitorPunish.setPartyInstitution(person);
+
 		initDate();
+
 		doFetch(oneFinanceMonitorPunish, true);
 		return null;
 	}
@@ -97,18 +105,13 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 				JSONObject contentObj = contentArray.getJSONObject(i);
 
-				//当事人 从链接中提取
-				String person = "";
+
 				String disclosureTitle = contentObj.getStr("disclosureTitle");
 				if (disclosureTitle.contains("撤销")) continue;
 				disclosureTitle = disclosureTitle.replace("\\u201c", "“")
 						.replace("\\u201d", "”");
-				if (disclosureTitle.contains("关于对") && disclosureTitle.contains("采取")) {
-					person = disclosureTitle.substring(3, disclosureTitle.indexOf("采取"))
-							.replace("“", "")
-							.replace("”", "");
-				}
-
+				//当事人 从链接中提取
+				String person = getPartyByTitle(disclosureTitle);
 				String targetUrl = "http://www.neeq.com.cn" + contentObj.getStr("destFilePath");
 
 				financeMonitorPunish.setPartyInstitution(person);
@@ -128,6 +131,23 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 		}
 		return lists;
+	}
+
+	private String getPartyByTitle(String punishTitle) {
+		String person = null;
+		String 关于对 = null;
+		if (punishTitle.contains("关于给予")) {
+			关于对 = "关于给予";
+		} else if (punishTitle.contains("关于对")) {
+			关于对 = "关于对";
+		}
+
+		if (StrUtil.isNotEmpty(关于对) && punishTitle.contains("采取")) {
+			person = punishTitle.substring(关于对.length(), punishTitle.indexOf("采取"))
+					.replace("“", "")
+					.replace("”", "");
+		}
+		return person;
 	}
 
 	/**

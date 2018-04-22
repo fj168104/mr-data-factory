@@ -573,8 +573,11 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 
 			financeMonitorPunish.setDomicile(address);
-			financeMonitorPunish.setPartyInstitution(companyFullName);
 			financeMonitorPunish.setPartyPerson(person);
+			if (StrUtil.isNotEmpty(companyFullName)) {
+				companyFullName = companyFullName.replace("“", "").replace("”", "");
+			}
+			financeMonitorPunish.setPartyInstitution(companyFullName);
 			financeMonitorPunish.setCompanyFullName(companyFullName);
 		} else {
 			//当事人为个人

@@ -64,14 +64,6 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	protected String executeOne() throws Throwable {
 		log.info("*******************call site2 task for One Record**************");
 
-//		if (org.springframework.util.StringUtils.isEmpty(oneFinanceMonitorPunish.getPartyInstitution())) {
-//			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPartyPerson());
-//			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPartyPerson());
-//		} else {
-//			oneFinanceMonitorPunish.setPartyInstitution(oneFinanceMonitorPunish.getPunishInstitution());
-//			oneFinanceMonitorPunish.setPartyPerson(oneFinanceMonitorPunish.getPunishInstitution());
-//		}
-
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
 		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getRegion());
@@ -211,6 +203,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				"依据《中华人民共和国证券法》",
 				"依据《私募投资基金监督管理暂行办法》",
 				"根据2006年1月1日起施行的《中华人民共和国证券法》",
+				"依据1999年7月1日起施行的《中华人民共和国证券法》",
 				"依据中国证监会《私募投资基金监督管理暂行办法》",
 				"依据《期货交易管理条例》",
 				"依据2004年6月1日起实施的《中华人民共和国证券投资基金法》",
@@ -218,6 +211,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		ArrayList<String> filterTags = Lists.newArrayList("<SPAN>", "</SPAN>", "&nbsp;", "　", "<BR>");
 
 		String city = financeMonitorPunish.getRegion();
+
+		fullTxt = fullTxt.replace(":", "：").replace(",", "，");
 		//仅仅天津是pdf,doc
 		boolean isHtml = !pdfOrDocType.contains(city);
 		if (!fullTxt.contains("当事人") && fullTxt.contains(".pdf")) {
@@ -245,6 +240,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		ArrayList<String> details = Lists.newArrayList();
 
 		Document doc = Jsoup.parse(fullTxt);
+		String txt = doc.text();
 
 		String[] zjh = {"中国证监会", city + "证监局"};
 		String zjhStr = "";
@@ -257,17 +253,16 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			}
 		}
 
-		String[] p = {"谢锦芬，", "当事人：", "当事人", "当事人:"};
+		String[] p = {"谢锦芬，", "当事人：", "当事人:", "当事人"};
 		String pStr = "";
-		int pIndex = -1;
+//		int pIndex = -1;
 		for (int i = 0; i < p.length; i++) {
-			if (fullTxt.indexOf(p[i]) > -1) {
+			if (txt.indexOf(p[i]) > -1) {
 				pStr = p[i];
-				pIndex = fullTxt.indexOf(p[i]);
+//				pIndex = txt.indexOf(p[i]);
 				break;
 			}
 		}
-
 
 		if (isHtml) {
 			Element classPunishNoEl = doc.getElementsByClass("title").first();
@@ -275,7 +270,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					!Objects.isNull(classPunishNoEl)) {
 				String tmp = classPunishNoEl.text();
 				if (tmp.contains("20") && tmp.indexOf("20") < tmp.indexOf("号")) {
-					financeMonitorPunish.setPunishNo(tmp.substring(tmp.indexOf("20") - 1, tmp.indexOf("号") + 1));
+					punishNo = tmp.substring(tmp.indexOf("20") - 1, tmp.indexOf("号") + 1);
 				}
 			}
 
@@ -283,80 +278,126 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			if (doc.getElementsByTag("title").first().text().contains("404"))
 				return;
 			Elements Ps = doc.getElementsByTag("P");
-			if (city.equals("贵州"))
-				Ps = doc.getElementsByTag("SPAN");
 
+			//判断一些情况不是按照<P>分割内容的
+			boolean isPSplit = false;
+			String punishNotmp = "";
 			for (Element pElement : Ps) {
-				if (city.equals("贵州") && !Ps.text().contains(pStr) && !isOn)
-					continue;
-
-				//punishNo 处理
-				if (Strings.isNullOrEmpty(punishNo)) {
-//					Elements strongEles = pElement.getElementsByTag("STRONG");
-//					if (!CollectionUtils.isEmpty(strongEles)) {
-//						punishNo = strongEles.get(0).text().trim();
-////					continue;
-//					} else {
-//						punishNo = Strings.isNullOrEmpty(pElement.text()) ? "" : pElement.text().trim();
-//					}
-					punishNo += pElement.text();
-
-					// 处罚文号 不存在
-					if (punishNo.contains(pStr)) punishNo = "";
+				String pText = pElement.text();
+				if (pText.contains("20") && pText.contains("号") && StrUtil.isEmpty(punishNotmp)) {
+					punishNotmp = pText;
 				}
+				if (pText.contains(pStr) && StringUtils.isNotEmpty(contains(pText, 根据))) {
+					isPSplit = true;
+					break;
+				}
+			}
 
-				//punishObject 处理
-				if (CollectionUtils.isEmpty(punishObjects) || isOn) {
-					String pString = filter(pElement.text().trim(), filterTags).trim();
-					if (pString.contains(pStr) && StringUtils.isNotEmpty(contains(pString, 根据))) {
-						punishObject = pString.substring(0, pString.indexOf(contains(pString, 根据)));
-						if (zjhIndex > -1) {
-							detail = pString.substring(pString.indexOf(contains(pString, 根据)),
-									pString.length() > zjhIndex ? zjhIndex : pString.length());
-							if (zjhIndex + 10 > pString.length()) {
-								punishDate = null;
-							} else {
-								punishDate = filter(pString.substring(zjhIndex + 10), filterTags);
-							}
-
-						}
+			if (isPSplit) {
+				punishNo = punishNotmp;
+				String[] zjh1 = {city + "证监会", city + "监管局", "中国证监会", "中国证券监督管理委员会"};
+				String zjhStr1 = "";
+				int zjhIndex1 = -1;
+				for (int i = 0; i < zjh1.length; i++) {
+					if (txt.lastIndexOf(zjh1[i]) > -1) {
+						zjhStr1 = zjh1[i];
+						zjhIndex1 = txt.lastIndexOf(zjh1[i]);
 						break;
 					}
+				}
+				if (txt.contains(pStr) && txt.contains("依据")) {
 
-					if (pString.contains(pStr)) {
-						isOn = true;    //打开当事人提取开关
-						punishObjects.add(pString);
+					punishObject = txt.substring(txt.indexOf(pStr), txt.indexOf("依据"));
+					punishObjects.add(punishObject);
+					if (zjhIndex1 > -1 && zjhIndex1 < txt.lastIndexOf("日")) {
+						punishDate = txt.substring(zjhIndex1, txt.lastIndexOf("日") + 1).replace(zjhStr1, "").trim();
+						if (punishDate.length() > 15) {
+							log.warn("punishDate:{}无法解析", punishDate);
+							punishDate = null;
+						}
+						detail = txt.substring(txt.indexOf("依据"), zjhIndex1);
+					} else {
+						detail = txt.substring(txt.indexOf("依据"));
+					}
+				}
+			} else {
+				if (city.equals("贵州"))
+					Ps = doc.getElementsByTag("SPAN");
+
+				for (Element pElement : Ps) {
+					if (city.equals("贵州") && !Ps.text().contains(pStr) && !isOn)
+						continue;
+
+					//punishNo 处理
+					if (StrUtil.isEmpty(punishNo) && StrUtil.isNotEmpty(pElement.text())) {
+						punishNo += pElement.text()
+								.replaceAll("\\s*", "")
+								.replace("&nbsp;", "")
+								.replace(" ", "")
+								.replace("　", "")
+								.trim();
+
+						// 处罚文号 不存在
+						if (punishNo.contains(pStr)) punishNo = null;
+					}
+
+					//punishObject 处理
+					if (CollectionUtils.isEmpty(punishObjects) || isOn) {
+						String pString = filter(pElement.text().trim(), filterTags).trim();
+						if (StringUtils.isNotEmpty(contains(pString, 根据))) {
+//						punishObject = pString.substring(0, pString.indexOf(contains(pString, 根据)));
+							if (zjhIndex > -1) {
+								detail = pString.substring(pString.indexOf(contains(pString, 根据)),
+										pString.length() > zjhIndex ? zjhIndex : pString.length());
+								if (zjhIndex + 10 > pString.length()) {
+									punishDate = null;
+								} else {
+									punishDate = filter(pString.substring(zjhIndex + 10), filterTags);
+								}
+
+							}
+//						break;
+						}
+
+						if (StringUtils.isNotEmpty(contains(pString, 根据))) {
+							isOn = false;
+							punishObject = punishObjects.toString().replace("[", "").replace("]", "");
+							detailIsOn = true;    //打开详情提取开关
+						}
+
+						if (pString.contains(pStr) || isOn) {
+							isOn = true;    //打开当事人提取开关
+							punishObjects.add(pString);
+
+						}
 
 					}
-					if (StringUtils.isNotEmpty(contains(pString, 根据))) {
-						isOn = false;
-						punishObject = punishObjects.toString().replace("[", "").replace("]", "");
-						detailIsOn = true;    //打开详情提取开关
+
+					//punishDate 处理
+					{
+						String pString = extracterZH(pElement.text().trim());
+						if ("年月日".equals(pString) || (pElement.text().contains("二〇")))
+							punishDate = filter(pElement.text().trim(), filterTags);
+					}
+
+
+					//detail 处理
+					if (detailIsOn) {
+						details.add(filter(pElement.text().trim(), filterTags));
+						if (filter(pElement.text().trim(), filterTags).startsWith(zjhStr)) {
+							detailIsOn = false;
+							detail = details.toString().replace("[", "").replace("]", "");
+						}
+
 					}
 				}
 
-				//punishDate 处理
-				{
-					String pString = extracterZH(pElement.text().trim());
-					if ("年月日".equals(pString) || (pElement.text().contains("二〇")))
-						punishDate = filter(pElement.text().trim(), filterTags);
-				}
-
-
-				//detail 处理
-				if (detailIsOn) {
-					details.add(filter(pElement.text().trim(), filterTags));
-					if (filter(pElement.text().trim(), filterTags).startsWith(zjhStr)) {
-						detailIsOn = false;
-						detail = details.toString().replace("[", "").replace("]", "");
-					}
-
+				if (Strings.isNullOrEmpty(detail)) {
+					detail = details.toString().replace("[", "").replace("]", "");
 				}
 			}
 
-			if (Strings.isNullOrEmpty(detail)) {
-				detail = details.toString().replace("[", "").replace("]", "");
-			}
+
 		} else {
 			String text = fullTxt.substring(fullTxt.indexOf("var file_appendix"));
 			String href = financeMonitorPunish.getUrl().substring(0, financeMonitorPunish.getUrl().lastIndexOf("/"))
@@ -418,7 +459,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 		}
 
-		if (org.springframework.util.StringUtils.isEmpty(financeMonitorPunish.getPunishNo())) {
+		//处罚文号
+		if (StrUtil.isEmpty(financeMonitorPunish.getPunishNo())) {
 			if (punishNo.contains("号")) {
 				punishNo = punishNo.substring(0, punishNo.indexOf("号") + 1);
 			}
@@ -431,6 +473,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			} else if (pTmp.lastIndexOf("(") > pTmp.indexOf("号")) {
 				pTmp = pTmp.substring(0, pTmp.lastIndexOf("("));
 			}
+			if (!pTmp.endsWith("号")) pTmp.substring(0, pTmp.indexOf("号") + 1);
 			financeMonitorPunish.setPunishNo(pTmp);
 		}
 
@@ -441,21 +484,23 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		}
 
 		//当事人
-		punishObject = punishObject.replace(pStr, "");
 		String partyPerson = "";
 		String partyInstitution = "";
 
-		for (String ps : punishObject.split("。")) {
+		for (String ps : punishObjects) {
 			if (StringUtils.isEmpty(ps)) continue;
+			ps = ps.replace(",", "，").replace(pStr, "");
 			if (ps.contains("出生")
 					|| ps.contains("住址")
 					|| ps.contains("时任")
 					|| ps.contains("现居住于")
-					|| ps.contains("生，")) {
+					|| ps.contains("生，")
+					|| ps.contains("，男")
+					|| ps.contains("，女")) {
 				if (ps.contains("，男")) {
-					partyPerson += "," + ps.substring(0, ps.indexOf("，男"));
+					partyPerson += "，" + ps.substring(0, ps.indexOf("，男"));
 				} else if (ps.contains("，女")) {
-					partyPerson += "," + ps.substring(0, ps.indexOf("，女"));
+					partyPerson += "，" + ps.substring(0, ps.indexOf("，女"));
 				}
 			} else {
 				partyInstitution += ps;
@@ -464,19 +509,13 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isNotEmpty(partyPerson)) {
-			partyPerson = partyPerson.substring(1).replace("\n", "").trim();
+			partyPerson = partyPerson.replace("\n", "").trim().substring(1);
+
 			if (partyPerson.contains("，女")) partyPerson = partyPerson.substring(0, partyPerson.indexOf("，女"));
 			if (partyPerson.contains("，男")) partyPerson = partyPerson.substring(0, partyPerson.indexOf("，男"));
 
-			if (partyPerson.contains("公司")) {
-				partyInstitution = partyPerson;
-				partyPerson = null;
-			} else {
-				if (partyPerson.contains("，身份证")) {
-					partyPerson = partyPerson.substring(0, partyPerson.indexOf("，身份证"));
-				}
-
-				financeMonitorPunish.setPartyInstitution(null);
+			if (partyPerson.contains("，身份证")) {
+				partyPerson = partyPerson.substring(0, partyPerson.indexOf("，身份证"));
 			}
 
 			financeMonitorPunish.setPartyPerson(partyPerson);
@@ -493,22 +532,14 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("）注册地"));
 			}
 
-			if (partyInstitution.contains("，女") || partyInstitution.contains("，男")) {
-				financeMonitorPunish.setPartyPerson(partyInstitution.trim());
-				partyInstitution = null;
-			} else {
-
-				if (partyInstitution.contains("（以下简称")) {
-					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（以下简称"));
-				} else if (partyInstitution.contains("(以下简称")) {
-					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("(以下简称"));
-				}else if (partyInstitution.contains("（股票代码")) {
-					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（股票代码"));
-				}else if (partyInstitution.contains("（下称")) {
-					partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（下称"));
-				}
-
-				financeMonitorPunish.setPartyPerson(null);
+			if (partyInstitution.contains("（以下简称")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（以下简称"));
+			} else if (partyInstitution.contains("(以下简称")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("(以下简称"));
+			} else if (partyInstitution.contains("（股票代码")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（股票代码"));
+			} else if (partyInstitution.contains("（下称")) {
+				partyInstitution = partyInstitution.substring(0, partyInstitution.indexOf("（下称"));
 			}
 
 			financeMonitorPunish.setPartyInstitution(partyInstitution);
@@ -547,7 +578,6 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 
 		String[] zjhDetail = {"中国证监会", "中国证券监督管理委员会", city + "证监会", city + "监管局"};
-		;
 		String zjhDetailStr = "";
 		int zjhDetailIndex = -1;
 		for (int i = 0; i < zjhDetail.length; i++) {
@@ -678,6 +708,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/jilin/jlxzcf/201708/P020170814371890315254.pdf")) {
 			person = "吉林晋吉，张佩宏";
 			financeMonitorPunish.setPartyInstitution(null);
+			financeMonitorPunish.setPunishNo("〔2017〕2号");
 		}
 		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201803/t20180323_335653.htm")) {
 			person = "顾乃凤";
@@ -790,13 +821,18 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 			financeMonitorPunish.setPartyInstitution("华益科技（英属维尔京群岛）有限公司");
 			person = null;
 		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/shanghai/xzcf/201612/t20161228_308626.htm")) {
+			financeMonitorPunish.setPunishNo("沪[2016] 8号");
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/guangdong/xzcf/201303/t20130307_221926.htm")) {
+			financeMonitorPunish.setPunishNo("[ 2013 ] 1 号");
+		}
 		financeMonitorPunish.setPartyPerson(person);
 	}
 
 	public LinkedHashMap<String, String> initCityMap() {
 		if (cityMap.size() > 0) return cityMap;
 		cityMap.put("北京", "http://www.csrc.gov.cn/pub/beijing/bjxzcf/");
-
 		cityMap.put("河北", "");
 		cityMap.put("山西", "http://www.csrc.gov.cn/pub/shanxi/xzcf/");
 		cityMap.put("内蒙古", "http://www.csrc.gov.cn/pub/neimenggu/nmgxzcf/");
@@ -831,7 +867,6 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		cityMap.put("宁波", "http://www.csrc.gov.cn/pub/ningbo/nbxzcf/");
 		cityMap.put("厦门", "http://www.csrc.gov.cn/pub/xiamen/xmxzcf/");
 		cityMap.put("青岛", "http://www.csrc.gov.cn/pub/qingdao/xzcf/");
-
 		cityMap.put("天津", "http://www.csrc.gov.cn/pub/tianjin/xzcf/");
 
 		return cityMap;

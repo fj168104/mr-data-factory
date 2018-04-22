@@ -153,7 +153,17 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 				String createTime = jsObj.getStr("createTime");
 
 				financeMonitorPunish.setStockCode(stockcode);
+				if(stockcode.contains("600610")
+						|| stockcode.contains("900906")
+						||stockcode.contains("600698")
+						||stockcode.contains("900946")){
+					extGSJC = stockcode.replace("600610", "中毅达")
+							.replace("900906", "中毅达B")
+							.replace("600698","湖南天雁")
+							.replace("900946","天雁 B 股");
+				}
 				financeMonitorPunish.setStockShortName(extGSJC);
+
 				financeMonitorPunish.setSupervisionType(typeName);
 				financeMonitorPunish.setPunishTitle(docTitle);
 				financeMonitorPunish.setPunishDate(createTime);
@@ -163,7 +173,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 
 				if (!doFetch(financeMonitorPunish, false)) {
 					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
-							.selectByBizKey(financeMonitorPunish.getPrimaryKey());
+							.selectByUrl(financeMonitorPunish.getUrl());
 					if (srcFmp.getSupervisionType().contains(typeName)) {
 						return lists;
 					} else {
@@ -195,6 +205,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			String fileName = downLoadFile(docURL);
 			//处理事由正文详细文本信息
 			docTitleDetail = ocrUtil.getTextFromPdf(fileName);
+			financeMonitorPunish.setDetails(filterErrInfo(docTitleDetail));
 			extractPDF(docTitleDetail, financeMonitorPunish);
 		} else {
 			extractHTML(getData(docURL), financeMonitorPunish);
@@ -220,8 +231,21 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 
 		int sIndx = fullTxt.indexOf("当事人：") == -1 ?
 				fullTxt.indexOf("当事人") : fullTxt.indexOf("当事人：");
-		int pIndx = fullTxt.indexOf("经查明，") == -1 ?
-				fullTxt.indexOf("经查明") : fullTxt.indexOf("经查明，");
+
+
+		//经查明关键字
+		String pStr = "";
+		int pIndx = -1;
+		String[] p = {"经查明，", "经查明", "根据证监会行政处罚"};
+
+		for (int i = 0; i < p.length; i++) {
+			if (fullTxt.indexOf(p[i]) > -1) {
+				pStr = p[i];
+				pIndx = fullTxt.indexOf(p[i]);
+				break;
+			}
+		}
+
 		if (pIndx < 0) {
 			log.error("文本格式不规则，无法识别");
 			return;
@@ -275,7 +299,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			for (String t : tArr) {
 				if (t.indexOf("，") > -1) {
 					String s = t.substring(0, t.indexOf("，"));
-					if (s.contains("公司") || s.contains("工程中心") || s.contains("咨询中心")||s.contains("检验中心"))
+					if (s.contains("公司") || s.contains("工程中心") || s.contains("咨询中心") || s.contains("检验中心"))
 						partyInstitution += "," + s;
 					else
 						person += "," + s;
@@ -285,13 +309,11 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 					? filterErrInfo(person.substring(1)) : null;
 		}
 
-
-		financeMonitorPunish.setPunishNo(punishNo);
+		financeMonitorPunish.setPunishNo(punishNo.replace("纪律处分决定书", ""));
 		financeMonitorPunish.setPartyPerson(person);
 		financeMonitorPunish.setPartyInstitution(StringUtils.isNotEmpty(partyInstitution)
 				? partyInstitution.substring(1) : null);
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));
-		financeMonitorPunish.setDetails(filterErrInfo(fullTxt));
 	}
 
 	/**
@@ -384,7 +406,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 			for (String t : tArr) {
 				if (t.indexOf("，") > -1) {
 					String s = t.substring(0, t.indexOf("，"));
-					if (s.contains("公司") || s.contains("工程中心") || s.contains("咨询中心")||s.contains("检验中心"))
+					if (s.contains("公司") || s.contains("工程中心") || s.contains("咨询中心") || s.contains("检验中心"))
 						partyInstitution += "," + s;
 					else
 						person += "," + s;
@@ -394,7 +416,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 					? filterErrInfo(person.substring(1)) : null;
 		}
 
-		financeMonitorPunish.setPunishNo(punishNo);
+		financeMonitorPunish.setPunishNo(punishNo.replace("纪律处分决定书", ""));
 		financeMonitorPunish.setPartyPerson(person);
 		financeMonitorPunish.setPartyInstitution(StringUtils.isNotEmpty(partyInstitution)
 				? partyInstitution.substring(1) : null);
@@ -553,6 +575,16 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/c_20160524_4118428.shtml")) {
 			person = "刘永跃";
 			partyInstitution = "安徽四创电子股份有限公司";
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/8129505052203282.pdf")) {
+			financeMonitorPunish.setPunishNo("〔2017〕0056号");
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/criticism/c/8129382882712887.pdf")) {
+			financeMonitorPunish.setPunishNo("〔2017〕0049 号");
+		}
+		if (financeMonitorPunish.getUrl().contains("http://www.sse.com.cn/disclosure/credibility/supervision/measures/ident/c/4118455.pdf")) {
+			person = "鲍崇宪，王星星";
+			partyInstitution = "上海澄海企业发展股份有限公司";
 		}
 
 		financeMonitorPunish.setPartyPerson(person);

@@ -402,7 +402,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			financeMonitorPunish.setUpdateTime(new Date());
 		}
 		try {
-			if(StrUtil.isEmpty(financeMonitorPunish.getCompanyFullName())){
+			if (StrUtil.isEmpty(financeMonitorPunish.getCompanyFullName())) {
 				financeMonitorPunish.setCompanyFullName(financeMonitorPunish.getPartyInstitution());
 			}
 			financeMonitorPunishMapper.insert(filterPlace(financeMonitorPunish));
@@ -430,10 +430,13 @@ public abstract class SiteTaskExtend extends SiteTask {
 			// 获取setter方法，反射赋值
 			prop.getWriteMethod().invoke(financeMonitorPunish,
 					str.replaceAll("\\s*", "")
-						.replace("\n", "").trim());
+							.replace("　", "")
+							.replace(" ", "")
+							.replace("　　","")
+							.replace("\n", "").trim());
 
 		}
-		if(StrUtil.isNotEmpty(financeMonitorPunish.getDetails())){
+		if (StrUtil.isNotEmpty(financeMonitorPunish.getDetails())) {
 			financeMonitorPunish.setDetails(financeMonitorPunish.getDetails()
 					.replaceAll("\\s*", ""));
 		}

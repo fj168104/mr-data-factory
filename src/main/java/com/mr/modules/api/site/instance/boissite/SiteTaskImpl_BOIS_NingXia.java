@@ -2,6 +2,7 @@ package com.mr.modules.api.site.instance.boissite;
 
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtendSub;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,7 +19,7 @@ import java.util.Map;
 @Component("ningxia")
 @Slf4j
 @Scope("prototype")
-public class SiteTaskImpl_BOIS_NingXia extends SiteTaskExtend {
+public class SiteTaskImpl_BOIS_NingXia extends SiteTaskExtendSub {
    /* @Override
     protected String execute() throws Throwable {
         String url ="http://ningxia.circ.gov.cn/web/site28/tab3598/info123135.htm";
@@ -345,6 +346,7 @@ public class SiteTaskImpl_BOIS_NingXia extends SiteTaskExtend {
         map.put("punishDate",punishDate);
         map.put("punishNo",textTransfer(punishNo));
         map.put("punishToOrg",textTransfer(punishToOrg));
+        map.put("companyFullName",textTransfer(punishToOrg));
         map.put("punishToOrgAddress",textTransfer(punishToOrgAddress));
         map.put("punishToOrgHolder",textTransfer(punishToOrgHolder));
         map.put("priPerson",textTransfer(priPerson.toString().replaceAll(punishToOrg,"")));
@@ -371,6 +373,7 @@ public class SiteTaskImpl_BOIS_NingXia extends SiteTaskExtend {
         financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
         financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
         financeMonitorPunish.setPartyInstitution(mapInfo.get("punishToOrg"));//当事人（公司）=处罚对象
+        financeMonitorPunish.setCompanyFullName(mapInfo.get("companyFullName"));//公司全称
         financeMonitorPunish.setDomicile(mapInfo.get("punishToOrgAddress"));//机构住址
         financeMonitorPunish.setLegalRepresentative(mapInfo.get("punishToOrgHolder"));//机构负责人
         financeMonitorPunish.setPartyPerson(mapInfo.get("priPerson"));//受处罚人

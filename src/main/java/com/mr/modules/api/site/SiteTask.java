@@ -6,6 +6,7 @@ import com.mr.modules.api.TaskStatus;
 import com.mr.modules.api.caller.SiteVisitor;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.spel.ast.OpNE;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

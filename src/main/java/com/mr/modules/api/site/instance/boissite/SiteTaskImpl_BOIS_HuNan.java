@@ -364,6 +364,7 @@ public class SiteTaskImpl_BOIS_HuNan extends SiteTaskExtendSub {
             mapTRSpecial.put("punishToOrg",punishToOrg);
             mapTRSpecial.put("punishToOrgAddress",punishToOrgAddress.toString());
             mapTRSpecial.put("punishToOrgHolder",punishToOrgHolder.toString());
+            mapTRSpecial.put("priPerson",priPerson.toString());
             mapTRSpecial.put("priPersonCert",priPersonCert.toString());
             mapTRSpecial.put("priAddress",priAddress.toString());
             mapTRSpecial.put("source",source);

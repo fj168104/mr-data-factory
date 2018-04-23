@@ -53,7 +53,7 @@
 
     <!--通过业务主键查找-->
     <select id="selectByBizKey" resultMap="BaseResultMap">
-        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.PRIMARY_KEY = #{primaryKey}
+        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.PRIMARY_KEY = #{primaryKey} LIMIT 0, 1
     </select>
 
     <!--通过链接地址删除-->
@@ -63,7 +63,7 @@
 
     <!--通过链接地址查找-->
     <select id="selectByUrl" resultMap="BaseResultMap">
-        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.URL = #{url}
+        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.URL = #{url} LIMIT 0, 1
     </select>
 
     <!--通过业务来源删除-->

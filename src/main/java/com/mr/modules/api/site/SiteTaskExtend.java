@@ -353,19 +353,24 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * 设置单条抓取的更新日期
 	 */
 	protected void initDate() {
-		//通过source查找
-		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
-				.selectByUrl(oneFinanceMonitorPunish.getUrl());
-		if (Objects.isNull(originFinanceMonitorPunish)) {
-			oneFinanceMonitorPunish.setCreateTime(new Date());
-			oneFinanceMonitorPunish.setUpdateTime(new Date());
-		} else {
-			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
-			oneFinanceMonitorPunish.setUpdateTime(new Date());
+		try {
+			//通过source查找
+			FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
+					.selectByUrl(oneFinanceMonitorPunish.getUrl());
+			if (Objects.isNull(originFinanceMonitorPunish)) {
+				oneFinanceMonitorPunish.setCreateTime(new Date());
+				oneFinanceMonitorPunish.setUpdateTime(new Date());
+			} else {
+				oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
+				oneFinanceMonitorPunish.setUpdateTime(new Date());
+			}
+
+			//通过url先删除，确保不产生多余数据
+			financeMonitorPunishMapper.deleteByUrl(oneFinanceMonitorPunish.getUrl());
+		} catch (Exception e) {
+			log.error(keyWords + ">>>" + e.getMessage());
 		}
 
-		//通过url先删除，确保不产生多余数据
-		financeMonitorPunishMapper.deleteByUrl(oneFinanceMonitorPunish.getUrl());
 	}
 
 	/**
@@ -376,12 +381,17 @@ public abstract class SiteTaskExtend extends SiteTask {
 	protected Boolean saveOne(FinanceMonitorPunish financeMonitorPunish, Boolean isForce) {
 		String primaryKey = buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		log.debug("primaryKey:" + primaryKey);
-		if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByUrl(financeMonitorPunish.getUrl()))) {
-			insertOrUpdate(financeMonitorPunish);
-			return true;
-		} else {
-			return false;
+		try {
+			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByUrl(financeMonitorPunish.getUrl()))) {
+				insertOrUpdate(financeMonitorPunish);
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			log.error(keyWords + ">>>" + e.getMessage());
 		}
+		return false;
 	}
 
 	/**
@@ -395,13 +405,14 @@ public abstract class SiteTaskExtend extends SiteTask {
 			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		}
 
-		financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
-		//设置createTime
-		if (StringUtils.isEmpty(financeMonitorPunish.getCreateTime())) {
-			financeMonitorPunish.setCreateTime(new Date());
-			financeMonitorPunish.setUpdateTime(new Date());
-		}
+
 		try {
+			financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
+			//设置createTime
+			if (StringUtils.isEmpty(financeMonitorPunish.getCreateTime())) {
+				financeMonitorPunish.setCreateTime(new Date());
+				financeMonitorPunish.setUpdateTime(new Date());
+			}
 			if (StrUtil.isEmpty(financeMonitorPunish.getCompanyFullName())) {
 				financeMonitorPunish.setCompanyFullName(financeMonitorPunish.getPartyInstitution());
 			}
@@ -432,7 +443,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 					str.replaceAll("\\s*", "")
 							.replace("　", "")
 							.replace(" ", "")
-							.replace("　　","")
+							.replace("　　", "")
 							.replace("\n", "").trim());
 
 		}

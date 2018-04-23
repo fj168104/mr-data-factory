@@ -338,7 +338,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 						.replace("法定代表人：","负责人：")
 						.replace("身份证号：","证件号码：")
 						.replace("住所","地址");
-				if(elementP.text().contains("担任")&&elementP.text().contains("期间")){
+				if(elementP.text().contains("担任")&&elementP.text().contains("期间")&&elementsSpanChild.contains("赵冰")){
 					strList.add("职务："+elementP.text().substring(elementP.text().indexOf("担任"),elementP.text().indexOf("期间")));
 				}
 				//只包含“：”的当事人记录

@@ -2,6 +2,7 @@ package com.mr.modules.api.site.instance.boissite;
 
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtendSub;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -26,10 +27,10 @@ import java.util.Map;
 @Slf4j
 @Component("shenzhen")
 @Scope("prototype")
-public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
-    /*@Override
+public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtendSub {
+   /* @Override
     protected String execute() throws Throwable {
-        String url = "http://www.circ.gov.cn/web/site0/tab5241/info186612.htm";
+        String url = "http://shenzhen.circ.gov.cn/web/site33/tab3425/info84171.htm";
         extractContent(getData(url));
         return null;
     }*/
@@ -94,7 +95,7 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
         //发布时间
         String publishDate = "";
         //TODO 处罚机关
-        String punishOrg ="";
+        String punishOrg ="深圳保监局";
         //TODO 处罚时间
         String punishDate = "";
         //TODO 处罚文号
@@ -121,7 +122,7 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
         String object = "行政处罚决定";
         //正文
         String stringDetail ="";
-        Document doc = Jsoup.parse(fullTxt.replaceAll("、","，")
+        Document doc = Jsoup.parse(fullTxt
                 .replace("(","（")
                 .replace(")","）")
                 .replace(":","：")
@@ -132,13 +133,16 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
                 .replace("受处罚人姓名：","当事人：")
                 .replace("受处罚人名称：","当事人：")
                 .replace("拟被处罚人：","当事人")
+                .replace("受罚人：","当事人")
                 .replace("受处罚人：","当事人")
                 .replace("被处罚人：","当事人：")
                 .replace("拟被处罚机构名称：","当事人：")
                 .replace("被处罚机构名称：","当事人：")
                 .replace("被处罚机构：","当事人：")
+                .replace("受处罚机构：","当事人：")
                 .replace("住址：","地址：")
                 .replace("营业地址：","地址：")
+                .replace("工作单位地址：","地址：")
                 .replace("住址：","地址：")
                 .replace("住 址：","地址：")
                 .replace("地 址：","地址：")
@@ -182,8 +186,8 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
         String publishDateStr = elementsPublishDate.text();
         publishDate = publishDateStr.substring(publishDateStr.indexOf("发布时间：")+5,publishDateStr.indexOf("分享到："));
 
-        //Span 标签 ClassName：xilanwb  中存在P标签，不存在TR标签
-        if(elementsSpanP.size()>0&&elementsSpanTR.size()==0){
+        //Span 标签 ClassName：xilanwb  中存在P标签，不存在TR标签 elementsSpanP.size()>0&&elementsSpanTR.size()==0
+        if(!titleStr.contains("事项") && elementsSpanP.text().contains("当事人：")){
             //TODO 正文中没有文号
             if(elementsSpan.get(0).text().indexOf("深保监罚")>-1){
                 punishNo=elementsP.get(0).text().replaceAll("　","").trim();
@@ -193,12 +197,12 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
                     punishNo ="（"+punishNoStr[1].replaceAll("　","").trim();
                 }
             }
-            /*TODO 特殊型 只适合没有标明当事人的处罚文案，需要加限制条件*/
-            if(stringDetail.indexOf("当事人：")>-1||elementsSpanChildStr.text().indexOf("当事人：")>-1){
+            /*TODO 特殊型 只适合没有标明当事人的处罚文案，需要加限制条件*/ //||elementsSpanChildStr.text().indexOf("当事人：")>-1
+            if(stringDetail.indexOf("当事人：")>-1){
                 //TODO 默认值
                 punishOrg = "深圳监管局";
                 List<String> listStr = new ArrayList();
-                listStr.add(elementsSpanChildStr.text());
+          //      listStr.add(elementsSpanChildStr.text());
                 //TODO 判断是否为法人
                 for(Element elementP : elementsP){
                     String elementPStr =  elementP.text().replaceAll("　","").trim();
@@ -223,48 +227,132 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
                 boolean busiPersonFlag = false;
                 log.info("listStr:-------"+listStr.toString());
                 for(int i=0;i<listStr.size();i++ ){
-                    String[] currentPersonStr  = listStr.get(i).split("：");
+                    if( i==0 && listStr.get(0).contains("当事人：") && listStr.get(0).contains("身份证号：")&& listStr.get(0).contains("地址：")&& listStr.get(0).contains("，")){
+                        String info = listStr.get(0).replaceAll("时任","职务：");
+                        String[] infos = info.split("，");
+                        for(String str : infos){
+                            str = textFormat(str);
 
-                    if(currentPersonStr[1].length()>5&&currentPersonStr[0].equals("当事人")){
-                        busiPersonFlag =true;
-                        punishToOrg = currentPersonStr[1];
+                            String[] peopleInfo = str.split("：");
+                            if(peopleInfo[0].contains("号")){
+                                peopleInfo[0] = peopleInfo[0].substring(peopleInfo[0].lastIndexOf("号")+1);
+                            }
+
+                            if(peopleInfo[0].trim().equals("当事人")){
+                                if(priPerson.toString().equalsIgnoreCase("")){
+                                    priPerson.append(peopleInfo[1]).append("，");
+                                }
+                            }
+                            if(peopleInfo[0].trim().equals("地址")){
+                                if(peopleInfo[1].contains("经查")){
+                                    peopleInfo[1] = peopleInfo[1].substring(0,peopleInfo[1].indexOf("经查")-1);
+                                }
+                                priAddress.append(peopleInfo[1].replaceAll("。","")).append("，");
+                            }
+                            if(peopleInfo[0].trim().equals("身份证号")){
+                                priPersonCert.append(peopleInfo[1]).append("，");
+                            }
+                            if(peopleInfo[0].trim().equals("职务")){
+                                priJob.append(peopleInfo[1]).append("，");
+                            }
+                        }
+
+                        break;
+
+                    }else if( i==0 && listStr.get(0).contains("当事人：") && listStr.get(0).contains("地址：") && listStr.get(0).contains("负责人：")&& listStr.get(0).contains("，")){
+                        String info = listStr.get(0);
+                        String[] infos = info.split("，");
+                        for(String str : infos){
+                            str = textFormat(str);
+                            String[] peopleInfo = str.split("：");
+                            if(peopleInfo[0].equals("当事人")){
+                                punishToOrg = peopleInfo[1];
+                            }
+                            if(peopleInfo[0].trim().equals("地址")){
+                                punishToOrgAddress = peopleInfo[1];
+                            }
+                            if(peopleInfo[0].trim().equals("负责人")){
+                                if(peopleInfo[1].contains("经查")){
+                                    peopleInfo[1] = peopleInfo[1].substring(0,peopleInfo[1].indexOf("经查")-1);
+                                }
+                                punishToOrgHolder = peopleInfo[1].replaceAll("。","");
+                            }
+                        }
+
+                        break;
+                    }else{
+                        String[] currentPersonStr  = listStr.get(i).split("：");
+
+                        currentPersonStr[0] = textFormat(currentPersonStr[0]);
+                        currentPersonStr[1] = textFormat(currentPersonStr[1]);
+                        if(currentPersonStr[1].length()>5&&currentPersonStr[0].equals("当事人") && !currentPersonStr[1].contains("身份证")){
+                            busiPersonFlag =true;
+                            if(currentPersonStr[1].contains("以下简称")){
+                                currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("以下简称")-1);
+                            }
+                        }
+
+                        if(currentPersonStr[1].contains("年龄")){
+                            currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("年龄"));
+                        }
+                        if(currentPersonStr[1].contains("性别")){
+                            currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("性别"));
+                        }
+                        currentPersonStr[1] = currentPersonStr[1].replaceAll("经查实，","经查，");
+                        if(currentPersonStr[1].contains("经查，")){
+                            currentPersonStr[1] = currentPersonStr[1].substring(0,currentPersonStr[1].indexOf("经查，"));
+                        }
+
+                        log.info("---currentPersonStr[0]---"+currentPersonStr[0]+"---currentPersonStr[1]---"+currentPersonStr[1]);
+
+                        if(currentPersonStr[1].length()>5&&currentPersonStr[0].equals("当事人")){
+                            busiPersonFlag =true;
+                            punishToOrg = currentPersonStr[1];
+                        }
+                        if(currentPersonStr[1].length()<=5&&currentPersonStr[0].equals("当事人")){
+                            busiPersonFlag =false;
+                            priPerson.append(currentPersonStr[1]).append("，");
+                        }
+                        // TODO 法人
+                        if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("地址")){
+                            punishToOrgAddress = currentPersonStr[1];
+                        }
+                        if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("负责人")){
+                            punishToOrgHolder = currentPersonStr[1];
+                        }
+                        //TODO 自然人
+                        if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("地址")){
+                            priAddress.append(currentPersonStr[1]).append("，");
+                        }
+                        if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("身份证号")){
+                            priPersonCert.append(currentPersonStr[1]).append("，");
+                        }
+                        if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("职务")){
+                            priJob.append(currentPersonStr[1]).append("，");
+                        }
                     }
-                    if(currentPersonStr[1].length()<=5&&currentPersonStr[0].equals("当事人")){
-                        busiPersonFlag =false;
-                        priAddress.append(currentPersonStr[1]);
-                    }
-                    // TODO 法人
-                    if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("地址")){
-                        punishToOrgAddress = currentPersonStr[1];
-                    }
-                    if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("负责人")){
-                        punishToOrgHolder = currentPersonStr[1];
-                    }
-                    //TODO 自然人
-                    if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("地址")){
-                        priAddress.append(currentPersonStr[1]).append("，");
-                    }
-                    if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("身份证号")){
-                        priPersonCert.append(currentPersonStr[1]).append("，");
-                    }
-                    if(busiPersonFlag==false&&currentPersonStr[0].trim().equals("职务")){
-                        priJob.append(currentPersonStr[1]).append("，");
-                    }
+
                 }
             }
-        }
-        //Span 标签 ClassName：xilanwb  中存在TR标签，不存在TR标签
-        if(elementsSpanP.size()==0&&elementsSpanTR.size()>0){
+        }else if(elementsSpanTR.size()>0 && titleStr.contains("事项")){ //Span 标签 ClassName：xilanwb  中存在TR标签，不存在TR标签
             int countTD = 0;
             for(Element elementTR :elementsSpanTR){
                 Elements elementsTRTD = elementTR.getElementsByTag("TD");
                 if(countTD>0 && elementsTRTD.size()==6){
-                    punishNo = elementsTRTD.get(0).text();
+                    if(!punishNo.equalsIgnoreCase("")){
+                        punishNo = punishNo+"，"+elementsTRTD.get(0).text();
+                    }else{
+                        punishNo = elementsTRTD.get(0).text();
+                    }
                     if(elementsTRTD.get(1).text().length()<=5){
-                        priPerson.append(elementsTRTD.get(1).text());
+                        priPerson.append(elementsTRTD.get(1).text()).append("，");
                     }
                     if(elementsTRTD.get(1).text().length()>5){
-                        punishOrg = elementsTRTD.get(1).text();
+                        if(!punishToOrg.equalsIgnoreCase("")){
+                            punishToOrg = punishToOrg +"，"+elementsTRTD.get(1).text();
+                        }else{
+                            punishToOrg = elementsTRTD.get(1).text();
+                        }
                     }
                     punishDate = elementsTRTD.get(5).text();
                     StringBuffer stringBuffer = new StringBuffer();
@@ -274,7 +362,25 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
                 }
                 countTD++;
             }
+        }else{
+            if(stringDetail.indexOf("：")>-1){
+                String nameInfo = stringDetail.substring(0,stringDetail.indexOf("："));
+                log.info("-nameInfo-"+nameInfo);
+                if(nameInfo.contains("号")){
+                    punishNo = nameInfo.substring(0,nameInfo.indexOf("号")+1);
+                    String name = textFormat(nameInfo.substring(nameInfo.indexOf("号")+1));
+                    if(name.length()>5){
+                        punishToOrg = name;
+                    }else{
+                        priPerson.append(name).append("，");
+                    }
+                }
+
+            }
+
         }
+        punishNo = textFormat(punishNo);
+        punishDate = textFormat(punishDate);
 
         log.info("发布主题："+titleStr);
         log.info("发布机构："+publishOrg);
@@ -301,6 +407,7 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
         map.put("punishDate",punishDate);
         map.put("punishNo",punishNo);
         map.put("punishToOrg",punishToOrg);
+        map.put("companyFullName",punishToOrg);
         map.put("punishToOrgAddress",punishToOrgAddress);
         map.put("punishToOrgHolder",punishToOrgHolder);
         map.put("priPerson",priPerson.toString());
@@ -328,6 +435,7 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
         financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
         financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
         financeMonitorPunish.setPartyInstitution(mapInfo.get("punishToOrg"));//当事人（公司）=处罚对象
+        financeMonitorPunish.setCompanyFullName(mapInfo.get("companyFullName"));//公司全称
         financeMonitorPunish.setDomicile(mapInfo.get("punishToOrgAddress"));//机构住址
         financeMonitorPunish.setLegalRepresentative(mapInfo.get("punishToOrgHolder"));//机构负责人
         financeMonitorPunish.setPartyPerson(mapInfo.get("priPerson"));//受处罚人
@@ -344,4 +452,9 @@ public class SiteTaskImpl_BOIS_ShenZhen extends SiteTaskExtend{
 
         return financeMonitorPunish;
     }
+
+    public String textFormat(String text){
+        return text.replace((char) 12288, ' ').replaceAll(" ","").trim();
+    }
+
 }

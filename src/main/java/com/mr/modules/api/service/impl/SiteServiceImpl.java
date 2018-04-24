@@ -177,6 +177,12 @@ public class SiteServiceImpl implements SiteService {
 		return financeMonitorPunishMapper.deleteByBizKey(primaryKey);
 	}
 
+	public int deleteByUrl(String url) {
+		if (StringUtils.isEmpty(url))
+			return 0;
+		return financeMonitorPunishMapper.deleteByUrl(url);
+	}
+
 	public FinanceMonitorPunish selectByBizKey(String primaryKey) {
 		if (StringUtils.isEmpty(primaryKey)) {
 			return null;

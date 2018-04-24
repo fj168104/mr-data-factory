@@ -108,7 +108,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					log.info("targetUri>>>" + targetUri);
 					String fullTxt = "";
 					try {
-						fullTxt = getData(targetUri, 1);
+						fullTxt = getData(targetUri, 3);
 					} catch (RuntimeException ex) {
 						if (ex instanceof HttpClientErrorException && ex.getMessage().trim().equals("404 Not Found"))
 							break;
@@ -293,6 +293,11 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 				}
 			}
 
+			if (financeMonitorPunish.getUrl().contains("http://www.csrc.gov.cn/pub/qinghai/qhxzcf/201701/t20170112_309469.htm")) {
+				log.debug("***********");
+			}
+
+
 			if (isPSplit) {
 				punishNo = punishNotmp;
 				String[] zjh1 = {city + "证监会", city + "监管局", "中国证监会", "中国证券监督管理委员会"};
@@ -309,7 +314,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 
 					punishObject = txt.substring(txt.indexOf(pStr), txt.indexOf("依据"));
 					punishObjects.add(punishObject);
-					if (zjhIndex1 > -1 && zjhIndex1 < txt.lastIndexOf("日")) {
+					if (zjhIndex1 > -1 && zjhIndex1 < txt.lastIndexOf("日") && txt.indexOf("依据") < zjhIndex1) {
 						punishDate = txt.substring(zjhIndex1, txt.lastIndexOf("日") + 1).replace(zjhStr1, "").trim();
 						if (punishDate.length() > 15) {
 							log.warn("punishDate:{}无法解析", punishDate);

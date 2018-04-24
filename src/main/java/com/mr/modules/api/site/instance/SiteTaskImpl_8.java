@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Assert;
@@ -126,18 +127,24 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 			financeMonitorPunish.setSource("深交所");
 			financeMonitorPunish.setObject("中介机构处罚与处分记录");
 
-			//增量抓取
-			if (!doFetch(financeMonitorPunish, false)) {
-				FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
-						.selectByBizKey(financeMonitorPunish.getPrimaryKey());
-				if (srcFmp.getPunishCategory().contains(financeMonitorPunish.getPunishCategory())) {
-					return lists;
-				} else {
-					srcFmp.setPunishCategory(srcFmp.getPunishCategory()
-							+ "|" + financeMonitorPunish.getPunishCategory());
-					financeMonitorPunishMapper.updateByPrimaryKey(srcFmp);
-					financeMonitorPunish.setPunishCategory(srcFmp.getPunishCategory());
+			try {
+				//增量抓取
+				if (!doFetch(financeMonitorPunish, false)) {
+					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
+							.selectByBizKey(financeMonitorPunish.getPrimaryKey());
+					if (srcFmp.getPunishCategory().contains(financeMonitorPunish.getPunishCategory())
+							&& srcFmp.getIntermediaryCategory().trim().equals(
+							financeMonitorPunish.getIntermediaryCategory().trim())) {
+						return lists;
+					} else {
+						srcFmp.setPunishCategory(financeMonitorPunish.getPunishCategory());
+						srcFmp.setId(null);
+						financeMonitorPunishMapper.insert(srcFmp);
+					}
 				}
+
+			} catch (Exception e) {
+				log.error(e.getMessage());
 			}
 
 			lists.add(financeMonitorPunish);
@@ -148,68 +155,87 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 
 	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) throws Exception {
-		String person = financeMonitorPunish.getPartyInstitution();
-		financeMonitorPunish.setPartyInstitution(null);
-		//当事人（公司）
-		String partyInstitution = "";
-		//当事人（个人）
-		String partyPerson = "";
-		if (org.apache.commons.lang3.StringUtils.isNotEmpty(person)) {
-			String personArray[] = person.split("、");
-			for (String psub : personArray) {
-				if (psub.contains("公司") || psub.contains("事务所")) {
-					if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyInstitution)) {
-						partyInstitution += "、";
-					}
-					partyInstitution += psub;
-				} else {
-					if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyPerson)) {
-						partyPerson += "、";
-					}
-					partyPerson += psub;
-				}
-			}
-			if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyPerson)) {
-				financeMonitorPunish.setPartyPerson(partyPerson);
-			}
-			if (org.apache.commons.lang3.StringUtils.isNotEmpty(partyInstitution)) {
-				financeMonitorPunish.setPartyInstitution(partyInstitution);
-			}
-		}
 
 		financeMonitorPunish.setPartyCategory(PLATE.getPlate(
 				financeMonitorPunish.getCompanyCode().substring(0, 3)).name);
-		//公司全称
-		String companyFullName = null;
-		if (org.apache.commons.lang3.StringUtils.isNotEmpty(financeMonitorPunish.getPunishTitle())) {
-			String title = financeMonitorPunish.getPunishTitle();
-			//公司或者事务所关键字
-			String corpStr = "";
-			int corpIndex = -1;
-			String[] corp = {"公司", "事务所"};
-
-			for (int i = 0; i < corp.length; i++) {
-				if (title.indexOf(corp[i]) > -1) {
-					corpStr = corp[i];
-					corpIndex = title.indexOf(corp[i]) + corpStr.length() + 1;
-					break;
-				}
-			}
-
-
-			if (title.contains("关于对") && corpIndex > 0) {
-				companyFullName = title.substring(title.indexOf("关于对") + 3, corpIndex);
-			}
-		}
 
 		String contentFile = downLoadFile(financeMonitorPunish.getUrl());
 
 		//详情
+		String details = "";
 		if (contentFile.toLowerCase().endsWith("doc")) {
-			financeMonitorPunish.setDetails(filterErrInfo(ocrUtil.getTextFromDoc(contentFile)));
+			details = filterErrInfo(ocrUtil.getTextFromDoc(contentFile));
 		} else if (contentFile.toLowerCase().endsWith("pdf")) {
-			financeMonitorPunish.setDetails(filterErrInfo(ocrUtil.getTextFromPdf(contentFile)));
+			details = filterErrInfo(ocrUtil.getTextFromPdf(contentFile));
+			if (!details.contains("经查明")) {
+				try {
+					details = filterErrInfo(ocrUtil.getTextFromImg(downLoadFile(financeMonitorPunish.getUrl())));
+				} catch (Exception e) {
+					log.debug(e.getMessage());
+					return true;
+				}
+			}
 		}
+		details = details.replaceAll("\\s*", "")
+				.replace(":", "：")
+				.replace(",", "，")
+				.replace("o", "。")
+				.replace("　", "")
+				.replace(" ", "")
+				.replace("　　", "")
+				.replace("\n", "").trim();
+		financeMonitorPunish.setDetails(details);
+
+		//当事人
+		String partyPerson = "";
+		String partyInstitution = "";
+
+		if (details.contains("当事人：") && details.indexOf("当事人：") < details.indexOf("经查明，")) {
+			String pString = details.substring(details.indexOf("当事人：") + 4, details.indexOf("经查明，"));
+
+			String personArray[] = pString.contains("；") ? pString.split("；") : pString.split("。");
+			for (String psub : personArray) {
+				if (StrUtil.isEmpty(psub)) continue;
+				psub = psub.contains("，") ? psub.substring(0, psub.indexOf("，")) : psub;
+				psub = psub.contains("：") ? psub.substring(0, psub.indexOf("：")) : psub;
+				if (psub.contains("公司") || psub.contains("（有限合伙）")
+						|| psub.contains("事务所") || psub.contains("集团")
+						|| psub.contains("实业有限") || psub.contains("联社")) {
+					partyInstitution += "，" + psub;
+				} else {
+					partyPerson += "，" + psub;
+				}
+			}
+		}
+		if (StrUtil.isNotEmpty(partyPerson)) {
+			financeMonitorPunish.setPartyPerson(partyPerson.substring(1));
+		}
+		if (StrUtil.isNotEmpty(partyInstitution)) {
+			financeMonitorPunish.setPartyInstitution(partyInstitution.substring(1));
+		} else {
+			financeMonitorPunish.setPartyInstitution(null);
+		}
+
+		//违规情况
+		//股票上市规则
+		String pStr = "";
+		int pIndx = -1;
+		String[] p = {"《股票上市规则", "《创业板股票上市规则", "《证券法》", "《股示上市规则"};
+
+		for (int i = 0; i < p.length; i++) {
+			if (details.indexOf(p[i]) > -1) {
+				pStr = p[i];
+				pIndx = details.indexOf(p[i]);
+				break;
+			}
+		}
+
+		if (details.contains("经查明，") && details.indexOf("经查明，") < pIndx) {
+			String tmp = details.substring(details.indexOf("经查明，") + 4, pIndx);
+			tmp = tmp.substring(0, tmp.lastIndexOf("。") + 1);
+			financeMonitorPunish.setIrregularities(tmp);
+		}
+
 
 		financeMonitorPunish.setPunishInstitution("深圳证券交易所");
 		return saveOne(financeMonitorPunish, isForce);

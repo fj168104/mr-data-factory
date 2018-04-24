@@ -112,10 +112,13 @@ public class SiteController extends BaseController {
 	 */
 	@RequestMapping(value = "/data/delete")
 	public ModelMap delSiteData(@RequestParam(value = "primaryKey", required = false) String primaryKey,
+								@RequestParam(value = "url", required = false) String url,
 								@RequestParam(value = "source", required = false) String source) throws Exception {
 		ModelMap map = new ModelMap();
 		if (!StringUtils.isEmpty(primaryKey)) {
 			map.addAttribute("delete_result", siteService.deleteByBizKey(primaryKey));
+		}if (!StringUtils.isEmpty(url)) {
+			map.addAttribute("delete_result", siteService.deleteByUrl(url));
 		} else if (!StringUtils.isEmpty(source)) {
 			map.addAttribute("delete_result", siteService.deleteBySource(source));
 		} else {

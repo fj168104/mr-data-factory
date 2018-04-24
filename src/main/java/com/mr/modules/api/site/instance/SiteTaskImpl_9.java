@@ -155,18 +155,24 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 		log.info(contentUri);
 		String fileName = contentUri.substring(contentUri.lastIndexOf("/") + 1);
 		String content = null;    //函件内容
-		downLoadFile(contentUri, fileName);
-		if (fileName.toLowerCase().endsWith("doc")) {
-			content = ocrUtil.getTextFromDoc(fileName);
-		} else if (fileName.toLowerCase().endsWith("pdf")) {
-			content = ocrUtil.getTextFromPdf(fileName);
-			if (!content.contains("深圳证券交易所")) {
-				downLoadFile(contentUri, fileName);
-				content = ocrUtil.getTextFromImg(fileName);
+		try {
+			downLoadFile(contentUri, fileName);
+			if (fileName.toLowerCase().endsWith("doc")) {
+				content = ocrUtil.getTextFromDoc(fileName);
+			} else if (fileName.toLowerCase().endsWith("pdf")) {
+				content = ocrUtil.getTextFromPdf(fileName);
+				if (!content.contains("深圳证券交易所")) {
+					downLoadFile(contentUri, fileName);
+					content = ocrUtil.getTextFromImg(fileName);
+				}
 			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return true;
 		}
+
 		content = content.replace("\n", "")
-				.replace("o", "")
+				.replace("o", "。")
 				.replace(";", "；")
 				.replace(":", "：").replaceAll("\\s*", "")
 				.replace("住所：", "");
@@ -206,12 +212,34 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 			}
 			if (StrUtil.isNotEmpty(person)) {
 				person = person.substring(1);
-				if(person.startsWith("，")){
+				if (person.startsWith("，")) {
 					person = person.substring(1);
 				}
 				financeMonitorPunish.setPartyPerson(person);
 			}
 		}
+
+		//违规情况
+		//股票上市规则
+		String pStr = "";
+		int pIndx = -1;
+		String[] p = {"《非公开发行公司债券"};
+
+		for (int i = 0; i < p.length; i++) {
+			if (content.indexOf(p[i]) > -1) {
+				pStr = p[i];
+				pIndx = content.indexOf(p[i]);
+				break;
+			}
+		}
+
+		if (content.contains("经查明，") && content.indexOf("经查明，") < pIndx) {
+			String tmp = content.substring(content.indexOf("经查明，") + 4, pIndx);
+			tmp = tmp.substring(0, tmp.lastIndexOf("。") + 1);
+			financeMonitorPunish.setIrregularities(tmp);
+		}
+
+
 		financeMonitorPunish.setDetails(filterErrInfo(content));
 		financeMonitorPunish.setPunishInstitution("深圳证券交易所");
 

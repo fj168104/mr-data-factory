@@ -10,20 +10,50 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
 @Component("gansu")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_GanSu extends SiteTaskExtendSub{
+    /**
+     * 获取：全量、增量
+     * 通过发布时间：yyyy-mm-dd格式进行增量处理
+     * 注：请求参数：publishDate
+     */
     @Override
     protected String execute() throws Throwable {
-//        String url = "http://gansu.circ.gov.cn/web/site14/tab3389/module8914/page1.htm";
+//        String url = "http://anhui.circ.gov.cn/web/site11/tab3388/module8940/page1.htm";
         List<String> urlList = extractPageUrlList();
         for(String urlResult : urlList){
             log.info("urlResult:"+urlResult);
             Map map = extractContent(getData(urlResult));
             getObj(map,urlResult);
+        }
+        return null;
+    }
+    /**
+     * 获取：单笔
+     * 注：请求参数传入：url
+     */
+    @Override
+    protected String executeOne() throws Throwable {
+        log.info("============Url=========="+oneFinanceMonitorPunish.getUrl());
+        log.info("=======PublishDate======="+oneFinanceMonitorPunish.getPublishDate());
+        if(oneFinanceMonitorPunish.getUrl()!=null){
+            log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
+            Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
+            getObj(map,oneFinanceMonitorPunish.getUrl());
+        }
+        if(oneFinanceMonitorPunish.getPublishDate()!=null){
+            List<String> urlList = extractPageUrlListAdd(oneFinanceMonitorPunish.getPublishDate());
+            for(String urlResult : urlList){
+                log.info("urlResult:"+urlResult);
+                Map map = extractContent(getData(urlResult));
+                getObj(map,urlResult);
+            }
         }
         return null;
     }
@@ -49,6 +79,37 @@ public class SiteTaskImpl_BOIS_GanSu extends SiteTaskExtendSub{
                 String resultUrl = "http://gansu.circ.gov.cn"+elementUrl.attr("href");
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
                 urlList.add(resultUrl);
+            }
+        }
+        return urlList;
+    }
+    /*
+     *  xtractPageAll,增量集合
+     * @return
+     */
+    public List extractPageUrlListAdd(String date)throws Throwable{
+        List<String> urlList = new ArrayList<>();
+        //第一个页面，用于获取总页数
+        String baseUrl = "http://gansu.circ.gov.cn/web/site14/tab3389/module8914/page1.htm";
+        //解析第一个页面，获取这个页面上下文
+        String fullTxt = getData(baseUrl);
+        //获取页数
+        int  pageAll= extractPage(fullTxt);
+        for(int i=1;i<=pageAll;i++){
+            String url ="http://gansu.circ.gov.cn/web/site14/tab3389/module8914/page"+i+".htm";
+            String resultTxt = getData(url);
+            Document doc = Jsoup.parse(resultTxt);
+            Elements elementsHerf = doc.getElementsByClass("hui14");
+            for(Element element : elementsHerf){
+                //发布时间
+                Element element_td = element.nextElementSibling();
+                String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
+                if(new SimpleDateFormat("yyyy-MM-dd").parse(extract_Date).compareTo(new SimpleDateFormat("yyyy-MM-dd").parse(date))>=0){
+                    Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
+                    String resultUrl = "http://gansu.circ.gov.cn"+elementUrl.attr("href");
+                    log.info("编号："+i+"==resultUrl:"+resultUrl);
+                    urlList.add(resultUrl);
+                }
             }
         }
         return urlList;

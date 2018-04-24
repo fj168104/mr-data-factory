@@ -90,6 +90,32 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 		}
 		return financeMonitorPunish;
 	}
+	protected String downLoadFile(String targetUri, String fName) throws URISyntaxException, IOException {
+		String fileName = targetUri.substring(targetUri.lastIndexOf("/") + 1);
+		if (!Objects.isNull(fName))
+			fileName = fName;
+//		String targetUri = "http://www.neeq.com.cn/uploads/1/file/public/201802/20180226182405_lc6vjyqntd.pdf";
+		// 小文件
+		RequestEntity requestEntity = RequestEntity.get(new URI(targetUri)).build();
+		ResponseEntity<byte[]> responseEntity = restTemplate.exchange(requestEntity, byte[].class);
+		byte[] downloadContent = responseEntity.getBody();
+		OutputStream out = new FileOutputStream(OCRUtil.DOWNLOAD_DIR + File.separator + fileName);
+		out.write(downloadContent);
+		out.close();
+		return fileName;
 
+		// 大文件
+		//		FileOutputStream f=new FileOutputStream()
+		//		ResponseExtractor<ResponseEntity<File>> responseExtractor = new ResponseExtractor<ResponseEntity<File>>() {
+		//			@Override
+		//			public ResponseEntity<File> extractData(ClientHttpResponse response) throws IOException {
+		//				File rcvFile = File.createTempFile("rcvFile", "zip");
+		//				FileCopyUtils.copy(response.getBody(), new FileOutputStream(rcvFile));
+		//				return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(rcvFile);
+		//			}
+		//		};
+		//		ResponseEntity<File> getFile = restTemplate.execute(targetUri, HttpMethod.GET, (RequestCallback) null, responseExtractor);
+
+	}
 
 }

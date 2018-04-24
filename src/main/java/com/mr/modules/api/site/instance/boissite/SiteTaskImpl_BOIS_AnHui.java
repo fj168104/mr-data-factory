@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -18,9 +19,14 @@ import java.util.*;
  * @DateTime：201803
  */
 @Slf4j
-@Component("anhui")
+@Component("bois_anhui")
 @Scope("prototype")
 public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtendSub{
+    /**
+     * 获取：全量、增量
+     * 通过发布时间：yyyy-mm-dd格式进行增量处理
+     * 注：请求参数：publishDate
+     */
     @Override
     protected String execute() throws Throwable {
 //        String url = "http://anhui.circ.gov.cn/web/site11/tab3388/module8940/page1.htm";
@@ -33,7 +39,30 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtendSub{
         return null;
     }
     /**
-     *  xtractPageAll,URl集合
+     * 获取：单笔
+     * 注：请求参数传入：url
+     */
+    @Override
+    protected String executeOne() throws Throwable {
+        log.info("============Url=========="+oneFinanceMonitorPunish.getUrl());
+        log.info("=======PublishDate======="+oneFinanceMonitorPunish.getPublishDate());
+        if(oneFinanceMonitorPunish.getUrl()!=null){
+            log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
+            Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
+            getObj(map,oneFinanceMonitorPunish.getUrl());
+        }
+        if(oneFinanceMonitorPunish.getPublishDate()!=null){
+            List<String> urlList = extractPageUrlListAdd(oneFinanceMonitorPunish.getPublishDate());
+            for(String urlResult : urlList){
+                log.info("urlResult:"+urlResult);
+                Map map = extractContent(getData(urlResult));
+                getObj(map,urlResult);
+            }
+        }
+        return null;
+    }
+    /**
+     *  xtractPageAll,UR全量集合
      * @return
      */
     public List extractPageUrlList(){
@@ -54,6 +83,38 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtendSub{
                 String resultUrl = "http://anhui.circ.gov.cn"+elementUrl.attr("href");
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
                 urlList.add(resultUrl);
+            }
+        }
+        return urlList;
+    }
+    /**
+     *  xtractPageAll,UR全量集合
+     * @return
+     */
+    public List extractPageUrlListAdd(String date) throws Throwable{
+        List<String> urlList = new ArrayList<>();
+        //第一个页面，用于获取总页数
+        String baseUrl = "http://anhui.circ.gov.cn/web/site11/tab3388/module8940/page1.htm";
+        //解析第一个页面，获取这个页面上下文
+        String fullTxt = getData(baseUrl);
+        //获取页数
+        int  pageAll= extractPage(fullTxt);
+        for(int i=1;i<=pageAll;i++){
+            String url ="http://anhui.circ.gov.cn/web/site11/tab3388/module8940/page"+i+".htm";
+            String resultTxt = getData(url);
+            Document doc = Jsoup.parse(resultTxt);
+            Elements elementsHerf = doc.getElementsByClass("hui14");
+            for(Element element : elementsHerf){
+                //发布时间
+                Element element_td = element.nextElementSibling();
+                String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
+                if(new SimpleDateFormat("yyyy-MM-dd").parse(extract_Date).compareTo(new SimpleDateFormat("yyyy-MM-dd").parse(date))>=0){
+                    Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
+                    String resultUrl = "http://anhui.circ.gov.cn"+elementUrl.attr("href");
+                    log.info("编号："+i+"==resultUrl:"+resultUrl);
+                    urlList.add(resultUrl);
+                }
+
             }
         }
         return urlList;

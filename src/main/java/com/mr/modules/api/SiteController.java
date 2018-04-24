@@ -40,7 +40,19 @@ public class SiteController extends BaseController {
 			code = siteService.start(indexId, callId);
 		} else {
 			Map mapParams = new HashMap();
-			if (request.getQueryString().contains("region=")) {
+			if (request.getQueryString().contains("publishDate=")) {
+				String publishDate = request.getParameter("publishDate");
+				mapParams.put("publishDate", publishDate);
+			}
+			if (request.getQueryString().contains("url=")) {
+				String url = request.getParameter("url");
+				mapParams.put("url", url);
+			}if (request.getQueryString().contains("region=")) {
+				String region = request.getParameter("region");
+				mapParams.put("region", region);
+			}
+			code = siteService.startByParams(indexId, callId, mapParams);
+			/*if (request.getQueryString().contains("region=")) {
 				String region = request.getParameter("region");
 				mapParams.put("region", region);
 				code = siteService.startByParams(indexId, callId, mapParams);
@@ -55,7 +67,7 @@ public class SiteController extends BaseController {
 				code = siteService.startByParams(indexId, callId, mapParams);
 			} else {
 				code = "params-error";
-			}
+			}*/
 
 		}
 		map.addAttribute("code", code);

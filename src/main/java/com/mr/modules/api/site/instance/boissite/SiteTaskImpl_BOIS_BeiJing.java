@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -21,6 +22,11 @@ import java.util.*;
 @Component("beijing")
 @Scope("prototype")
 public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
+    /**
+     * 获取：全量、增量
+     * 通过发布时间：yyyy-mm-dd格式进行增量处理
+     * 注：请求参数：publishDate
+     */
     @Override
     protected String execute() throws Throwable {
         String url = "http://beijing.circ.gov.cn/web/site3/tab3419/";
@@ -36,7 +42,35 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
 
         return null;
     }
-
+    /**
+     * 获取：单笔
+     * 注：请求参数传入：url
+     */
+    @Override
+    protected String executeOne() throws Throwable {
+        log.info("============Url=========="+oneFinanceMonitorPunish.getUrl());
+        log.info("=======PublishDate======="+oneFinanceMonitorPunish.getPublishDate());
+        if(oneFinanceMonitorPunish.getUrl()!=null){
+            log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
+            Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
+            getObj(map,oneFinanceMonitorPunish.getUrl());
+        }
+        if(oneFinanceMonitorPunish.getPublishDate()!=null){
+            String url = "http://beijing.circ.gov.cn/web/site3/tab3419/";
+            String fullTxt = getData(url);
+            log.info("请耐心等待···Url加载中···");
+            Set setUrl = extractPage(fullTxt);
+            Iterator<String> it = setUrl.iterator();
+            while (it.hasNext()) {
+                String strUrl = it.next();
+                Map map = extractContent(getData(strUrl));
+                if(new SimpleDateFormat("yyyy-MM-dd").parse(map.get("publishDate").toString()).compareTo(new SimpleDateFormat("yyyy-MM-dd").parse(oneFinanceMonitorPunish.getPublishDate()))>=0){
+                    getObj(map,strUrl);
+                }
+            }
+        }
+        return null;
+    }
     /**
      * 获取保监会处罚列表所有页数
      * @param fullTxt

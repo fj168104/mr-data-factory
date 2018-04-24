@@ -43,10 +43,37 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 	@Override
 	protected String executeOne() throws Throwable {
 
-		if(!oneFinanceMonitorPunish.getUrl().equalsIgnoreCase("")){
+		if(oneFinanceMonitorPunish.getUrl() != null){
 			extractPageByUrl(oneFinanceMonitorPunish.getUrl());
-		}else{
-			extract();
+		}
+		if(oneFinanceMonitorPunish.getPublishDate() != null){
+			int pageAll = 1;
+			//获取清单列表页数pageAll
+			String targetUri1 = "http://bxjg.circ.gov.cn/web/site0/tab5240/";
+			String fullTxt1 = getData(targetUri1);
+			pageAll = extractPage(fullTxt1);
+			//1.保监会处罚列表清单
+			List<List<?>> listList = new ArrayList<>();
+			for (int i = 1;i<=pageAll;i++){
+				String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
+				String fullTxt2 = getData(targetUri2);
+				listList.add(extractListByDate(fullTxt2,oneFinanceMonitorPunish.getPublishDate()));
+				log.info("看到你到这儿我可安心了哈······");
+			}
+			//2.获取处罚详情信息
+			for(List<?> list : listList) {//其内部实质上还是调用了迭代器遍历方式，这种循环方式还有其他限制，不建议使用。
+				for (int i=0;i<list.size();i++){
+					String urlStr = list.get(i).toString();
+					String[] urlArr = urlStr.split("\\|\\|");
+					String id = urlArr[0];
+					String url = urlArr[1];
+					log.info("excuteOne-----------url:"+url);
+					String fileName = urlArr[2];
+					//提取正文结构化数据
+					Map record = extractContent(getData(url),id,fileName);
+					getObj(record,url);
+				}
+			}
 		}
 		return null;
 	}
@@ -69,14 +96,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		for (int i = 1;i<=pageAll;i++){
 			String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
 			String fullTxt2 = getData(targetUri2);
-			if(oneFinanceMonitorPunish!=null){
-				if(!oneFinanceMonitorPunish.getPublishDate().equalsIgnoreCase("")){
-					listList.add(extractListByDate(fullTxt2,oneFinanceMonitorPunish.getPublishDate()));
-				}
-			}else{
-				listList.add(extractList(fullTxt2));
-			}
-
+			listList.add(extractList(fullTxt2));
 		}
 
 		//2.获取处罚详情信息
@@ -152,7 +172,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 	/**
 	 * 根据发布日期获取总页数下的所有连接url，获取指定日期的数据时格式为yyyy-mm-dd,获取某年某一个月内的数据时格式为yyyy-mm
 	 * */
-	private List<?> extractListByDate(String fullTxt,String date){
+	private List<?> extractListByDate(String fullTxt,String date) throws Throwable {
 		List<String> list = new ArrayList<>();
 		Document doc = Jsoup.parse(fullTxt);
 		Elements span = doc.getElementsByAttributeValue("id","lan1");
@@ -162,7 +182,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 			Element element_td = elementSpan.parent().nextElementSibling();
 			String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
 
-			if(date.equalsIgnoreCase(extract_Date) || extract_Date.contains(date)){
+			if(new SimpleDateFormat("yyyy-MM-dd").parse(extract_Date).compareTo(new SimpleDateFormat("yyyy-MM-dd").parse(date))>=0){
 				Elements elements = elementSpan.getElementsByTag("a");
 				Element elementA = elements.get(0);
 				//抽取编号Id

@@ -25,7 +25,7 @@ import java.util.Map;
  * 当事人集合（当事人姓名、当事人身份证号、当事人职务、当事人住址）、发布机构、发布日期、行政处罚详情、处罚机关、处罚日期
  */
 @Slf4j
-@Component("qinghai")
+@Component("bois_qinghai")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_QingHai extends SiteTaskExtendSub {
     /**

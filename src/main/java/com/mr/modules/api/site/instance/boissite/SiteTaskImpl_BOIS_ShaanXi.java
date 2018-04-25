@@ -23,7 +23,7 @@ import java.util.Map;
  * 陕西保监局处罚信息提取
  */
 @Slf4j
-@Component("shaanxi")
+@Component("bois_shaanxi")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_ShaanXi extends SiteTaskExtendSub {
     /**

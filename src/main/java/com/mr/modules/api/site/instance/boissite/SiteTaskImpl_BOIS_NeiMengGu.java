@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component("neimenggu")
+@Component("bois_neimenggu")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_NeiMengGu extends SiteTaskExtendSub{
     /**

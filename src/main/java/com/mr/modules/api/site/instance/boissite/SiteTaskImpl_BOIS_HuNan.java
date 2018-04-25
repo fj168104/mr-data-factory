@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Component("hunan")
+@Component("bois_hunan")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_HuNan extends SiteTaskExtendSub {
     /**

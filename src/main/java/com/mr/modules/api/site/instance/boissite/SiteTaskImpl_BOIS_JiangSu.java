@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
-@Component("jiangsu")
+@Component("bois_jiangsu")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_JiangSu extends SiteTaskExtendSub{
     /**

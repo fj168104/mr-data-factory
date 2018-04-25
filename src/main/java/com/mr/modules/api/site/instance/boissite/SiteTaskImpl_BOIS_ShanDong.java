@@ -26,7 +26,7 @@ import java.util.Map;
  * TODO 山东保监局发布的处罚信息有部分是Excel文件，需要解析Excel文件
  */
 @Slf4j
-@Component("shandong")
+@Component("bois_shandong")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_ShanDong extends SiteTaskExtendSub {
     /**

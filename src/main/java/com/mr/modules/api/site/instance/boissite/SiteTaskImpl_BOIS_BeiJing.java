@@ -19,7 +19,7 @@ import java.util.*;
  * @DateTime：201803
  */
 @Slf4j
-@Component("beijing")
+@Component("bois_beijing")
 @Scope("prototype")
 public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
     /**

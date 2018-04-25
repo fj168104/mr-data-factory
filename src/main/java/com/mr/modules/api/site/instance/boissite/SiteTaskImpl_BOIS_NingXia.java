@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component("ningxia")
+@Component("bois_ningxia")
 @Slf4j
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_NingXia extends SiteTaskExtendSub {

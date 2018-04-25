@@ -26,7 +26,7 @@ import java.util.Map;
  *
  */
 @Slf4j
-@Component("shanxi")
+@Component("bois_shanxi")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_ShanXi extends SiteTaskExtendSub {
 

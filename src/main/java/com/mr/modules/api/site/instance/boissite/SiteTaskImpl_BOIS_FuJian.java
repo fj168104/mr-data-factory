@@ -20,7 +20,7 @@ import java.util.*;
  * 福建保监局处罚信息提取
  */
 @Slf4j
-@Component("fujian")
+@Component("bois_fujian")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_FuJian extends SiteTaskExtendSub{
     /**

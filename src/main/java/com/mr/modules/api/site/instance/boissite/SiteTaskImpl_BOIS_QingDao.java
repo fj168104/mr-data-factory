@@ -24,7 +24,7 @@ import java.util.Map;
  * 序号、处罚文号、机构当事人名称、机构当事人住所、机构负责人姓名、
  * 当事人集合（当事人姓名、当事人身份证号、当事人职务、当事人住址）、发布机构、发布日期、行政处罚详情、处罚机关、处罚日期
  */
-@Component("qingdao")
+@Component("bois_qingdao")
 @Slf4j
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_QingDao extends SiteTaskExtendSub {

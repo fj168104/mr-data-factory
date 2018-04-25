@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
-@Component("hubei")
+@Component("bois_hubei")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_HuBei extends SiteTaskExtendSub {
     /**

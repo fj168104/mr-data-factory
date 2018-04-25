@@ -18,7 +18,7 @@ import java.util.*;
  * @DateTime：201803
  */
 @Slf4j
-@Component("dalian")
+@Component("bois_dalian")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
     /**

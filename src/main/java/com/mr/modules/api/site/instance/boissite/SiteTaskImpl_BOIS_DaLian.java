@@ -34,8 +34,12 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
             log.info("urlResult:"+urlResult);
             List<Map<String,String>> mapList = extractContent(getData(urlResult));
             for(Map<String,String> map : mapList){
-
-                getObj(map,urlResult);
+                try{
+                    getObj(map,urlResult);
+                }catch (Exception e){
+                    log.error("请检查此条url："+urlResult+"\n"+e.getMessage());
+                    continue;
+                }
             }
         }
         return null;
@@ -52,7 +56,12 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
             log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
             List<Map<String,String>> mapList = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
             for(Map<String,String> map : mapList){
-                getObj(map,oneFinanceMonitorPunish.getUrl());
+                try{
+                    getObj(map,oneFinanceMonitorPunish.getUrl());
+                }catch (Exception e){
+                    log.error("请检查此条url："+oneFinanceMonitorPunish.getUrl()+"\n"+e.getMessage());
+                    continue;
+                }
             }
 
         }
@@ -62,7 +71,12 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
                 log.info("urlResult:"+urlResult);
                 List<Map<String,String>> mapList = extractContent(getData(urlResult));
                 for(Map<String,String> map : mapList){
-                    getObj(map,urlResult);
+                    try{
+                        getObj(map,urlResult);
+                    }catch (Exception e){
+                        log.error("请检查此条url："+urlResult+"\n"+e.getMessage());
+                        continue;
+                    }
                 }
             }
         }

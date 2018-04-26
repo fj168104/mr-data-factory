@@ -71,7 +71,13 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 					String fileName = urlArr[2];
 					//提取正文结构化数据
 					Map record = extractContent(getData(url),id,fileName);
-					getObj(record,url);
+
+					try{
+						getObj(record,url);
+					}catch (Exception e){
+						log.error("请检查此条url："+url+"\n"+e.getMessage());
+						continue;
+					}
 				}
 			}
 		}
@@ -111,16 +117,14 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 
 				//提取正文结构化数据
 				Map record = extractContent(getData(url),id,fileName);
-
-				getObj(record,url);
-
-//				   listsExcel.add(record);
-				//下载文件
-//                   downLoadFile(url,fileName+".html");
-//                   log.info("序号："+i+"----->>>------"+url);
+				try{
+					getObj(record,url);
+				}catch (Exception e){
+					log.error("请检查此条url："+url+"\n"+e.getMessage());
+					continue;
+				}
 			}
 		}
-//		exportToXls("circ.xlsx", listsExcel);
 		log.info("保监会处罚信息抓起完成···");
 	}
 	/**

@@ -41,7 +41,12 @@ public class SiteTaskImpl_BOIS_NingBo extends SiteTaskExtendSub {
         for(String urlResult : urlList){
             log.info("urlResult:"+urlResult);
             Map map = extractContent(getData(urlResult));
-            getObj(map,urlResult);
+            try{
+                getObj(map,urlResult);
+            }catch (Exception e){
+                log.error("请检查此条url："+urlResult+"\n"+e.getMessage());
+                continue;
+            }
         }
         return null;
     }
@@ -56,14 +61,24 @@ public class SiteTaskImpl_BOIS_NingBo extends SiteTaskExtendSub {
         if(oneFinanceMonitorPunish.getUrl()!=null){
             log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
             Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
-            getObj(map,oneFinanceMonitorPunish.getUrl());
+
+            try{
+                getObj(map,oneFinanceMonitorPunish.getUrl());
+            }catch (Exception e){
+                log.error("请检查此条url："+oneFinanceMonitorPunish.getUrl()+"\n"+e.getMessage());
+            }
         }
         if(oneFinanceMonitorPunish.getPublishDate()!=null){
             List<String> urlList = extractPageUrlListAdd(oneFinanceMonitorPunish.getPublishDate());
             for(String urlResult : urlList){
                 log.info("urlResult:"+urlResult);
                 Map map = extractContent(getData(urlResult));
-                getObj(map,urlResult);
+                try{
+                    getObj(map,urlResult);
+                }catch (Exception e){
+                    log.error("请检查此条url："+urlResult+"\n"+e.getMessage());
+                    continue;
+                }
             }
         }
         return null;

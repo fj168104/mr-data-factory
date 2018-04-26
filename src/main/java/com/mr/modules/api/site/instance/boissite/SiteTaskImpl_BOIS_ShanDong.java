@@ -41,7 +41,12 @@ public class SiteTaskImpl_BOIS_ShanDong extends SiteTaskExtendSub {
         for(String urlResult : urlList){
             log.info("urlResult:"+urlResult);
             Map map = extractContent(getData(urlResult));
-            getObj(map,urlResult);
+            try{
+                getObj(map,urlResult);
+            }catch (Exception e){
+                log.error("请检查此条url："+urlResult+"\n"+e.getMessage());
+                continue;
+            }
         }
         return null;
     }

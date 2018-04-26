@@ -37,7 +37,12 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
         while (it.hasNext()) {
             String strUrl = it.next();
             Map map = extractContent(getData(strUrl));
-            getObj(map,strUrl);
+            try{
+                getObj(map,strUrl);
+            }catch (Exception e){
+                log.error("请检查此条url："+strUrl+"\n"+e.getMessage());
+                continue;
+            }
         }
 
         return null;
@@ -53,7 +58,11 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
         if(oneFinanceMonitorPunish.getUrl()!=null){
             log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
             Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
-            getObj(map,oneFinanceMonitorPunish.getUrl());
+            try{
+                getObj(map,oneFinanceMonitorPunish.getUrl());
+            }catch (Exception e){
+                log.error("请检查此条url："+oneFinanceMonitorPunish.getUrl()+"\n"+e.getMessage());
+            }
         }
         if(oneFinanceMonitorPunish.getPublishDate()!=null){
             String url = "http://beijing.circ.gov.cn/web/site3/tab3419/";
@@ -65,7 +74,13 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
                 String strUrl = it.next();
                 Map map = extractContent(getData(strUrl));
                 if(new SimpleDateFormat("yyyy-MM-dd").parse(map.get("publishDate").toString()).compareTo(new SimpleDateFormat("yyyy-MM-dd").parse(oneFinanceMonitorPunish.getPublishDate()))>=0){
-                    getObj(map,strUrl);
+
+                    try{
+                        getObj(map,strUrl);
+                    }catch (Exception e){
+                        log.error("请检查此条url："+strUrl+"\n"+e.getMessage());
+                        continue;
+                    }
                 }
             }
         }

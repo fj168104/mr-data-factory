@@ -191,20 +191,14 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			} else {
 				log.warn("url{} is not doc or pdf", content);
 			}
-		} catch (Exception ex) {
-			log.error(ex.getMessage());
-		}
-
-		try {
 			financeMonitorPunish.setDetails(filterErrInfo(content));
 			extract(content, financeMonitorPunish);
 			processSpecial(financeMonitorPunish);
 			return saveOne(financeMonitorPunish, isForce);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.error(e.getMessage());
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
 		}
+
 		return true;
 	}
 

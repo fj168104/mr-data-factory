@@ -63,11 +63,28 @@ public class SiteTaskImpl_10 extends SiteTaskExtend {
 	@Override
 	protected String executeOne() throws Throwable {
 		log.info("*******************call site10 task for One Record**************");
-		String party = StrUtil.isEmpty(oneFinanceMonitorPunish.getPartyInstitution())
-				? oneFinanceMonitorPunish.getPartyPerson() : oneFinanceMonitorPunish.getPartyInstitution();
 
-		Assert.notNull(party);
 		Assert.notNull(oneFinanceMonitorPunish.getPunishTitle());
+		String title = oneFinanceMonitorPunish.getPunishTitle();
+		String 关于对 = null;
+		if (title.contains("关于对")) {
+			关于对 = "关于对";
+		} else if (title.contains("关于与对")) {
+			关于对 = "关于与对";
+		}
+
+		String 采取 = null;
+		采取 = "采取";
+
+		String punishObj = null;
+		if (StrUtil.isNotEmpty(关于对) && StrUtil.isNotEmpty(采取)) {
+			punishObj = title.substring(title.indexOf(关于对) + 3, title.lastIndexOf(采取));
+		}
+		if (StrUtil.isNotEmpty(punishObj) && (punishObj.contains("公司") || punishObj.contains("事务所"))) {
+			oneFinanceMonitorPunish.setPartyInstitution(punishObj);
+		} else {
+			oneFinanceMonitorPunish.setPartyPerson(punishObj);
+		}
 		Assert.notNull(oneFinanceMonitorPunish.getPublishDate());
 		Assert.notNull(oneFinanceMonitorPunish.getUrl());
 		oneFinanceMonitorPunish.setSource("证监会");
@@ -186,15 +203,18 @@ public class SiteTaskImpl_10 extends SiteTaskExtend {
 	private void extractTxt(FinanceMonitorPunish financeMonitorPunish) {
 		String details = "";
 		String fullTxt = financeMonitorPunish.getDetails();
+		fullTxt = fullTxt.replace("证怡会", "证监会").replace("怡管局", "监管局");
 
 		String punishOrg = "";    //处罚机构
 		int poPostion = fullTxt.indexOf("证监局办公室");
+		if (poPostion < 0) poPostion = fullTxt.indexOf("监管局办公室");
 		if (poPostion < 0) poPostion = fullTxt.indexOf("证监局");
 		if (poPostion > 0) {
 			for (int i = poPostion; ; i--) {
 				if (i < 2) break;
 				if (fullTxt.substring(i, i + 1).equals("\n")) {
 					punishOrg = fullTxt.substring(i + 1, poPostion) + "证监局";
+					punishOrg = punishOrg.replace("中国证监会", "");
 					break;
 				}
 			}

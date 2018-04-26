@@ -135,54 +135,58 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 
 			for (int i = 0; i < results.size(); i++) {
 				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
-				JSONObject jsObj = results.getJSONObject(i);
-				//证券代码
-				String stockcode = jsObj.getStr("stockcode");
-				//证券简称
-				String extGSJC = jsObj.getStr("extGSJC");
-				//名单分类
-				String extWTFL = typeName;
-				//标题名称
-				String docTitle = jsObj.getStr("docTitle");
-				//链接
-				String docURL = jsObj.getStr("docURL");
+				try {
+					JSONObject jsObj = results.getJSONObject(i);
+					//证券代码
+					String stockcode = jsObj.getStr("stockcode");
+					//证券简称
+					String extGSJC = jsObj.getStr("extGSJC");
+					//名单分类
+					String extWTFL = typeName;
+					//标题名称
+					String docTitle = jsObj.getStr("docTitle");
+					//链接
+					String docURL = jsObj.getStr("docURL");
 
-				//涉及对象
+					//涉及对象
 //				String extTeacher = jsObj.getStr("extTeacher");
-				//处理日期
-				String createTime = jsObj.getStr("createTime");
+					//处理日期
+					String createTime = jsObj.getStr("createTime");
 
-				financeMonitorPunish.setStockCode(stockcode);
-				if(stockcode.contains("600610")
-						|| stockcode.contains("900906")
-						||stockcode.contains("600698")
-						||stockcode.contains("900946")){
-					extGSJC = stockcode.replace("600610", "中毅达")
-							.replace("900906", "中毅达B")
-							.replace("600698","湖南天雁")
-							.replace("900946","天雁 B 股");
-				}
-				financeMonitorPunish.setStockShortName(extGSJC);
-
-				financeMonitorPunish.setSupervisionType(typeName);
-				financeMonitorPunish.setPunishTitle(docTitle);
-				financeMonitorPunish.setPunishDate(createTime);
-				financeMonitorPunish.setUrl(docURL.startsWith("http") ? docURL : "http://" + docURL);
-				financeMonitorPunish.setSource("上交所");
-				financeMonitorPunish.setObject("公司监管");
-
-				if (!doFetch(financeMonitorPunish, false)) {
-					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
-							.selectByUrl(financeMonitorPunish.getUrl());
-					if (srcFmp.getSupervisionType().contains(typeName)) {
-						return lists;
-					} else {
-						srcFmp.setSupervisionType(srcFmp.getSupervisionType() + "|" + typeName);
-						financeMonitorPunishMapper.updateByPrimaryKey(srcFmp);
+					financeMonitorPunish.setStockCode(stockcode);
+					if (stockcode.contains("600610")
+							|| stockcode.contains("900906")
+							|| stockcode.contains("600698")
+							|| stockcode.contains("900946")) {
+						extGSJC = stockcode.replace("600610", "中毅达")
+								.replace("900906", "中毅达B")
+								.replace("600698", "湖南天雁")
+								.replace("900946", "天雁 B 股");
 					}
+					financeMonitorPunish.setStockShortName(extGSJC);
 
+					financeMonitorPunish.setSupervisionType(typeName);
+					financeMonitorPunish.setPunishTitle(docTitle);
+					financeMonitorPunish.setPunishDate(createTime);
+					financeMonitorPunish.setUrl(docURL.startsWith("http") ? docURL : "http://" + docURL);
+					financeMonitorPunish.setSource("上交所");
+					financeMonitorPunish.setObject("公司监管");
 
+					if (!doFetch(financeMonitorPunish, false)) {
+						FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
+								.selectByUrl(financeMonitorPunish.getUrl());
+						if (srcFmp.getSupervisionType().contains(typeName)) {
+							return lists;
+						} else {
+							srcFmp.setSupervisionType(srcFmp.getSupervisionType() + "|" + typeName);
+							financeMonitorPunishMapper.updateByPrimaryKey(srcFmp);
+						}
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage());
+					continue;
 				}
+
 				lists.add(financeMonitorPunish);
 			}
 

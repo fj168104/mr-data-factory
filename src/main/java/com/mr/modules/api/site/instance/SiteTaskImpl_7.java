@@ -124,19 +124,24 @@ public class SiteTaskImpl_7 extends SiteTaskExtend {
 			financeMonitorPunish.setSource("深交所");
 			financeMonitorPunish.setObject("上市公司处罚与处分记录");
 
-			//增量抓取
-			if (!doFetch(financeMonitorPunish, false)) {
-				FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
-						.selectByBizKey(financeMonitorPunish.getPrimaryKey());
-				if (srcFmp.getPunishCategory().contains(financeMonitorPunish.getPunishCategory())) {
-					return lists;
-				} else {
+			try {
+				//增量抓取
+				if (!doFetch(financeMonitorPunish, false)) {
+					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
+							.selectByBizKey(financeMonitorPunish.getPrimaryKey());
+					if (srcFmp.getPunishCategory().contains(financeMonitorPunish.getPunishCategory())) {
+						return lists;
+					} else {
 //					srcFmp.setPunishCategory(srcFmp.getPunishCategory()
 //							+ "|" + financeMonitorPunish.getPunishCategory());
-					srcFmp.setPunishCategory(financeMonitorPunish.getPunishCategory());
-					srcFmp.setId(null);
-					financeMonitorPunishMapper.insert(srcFmp);
+						srcFmp.setPunishCategory(financeMonitorPunish.getPunishCategory());
+						srcFmp.setId(null);
+						financeMonitorPunishMapper.insert(srcFmp);
+					}
 				}
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				continue;
 			}
 
 			lists.add(financeMonitorPunish);

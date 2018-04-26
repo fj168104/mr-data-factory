@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Slf4j
-@Component("bois")
+@Component("bois_list")
 @Scope("prototype")
 public class SiteTaskImpl_BOIS_List extends SiteTaskExtend {
 

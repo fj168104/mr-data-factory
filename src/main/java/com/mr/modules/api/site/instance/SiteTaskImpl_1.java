@@ -13,6 +13,7 @@ import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -82,7 +83,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 		String url = "http://www.neeq.com.cn/disclosureInfoController/infoResult.do";
 		java.util.Map<String, String> requestParams = Maps.newHashMap();
-		requestParams.put("callback", "jQuery18305898860958323444_1521941846680");
+//
 		requestParams.put("disclosureType", "8");
 		requestParams.put("companyCd", "公司名称/拼音/代码");
 		requestParams.put("keyword", "关键字");
@@ -93,9 +94,23 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		for (int pageNo = 0; pageNo <= pageCount; pageNo++) {
 			log.info("page:" + pageNo);
 			requestParams.put("page", String.valueOf(pageNo));
-			String bodyStr = postData(url, requestParams)
-					.replace("jQuery18305898860958323444_1521941846680([", "");
+			String strTime = String.format("jQuery183079464724343002%d_%d", 10 + pageNo, System.currentTimeMillis());
+			requestParams.put("callback", strTime);
+			String bodyStr = null;
+			int waitTime = 0;
+			while (StrUtil.isEmpty(bodyStr) && waitTime++ < 10) {
+				try {
+					bodyStr = postData(url, requestParams, 3)
+							.replace(strTime + "([", "");
+				} catch (Exception e) {
+					log.error("site can not be visited:" + e.getMessage() + " | sleep time:" + waitTime * 10000);
+					Thread.sleep(waitTime * 10000);
+				}
+			}
+
+
 			bodyStr = bodyStr.substring(0, bodyStr.length() - 2);
+
 			JSONObject jsonObject = JSONUtil.parseObj(bodyStr);
 			JSONObject listInfoObj = jsonObject.getJSONObject("listInfo");
 			pageCount = Integer.parseInt(listInfoObj.getStr("totalPages"));
@@ -121,6 +136,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				financeMonitorPunish.setObject("全国中小企业股转系统-监管公告");
 				financeMonitorPunish.setSource("全国中小企业股转系统");
 
+				Thread.sleep(500);
 				//增量抓取
 				if (!doFetch(financeMonitorPunish, false)) {
 					return lists;

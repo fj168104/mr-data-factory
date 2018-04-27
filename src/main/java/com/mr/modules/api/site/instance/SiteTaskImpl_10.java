@@ -155,14 +155,18 @@ public class SiteTaskImpl_10 extends SiteTaskExtend {
 				financeMonitorPunish.setSource("证监会");
 
 				//增量抓取
-				if (!doFetch(financeMonitorPunish, false)) {
-					return lists;
+				try {
+					if (!doFetchForRetry(financeMonitorPunish, false)) {
+						return lists;
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage());
+					continue;
 				}
 
 				lists.add(financeMonitorPunish);
 			}
 		}
-
 
 		return lists;
 	}
@@ -173,25 +177,21 @@ public class SiteTaskImpl_10 extends SiteTaskExtend {
 	 * @param financeMonitorPunish
 	 * @param isForce
 	 */
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
-							Boolean isForce) throws Exception {
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+							  Boolean isForce) throws Exception {
+		String fileName = downLoadFile(financeMonitorPunish.getUrl());
+		String fullTxt = null;
 		try {
-			String fileName = downLoadFile(financeMonitorPunish.getUrl());
-			String fullTxt = null;
-			try {
-				fullTxt = ocrUtil.getTextFromImg(fileName);
-			} catch (RuntimeException e) {
-				log.error("ocr 解析失败，失败原因：" + e.getMessage());
-				return true;
-			}
-			log.info(fullTxt);
-			financeMonitorPunish.setDetails(fullTxt);
-			extractTxt(financeMonitorPunish);
-			processSpecial(financeMonitorPunish);
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("site>>>{} parse error", financeMonitorPunish.getUrl());
+			fullTxt = ocrUtil.getTextFromImg(fileName);
+		} catch (RuntimeException e) {
+			log.error("ocr 解析失败，失败原因：" + e.getMessage());
+			return true;
 		}
+		log.info(fullTxt);
+		financeMonitorPunish.setDetails(fullTxt);
+		extractTxt(financeMonitorPunish);
+		processSpecial(financeMonitorPunish);
 
 		return saveOne(financeMonitorPunish, isForce);
 	}

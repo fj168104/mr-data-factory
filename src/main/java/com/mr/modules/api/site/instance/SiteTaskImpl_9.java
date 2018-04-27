@@ -2,6 +2,7 @@ package com.mr.modules.api.site.instance;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mr.common.IdempotentOperator;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
 import com.mr.framework.core.util.StrUtil;
@@ -20,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * Created by feng on 18-3-16
@@ -134,7 +136,7 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 					financeMonitorPunish.setSource("深交所");
 					financeMonitorPunish.setObject("中介机构处罚与处分记录");
 
-					if (!doFetch(financeMonitorPunish, false)) {
+					if (!doFetchForRetry(financeMonitorPunish, false)) {
 						return lists;
 					}
 				} catch (Exception e) {
@@ -149,6 +151,7 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 		return lists;
 	}
 
+
 	/**
 	 * 抓取并解析单条数据
 	 * map[fileName; punishObj; objType; pCode; title; pDate; pStock; contentUri]
@@ -156,26 +159,22 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 	 * @param financeMonitorPunish
 	 * @param isForce
 	 */
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
-							Boolean isForce) throws Exception {
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+							Boolean isForce) throws Exception{
 		String contentUri = financeMonitorPunish.getUrl();
 		log.info(contentUri);
 		String fileName = contentUri.substring(contentUri.lastIndexOf("/") + 1);
 		String content = null;    //函件内容
-		try {
-			downLoadFile(contentUri, fileName);
-			if (fileName.toLowerCase().endsWith("doc")) {
-				content = ocrUtil.getTextFromDoc(fileName);
-			} else if (fileName.toLowerCase().endsWith("pdf")) {
-				content = ocrUtil.getTextFromPdf(fileName);
-				if (!content.contains("深圳证券交易所")) {
-					downLoadFile(contentUri, fileName);
-					content = ocrUtil.getTextFromImg(fileName);
-				}
+		downLoadFile(contentUri, fileName);
+		if (fileName.toLowerCase().endsWith("doc")) {
+			content = ocrUtil.getTextFromDoc(fileName);
+		} else if (fileName.toLowerCase().endsWith("pdf")) {
+			content = ocrUtil.getTextFromPdf(fileName);
+			if (!content.contains("深圳证券交易所")) {
+				downLoadFile(contentUri, fileName);
+				content = ocrUtil.getTextFromImg(fileName);
 			}
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			return true;
 		}
 
 		content = content.replace("\n", "")

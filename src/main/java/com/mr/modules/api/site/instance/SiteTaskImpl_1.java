@@ -138,9 +138,15 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 				Thread.sleep(500);
 				//增量抓取
-				if (!doFetch(financeMonitorPunish, false)) {
-					return lists;
+				try {
+					if (!doFetchForRetry(financeMonitorPunish, false)) {
+						return lists;
+					}
+				}catch (Exception e){
+					log.error(e.getMessage());
+					continue;
 				}
+
 
 				lists.add(financeMonitorPunish);
 			}
@@ -174,32 +180,27 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 	 * @param financeMonitorPunish
 	 * @return true:处理成功数据  false：未处理数据
 	 */
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish, Boolean isForce) throws Exception {
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish, Boolean isForce) throws Exception {
 		String targetUrl = financeMonitorPunish.getUrl();
 		log.info("targetUrl:" + targetUrl);
 		String content = "";
-		try {
-			String fileName = downLoadFile(targetUrl);
-			if (fileName.toLowerCase().endsWith("doc")) {
-				content = ocrUtil.getTextFromDoc(fileName);
-			} else if (fileName.toLowerCase().endsWith("pdf")) {
-				content = ocrUtil.getTextFromPdf(fileName);
-				if (!content.contains("当事人")) {
-					fileName = downLoadFile(targetUrl);
-					content = ocrUtil.getTextFromImg(fileName);
-				}
-			} else {
-				log.warn("url{} is not doc or pdf", content);
+		String fileName = downLoadFile(targetUrl);
+		if (fileName.toLowerCase().endsWith("doc")) {
+			content = ocrUtil.getTextFromDoc(fileName);
+		} else if (fileName.toLowerCase().endsWith("pdf")) {
+			content = ocrUtil.getTextFromPdf(fileName);
+			if (!content.contains("当事人")) {
+				fileName = downLoadFile(targetUrl);
+				content = ocrUtil.getTextFromImg(fileName);
 			}
-			financeMonitorPunish.setDetails(filterErrInfo(content));
-			extract(content, financeMonitorPunish);
-			processSpecial(financeMonitorPunish);
-			return saveOne(financeMonitorPunish, isForce);
-		} catch (Exception ex) {
-			log.error(ex.getMessage());
+		} else {
+			log.warn("url{} is not doc or pdf", content);
 		}
-
-		return true;
+		financeMonitorPunish.setDetails(filterErrInfo(content));
+		extract(content, financeMonitorPunish);
+		processSpecial(financeMonitorPunish);
+		return saveOne(financeMonitorPunish, isForce);
 	}
 
 	/**
@@ -722,7 +723,6 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 		String person = financeMonitorPunish.getPartyPerson();
 		String address = financeMonitorPunish.getDomicile();
 		String companyFullName = financeMonitorPunish.getPartyInstitution();
-
 		if (financeMonitorPunish.getUrl().contains("http://www.neeq.com.cn/uploads/1/file/public/201803/20180312092410_phjxs2yvt1.pdf")) {
 			person = "宋昊，赵艳清，徐娇";
 		}

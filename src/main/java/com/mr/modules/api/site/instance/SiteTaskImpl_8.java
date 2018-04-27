@@ -129,7 +129,7 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 
 			try {
 				//增量抓取
-				if (!doFetch(financeMonitorPunish, false)) {
+				if (!doFetchForRetry(financeMonitorPunish, false)) {
 					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
 							.selectByBizKey(financeMonitorPunish.getPrimaryKey());
 					if (srcFmp.getPunishCategory().contains(financeMonitorPunish.getPunishCategory())
@@ -145,6 +145,7 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 
 			} catch (Exception e) {
 				log.error(e.getMessage());
+				continue;
 			}
 
 			lists.add(financeMonitorPunish);
@@ -153,8 +154,9 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 		return lists;
 	}
 
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
-							Boolean isForce) throws Exception {
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+							  Boolean isForce) throws Exception {
 
 		financeMonitorPunish.setPartyCategory(PLATE.getPlate(
 				financeMonitorPunish.getCompanyCode().substring(0, 3)).name);
@@ -168,12 +170,7 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 		} else if (contentFile.toLowerCase().endsWith("pdf")) {
 			details = filterErrInfo(ocrUtil.getTextFromPdf(contentFile));
 			if (!details.contains("经查明")) {
-				try {
-					details = filterErrInfo(ocrUtil.getTextFromImg(downLoadFile(financeMonitorPunish.getUrl())));
-				} catch (Exception e) {
-					log.debug(e.getMessage());
-					return true;
-				}
+				details = filterErrInfo(ocrUtil.getTextFromImg(downLoadFile(financeMonitorPunish.getUrl())));
 			}
 		}
 		details = details.replaceAll("\\s*", "")

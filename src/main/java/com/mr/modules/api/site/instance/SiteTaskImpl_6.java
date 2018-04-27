@@ -143,7 +143,8 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 	 * @param financeMonitorPunish
 	 * @param isForce
 	 */
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) throws Exception {
 		String docUrl = financeMonitorPunish.getUrl();
 		String fullTxt = "";

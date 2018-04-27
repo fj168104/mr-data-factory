@@ -17,6 +17,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -78,7 +79,10 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 		List<FinanceMonitorPunish> lists = Lists.newLinkedList();
 		lists.addAll(extract(MType.A3, fullTxt));
 		lists.addAll(extract(MType.A4, fullTxt));
-		exportToXls("Site5.xlsx", lists);
+		if (!CollectionUtils.isEmpty(lists)) {
+			exportToXls("Site5.xlsx", lists);
+		}
+
 		return null;
 	}
 
@@ -154,7 +158,7 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 				financeMonitorPunish.setSource("上交所");
 				financeMonitorPunish.setObject("债券监管");
 
-				if (!doFetch(financeMonitorPunish, false)) {
+				if (!doFetchForRetry(financeMonitorPunish, false)) {
 					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
 							.selectByBizKey(financeMonitorPunish.getPrimaryKey());
 					if (srcFmp.getSupervisionType().contains(mType.name)) {
@@ -180,8 +184,9 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 	 * @param financeMonitorPunish
 	 * @param isForce
 	 */
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
-							Boolean isForce) throws Exception {
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+							  Boolean isForce) throws Exception {
 		String href = financeMonitorPunish.getUrl();
 
 		String fullTxt = "";

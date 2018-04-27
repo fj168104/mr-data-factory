@@ -172,14 +172,15 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 					financeMonitorPunish.setSource("上交所");
 					financeMonitorPunish.setObject("公司监管");
 
-					if (!doFetch(financeMonitorPunish, false)) {
+					if (!doFetchForRetry(financeMonitorPunish, false)) {
 						FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
 								.selectByUrl(financeMonitorPunish.getUrl());
 						if (srcFmp.getSupervisionType().contains(typeName)) {
 							return lists;
 						} else {
-							srcFmp.setSupervisionType(srcFmp.getSupervisionType() + "|" + typeName);
-							financeMonitorPunishMapper.updateByPrimaryKey(srcFmp);
+							srcFmp.setSupervisionType(financeMonitorPunish.getSupervisionType());
+							srcFmp.setId(null);
+							financeMonitorPunishMapper.insert(srcFmp);
 						}
 					}
 				} catch (Exception e) {
@@ -200,7 +201,8 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 	 *
 	 * @param financeMonitorPunish
 	 */
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) throws Exception {
 		String docURL = financeMonitorPunish.getUrl();
 		String docTitleDetail = "";

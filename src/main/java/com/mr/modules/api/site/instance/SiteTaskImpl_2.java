@@ -79,7 +79,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		//通过source查找
 		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 				.selectByUrl(oneFinanceMonitorPunish.getUrl());
-		if (!Objects.isNull(originFinanceMonitorPunish)) {
+		if (!Objects.isNull(oneFinanceMonitorPunish)) {
 			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
 			oneFinanceMonitorPunish.setUpdateTime(new Date());
 		}
@@ -154,7 +154,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 						financeMonitorPunish.setSource("地方证监局");
 						financeMonitorPunish.setObject("行政处罚决定");
 
-						if (!doFetch(financeMonitorPunish, false)) {
+						if (!doFetchForRetry(financeMonitorPunish, false)) {
 							return lists;
 						}
 						lists.add(financeMonitorPunish);
@@ -171,7 +171,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	 *
 	 * @param financeMonitorPunish
 	 */
-	private boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+	@Override
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
 							Boolean isForce) {
 		String url = financeMonitorPunish.getUrl();
 

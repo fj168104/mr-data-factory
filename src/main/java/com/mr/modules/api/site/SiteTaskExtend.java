@@ -2,6 +2,7 @@ package com.mr.modules.api.site;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mr.common.IdempotentOperator;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
 import com.mr.framework.core.io.FileUtil;
@@ -25,7 +26,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.lang.reflect.Field;
@@ -515,57 +515,20 @@ public abstract class SiteTaskExtend extends SiteTask {
 				.replace("'", "");
 	}
 
-	/**
-	 * 幂等操作类
-	 *
-	 * @param <T>
-	 */
-	static class IdempotentOperator<T> {
+	protected boolean doFetchForRetry(FinanceMonitorPunish financeMonitorPunish,
+									  Boolean isForce) throws Exception {
+		return new IdempotentOperator<Boolean>(new Callable<Boolean>() {
 
-		private Callable<T> task;
-
-		public IdempotentOperator(Callable<T> task) {
-			this.task = task;
-		}
-
-		public T execute() {
-			return execute(10);
-		}
-
-		/**
-		 * 重试操作
-		 *
-		 * @param maxRetryTimes 重试次数
-		 * @return
-		 */
-		public T execute(int maxRetryTimes) {
-			Throwable ex = null;
-			boolean executeSuccess = false;
-			T result = null;
-			int retryTimes = 0;
-			while (!executeSuccess && retryTimes++ < maxRetryTimes) {
-				try {
-					result = (T) task.call();
-					executeSuccess = true;
-				} catch (Throwable e) {
-					log.warn(e.getMessage());
-					ex = e;
-					try {
-						Thread.sleep(retryTimes * 1000);
-						log.info("retry...");
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
-					}
-				}
+			@Override
+			public Boolean call() throws Exception {
+				return doFetch(financeMonitorPunish, false);
 			}
-			if (!executeSuccess)
-				if (ex instanceof RuntimeException) {
-					throw (RuntimeException) ex;
-				} else {
-					log.error(ex.getMessage());
-					throw new RuntimeException("超过重试次数,执行失败");
-				}
-			return result;
-		}
+		}).execute(3);
 	}
+
+	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
+							   Boolean isForce) throws Exception{
+		return false;
+	}
+
 }

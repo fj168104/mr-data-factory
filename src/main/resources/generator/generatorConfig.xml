@@ -23,9 +23,9 @@
 
         <!--数据库连接 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:9906/test?useSSL=false"
+                        connectionURL="jdbc:mysql://47.100.7.81:3306/data_factory?useSSL=false"
                         userId="root"
-                        password="root">
+                        password="Root@1234">
         </jdbcConnection>
 
         <javaModelGenerator targetPackage="com.mr.modules.api.model" targetProject="./src/main/java">

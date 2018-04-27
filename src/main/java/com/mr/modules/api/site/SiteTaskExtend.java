@@ -185,6 +185,24 @@ public abstract class SiteTaskExtend extends SiteTask {
 	}
 
 
+	/**
+	 * POST 请求
+	 *
+	 * @param url
+	 * @param requestParams
+	 * @param retryTimes
+	 * @return
+	 */
+	protected String postData(String url, Map<String, String> requestParams, int retryTimes) {
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return postData(url, requestParams, Maps.newHashMap());
+			}
+		}).execute(retryTimes);
+	}
+
+
 	protected String downLoadFile(String targetUri) throws IOException, URISyntaxException {
 		return downLoadFile(targetUri, null);
 	}

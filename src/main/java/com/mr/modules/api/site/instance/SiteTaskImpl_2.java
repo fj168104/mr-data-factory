@@ -79,7 +79,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		//通过source查找
 		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 				.selectByUrl(oneFinanceMonitorPunish.getUrl());
-		if (!Objects.isNull(oneFinanceMonitorPunish)) {
+		if (!Objects.isNull(originFinanceMonitorPunish)) {
 			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
 			oneFinanceMonitorPunish.setUpdateTime(new Date());
 		}

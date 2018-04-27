@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component("site3")
+@Component("site_all")
 @Scope("prototype")
-public class SiteTaskImpl_3 extends SiteTaskExtend {
+public class SiteTaskImplAll extends SiteTaskExtend {
 
 	@Override
 	protected String execute() throws Throwable {
@@ -28,6 +28,7 @@ public class SiteTaskImpl_3 extends SiteTaskExtend {
 		return null;
 	}
 
-	String groupIndexs[] = {"bois", "circ"};
+	String groupIndexs[] = {"site1", "site2", "site3", "site4", "site5",
+							"site6", "site7", "site8", "site9", "site10"};
 
 }

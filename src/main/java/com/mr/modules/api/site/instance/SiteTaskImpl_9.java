@@ -104,37 +104,44 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 			Element tableElement = doc.getElementsByClass("cls-data-table-common cls-data-table").get(0);
 			Elements trElements = tableElement.getElementsByTag("tr");
 			for (int tr = 1; tr < trElements.size(); tr++) {
-				Elements tdElements = trElements.get(tr).getElementsByTag("td");
-				String punishObj = tdElements.get(0).text();    //处分对象
-				String objType = tdElements.get(1).text();        //处分对象类型
-				String pCode = tdElements.get(2).text();        //函号
-				String title = tdElements.get(3).getElementsByTag("a").text();
-
-				String fileName = tdElements.get(3).getElementsByTag("a")
-						.attr("onclick")
-						.replace("window.open('/UpFiles/zqjghj/'+encodeURIComponent('", "")
-						.replace("'))", "");
-				String contentUri = "http://www.szse.cn/UpFiles/zqjghj/" + fileName;    //函件标题URI
-				String pDate = tdElements.get(4).text();        //发函日期
-				String pStock = tdElements.get(5).text();        //涉及债券
-
 				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
-				if (StrUtil.isNotEmpty(punishObj) && punishObj.contains("公司")) {
-					punishObj = punishObj.substring(0, punishObj.indexOf("公司") + 2);
-				}
-				financeMonitorPunish.setPartyInstitution(punishObj);
-				financeMonitorPunish.setPartyCategory(objType);
-				financeMonitorPunish.setPunishNo(pCode);
-				financeMonitorPunish.setPunishTitle(title);
-				financeMonitorPunish.setPublishDate(pDate);
-				financeMonitorPunish.setRelatedBond(pStock);
-				financeMonitorPunish.setUrl(contentUri);
-				financeMonitorPunish.setSource("深交所");
-				financeMonitorPunish.setObject("中介机构处罚与处分记录");
+				try {
+					Elements tdElements = trElements.get(tr).getElementsByTag("td");
+					String punishObj = tdElements.get(0).text();    //处分对象
+					String objType = tdElements.get(1).text();        //处分对象类型
+					String pCode = tdElements.get(2).text();        //函号
+					String title = tdElements.get(3).getElementsByTag("a").text();
 
-				if (!doFetch(financeMonitorPunish, false)) {
-					return lists;
+					String fileName = tdElements.get(3).getElementsByTag("a")
+							.attr("onclick")
+							.replace("window.open('/UpFiles/zqjghj/'+encodeURIComponent('", "")
+							.replace("'))", "");
+					String contentUri = "http://www.szse.cn/UpFiles/zqjghj/" + fileName;    //函件标题URI
+					String pDate = tdElements.get(4).text();        //发函日期
+					String pStock = tdElements.get(5).text();        //涉及债券
+
+
+					if (StrUtil.isNotEmpty(punishObj) && punishObj.contains("公司")) {
+						punishObj = punishObj.substring(0, punishObj.indexOf("公司") + 2);
+					}
+					financeMonitorPunish.setPartyInstitution(punishObj);
+					financeMonitorPunish.setPartyCategory(objType);
+					financeMonitorPunish.setPunishNo(pCode);
+					financeMonitorPunish.setPunishTitle(title);
+					financeMonitorPunish.setPublishDate(pDate);
+					financeMonitorPunish.setRelatedBond(pStock);
+					financeMonitorPunish.setUrl(contentUri);
+					financeMonitorPunish.setSource("深交所");
+					financeMonitorPunish.setObject("中介机构处罚与处分记录");
+
+					if (!doFetch(financeMonitorPunish, false)) {
+						return lists;
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage());
+					continue;
 				}
+
 				lists.add(financeMonitorPunish);
 			}
 		}

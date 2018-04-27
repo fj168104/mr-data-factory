@@ -109,21 +109,26 @@ public class SiteTaskImpl_6 extends SiteTaskExtend {
 					.getElementsByTag("dd");
 			for (Element dd : dds) {
 				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
-				Element aElement = dd.getElementsByTag("a").first();
-				String title = aElement.attr("title");
-				String docUrl = "http://www.sse.com.cn" + aElement.attr("href");
-				String punishDate = dd.getElementsByTag("span").first().text();
+				try {
+					Element aElement = dd.getElementsByTag("a").first();
+					String title = aElement.attr("title");
+					String docUrl = "http://www.sse.com.cn" + aElement.attr("href");
+					String punishDate = dd.getElementsByTag("span").first().text();
 
-				financeMonitorPunish.setPunishTitle(title);
-				financeMonitorPunish.setPunishDate(punishDate);
-				financeMonitorPunish.setUrl(docUrl);
-				financeMonitorPunish.setSupervisionType("纪律处分");
-				financeMonitorPunish.setSource("上交所");
-				financeMonitorPunish.setObject("交易监管");
+					financeMonitorPunish.setPunishTitle(title);
+					financeMonitorPunish.setPunishDate(punishDate);
+					financeMonitorPunish.setUrl(docUrl);
+					financeMonitorPunish.setSupervisionType("纪律处分");
+					financeMonitorPunish.setSource("上交所");
+					financeMonitorPunish.setObject("交易监管");
 
-				//增量抓取
-				if (!doFetch(financeMonitorPunish, false)) {
-					return lists;
+					//增量抓取
+					if (!doFetch(financeMonitorPunish, false)) {
+						return lists;
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage());
+					continue;
 				}
 
 				lists.add(financeMonitorPunish);

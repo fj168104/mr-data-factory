@@ -125,44 +125,49 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 		Elements trElements = tableElement.getElementsByTag("tr");
 		for (int i = 1; i < trElements.size(); i++) {
 			FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+			try {
 
-			Elements tdElements = trElements.get(i).getElementsByTag("td");
+				Elements tdElements = trElements.get(i).getElementsByTag("td");
 
-			log.info(tdElements.text());
+				log.info(tdElements.text());
 
-			//证券代码
-			String code = tdElements.get(0).text();    //从链接中提取
+				//证券代码
+				String code = tdElements.get(0).text();    //从链接中提取
 
-			//证券简称
-			String sAbstract = tdElements.get(1).text(); //从链接中提取
+				//证券简称
+				String sAbstract = tdElements.get(1).text(); //从链接中提取
 
-			Element aElement = tdElements.get(2).getElementsByTag("a").get(0);
-			String href = "http://www.sse.com.cn" + aElement.attr("href");
-			//标题
-			String title = tdElements.get(2).text();    //从链接中提取
+				Element aElement = tdElements.get(2).getElementsByTag("a").get(0);
+				String href = "http://www.sse.com.cn" + aElement.attr("href");
+				//标题
+				String title = tdElements.get(2).text();    //从链接中提取
 
-			//处理日期
-			String punishDate = tdElements.get(3).text();    //链接中提取
+				//处理日期
+				String punishDate = tdElements.get(3).text();    //链接中提取
 
-			financeMonitorPunish.setStockCode(code);
-			financeMonitorPunish.setStockShortName(sAbstract);
-			financeMonitorPunish.setSupervisionType(mType.name);
-			financeMonitorPunish.setPunishTitle(title);
-			financeMonitorPunish.setPunishDate(punishDate);
-			financeMonitorPunish.setUrl(href);
-			financeMonitorPunish.setSource("上交所");
-			financeMonitorPunish.setObject("债券监管");
+				financeMonitorPunish.setStockCode(code);
+				financeMonitorPunish.setStockShortName(sAbstract);
+				financeMonitorPunish.setSupervisionType(mType.name);
+				financeMonitorPunish.setPunishTitle(title);
+				financeMonitorPunish.setPunishDate(punishDate);
+				financeMonitorPunish.setUrl(href);
+				financeMonitorPunish.setSource("上交所");
+				financeMonitorPunish.setObject("债券监管");
 
-			if (!doFetch(financeMonitorPunish, false)) {
-				FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
-						.selectByBizKey(financeMonitorPunish.getPrimaryKey());
-				if (srcFmp.getSupervisionType().contains(mType.name)) {
-					return lists;
-				} else {
-					srcFmp.setSupervisionType(srcFmp.getSupervisionType() + "|" + mType.name);
-					financeMonitorPunishMapper.updateByPrimaryKey(srcFmp);
-					financeMonitorPunish.setSupervisionType(srcFmp.getSupervisionType());
+				if (!doFetch(financeMonitorPunish, false)) {
+					FinanceMonitorPunish srcFmp = financeMonitorPunishMapper
+							.selectByBizKey(financeMonitorPunish.getPrimaryKey());
+					if (srcFmp.getSupervisionType().contains(mType.name)) {
+						return lists;
+					} else {
+						srcFmp.setSupervisionType(srcFmp.getSupervisionType() + "|" + mType.name);
+						financeMonitorPunishMapper.updateByPrimaryKey(srcFmp);
+						financeMonitorPunish.setSupervisionType(srcFmp.getSupervisionType());
+					}
 				}
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				continue;
 			}
 			lists.add(financeMonitorPunish);
 		}
@@ -259,10 +264,10 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 
 			if (person.contains("；")) {
 				pTag = "；";
-			}else if(person.contains("。")){
+			} else if (person.contains("。")) {
 				pTag = "。";
 			}
-			if(StrUtil.isNotEmpty(pTag)){
+			if (StrUtil.isNotEmpty(pTag)) {
 				String[] pArrs = person.split(pTag);
 				int j = 0;
 				for (String p : pArrs) {
@@ -275,8 +280,8 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 							partyPerson += "," + p1.substring(0, p1.indexOf("，"));
 						else
 							partyPerson += "," + p1;
-					}else{
-						if(j++ > 0) break;
+					} else {
+						if (j++ > 0) break;
 					}
 				}
 			}

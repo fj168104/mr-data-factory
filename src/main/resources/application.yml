@@ -94,19 +94,19 @@ spring:
   profiles: dev
   #数据源
   datasource:
-    url: jdbc:mysql://47.100.7.81:3306/data_factory_xu?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
+    url: jdbc:mysql://47.100.7.81:3306/data_factory?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
     username: root
     password: ${password}
 #日志
 logging:
   config: classpath:logback-mr.xml
-  path: F:/git_workspace/mr-data-factory/Documents/export
+  path: /home/fengjiang/Documents/export
 
 #数据库密码加密
 #java -cp druid-1.1.0.jar com.alibaba.druid.filter.config.ConfigTools 你的密码
 publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKTusxtIrx4B0a5Pi5oUImdtQrkV9spQaUYv6xpCIoAtM50Yo9d9miMTWF145+wwScNaV5QF+r+jQ0DCZL0/+j8CAwEAAQ==
 password: Root@1234
-download-dir: F:/git_workspace/mr-data-factory/Documents
+download-dir: /home/fengjiang/Documents
 
 
 

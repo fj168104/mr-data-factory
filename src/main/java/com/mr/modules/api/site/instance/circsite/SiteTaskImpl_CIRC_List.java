@@ -169,7 +169,10 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 			String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
 
             String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
-            list.add(urlStr);
+
+			if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(href))){
+				list.add(urlStr);
+			}
         }
 		return list;
 	}
@@ -199,7 +202,10 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 			//	String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
 				String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
-				list.add(urlStr);
+
+				if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(href))){
+					list.add(urlStr);
+				}
 			}
 
 		}

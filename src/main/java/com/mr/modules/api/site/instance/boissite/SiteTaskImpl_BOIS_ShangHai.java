@@ -12,10 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *@ auther :zjxu
@@ -55,8 +52,6 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtendSub {
      */
     @Override
     protected String executeOne() throws Throwable {
-        log.info("============Url=========="+oneFinanceMonitorPunish.getUrl());
-        log.info("=======PublishDate======="+oneFinanceMonitorPunish.getPublishDate());
         if(oneFinanceMonitorPunish.getUrl()!=null){
             log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
             Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
@@ -102,7 +97,9 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtendSub {
                 Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                 String resultUrl = "http://shanghai.circ.gov.cn"+elementUrl.attr("href");
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
-                urlList.add(resultUrl);
+                if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                    urlList.add(resultUrl);
+                }
             }
         }
         return urlList;
@@ -132,7 +129,9 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtendSub {
                     Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                     String resultUrl = "http://shanghai.circ.gov.cn"+elementUrl.attr("href");
                     log.info("编号："+i+"==resultUrl:"+resultUrl);
-                    urlList.add(resultUrl);
+                    if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                        urlList.add(resultUrl);
+                    }
                 }
             }
         }
@@ -271,7 +270,6 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtendSub {
                     if(childText.split("：").length<2){ //存在着 当事人：XXX  二者在不同的span标签里的情况
                         childText = childText+elementsSpanChild.get(2).text();
                     }
-                    log.info("-------childText------"+childText);
                     listStr.add(childText);
                 }
 
@@ -287,11 +285,9 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtendSub {
             }
             //TODO 需要判断是法人还是自然人
             boolean busiPersonFlag = false;
-            log.info("listStr:-------"+listStr.toString());
             for(int i=0;i<listStr.size();i++ ){
                 String[] currentPersonStr  = listStr.get(i).split("：");
                 if(currentPersonStr.length>1){
-                    log.info("---currentPersonStr[0]---"+currentPersonStr[0]+"---currentPersonStr[1]---"+currentPersonStr[1]);
                     if(i==0&&currentPersonStr[1].length()>5&&currentPersonStr[0].equals("当事人")){
                         busiPersonFlag =true;
                         punishToOrg = currentPersonStr[1];
@@ -335,7 +331,7 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtendSub {
 
             }
         }
-        log.info("发布主题："+titleStr);
+        /*log.info("发布主题："+titleStr);
         log.info("发布机构："+publishOrg);
         log.info("发布时间："+publishDate);
         log.info("处罚机关："+punishOrg);
@@ -350,7 +346,7 @@ public class SiteTaskImpl_BOIS_ShangHai extends SiteTaskExtendSub {
         log.info("受处罚人地址："+priAddress);
         log.info("来源："+source);
         log.info("主题："+object);
-        log.info("正文："+stringDetail);
+        log.info("正文："+stringDetail);*/
 
         Map<String,String> map = new HashMap<String,String>();
         map.put("titleStr",titleStr);

@@ -53,8 +53,6 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
      */
     @Override
     protected String executeOne() throws Throwable {
-        log.info("============Url=========="+oneFinanceMonitorPunish.getUrl());
-        log.info("=======PublishDate======="+oneFinanceMonitorPunish.getPublishDate());
         if(oneFinanceMonitorPunish.getUrl()!=null){
             log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
             Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
@@ -107,17 +105,17 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
             pageAll = Integer.valueOf(pageCount.text().split("/")[1]);
             for(int i = 1;i<=pageAll;i++){
                 String strUrl="http://beijing.circ.gov.cn"+pageUrl.attr("href").split("page")[0]+"page"+i+".htm";
-//                log.info("title:"+title+"--pageAll:"+pageAll+"--strUrl:"+strUrl);
                 String pageStr = getData(strUrl);
                 Document docSub = Jsoup.parse(pageStr);
                 Elements elementsHui1A = docSub.getAllElements().select("span[id=hui1]").select("a");
                 for(Element elementBaseUrl : elementsHui1A){
                     String url = "http://beijing.circ.gov.cn"+elementBaseUrl.attr("href");
-                    setUrl.add(url);
+                    if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(url))){
+                        setUrl.add(url);
+                    }
                 }
             }
         }
-        //记录元素的数量
         log.info("-------------********---------------");
         log.info("处罚列表清单总页数为："+pageAll);
         log.info("-------------********---------------");
@@ -330,7 +328,7 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
         }
 
 
-        log.info("发布主题："+titleStr);
+        /*log.info("发布主题："+titleStr);
         log.info("发布机构："+publishOrg);
         log.info("发布时间："+publishDate);
         log.info("处罚机关："+punishOrg);
@@ -345,7 +343,7 @@ public  class SiteTaskImpl_BOIS_BeiJing extends SiteTaskExtendSub{
         log.info("受处罚人地址："+priAddress);
         log.info("来源："+source);
         log.info("主题："+object);
-        log.info("正文："+stringDetail);
+        log.info("正文："+stringDetail);*/
 
         Map<String,String> map = new HashMap<String,String>();
         map.put("titleStr",titleStr);

@@ -45,8 +45,6 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtendSub {
      */
     @Override
     protected String executeOne() throws Throwable {
-        log.info("============Url=========="+oneFinanceMonitorPunish.getUrl());
-        log.info("=======PublishDate======="+oneFinanceMonitorPunish.getPublishDate());
         if(oneFinanceMonitorPunish.getUrl()!=null){
             log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
             Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
@@ -93,7 +91,9 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtendSub {
                 Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                 String resultUrl = "http://heilongjiang.circ.gov.cn"+elementUrl.attr("href");
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
-                urlList.add(resultUrl);
+                if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                    urlList.add(resultUrl);
+                }
             }
         }
         return urlList;
@@ -122,7 +122,9 @@ public class SiteTaskImpl_BOIS_HeiLongJiang extends SiteTaskExtendSub {
                     Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                     String resultUrl = "http://heilongjiang.circ.gov.cn"+elementUrl.attr("href");
                     log.info("编号："+i+"==resultUrl:"+resultUrl);
-                    urlList.add(resultUrl);
+                    if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                        urlList.add(resultUrl);
+                    }
                 }
             }
         }

@@ -50,8 +50,6 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
      */
     @Override
     protected String executeOne() throws Throwable {
-        log.info("============Url=========="+oneFinanceMonitorPunish.getUrl());
-        log.info("=======PublishDate======="+oneFinanceMonitorPunish.getPublishDate());
         if(oneFinanceMonitorPunish.getUrl()!=null){
             log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
             List<Map<String,String>> mapList = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
@@ -103,7 +101,9 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
                 Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                 String resultUrl = "http://dalian.circ.gov.cn"+elementUrl.attr("href");
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
-                urlList.add(resultUrl);
+                if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                    urlList.add(resultUrl);
+                }
             }
         }
         return urlList;
@@ -133,7 +133,9 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
                     Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                     String resultUrl = "http://dalian.circ.gov.cn"+elementUrl.attr("href");
                     log.info("编号："+i+"==resultUrl:"+resultUrl);
-                    urlList.add(resultUrl);
+                    if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                        urlList.add(resultUrl);
+                    }
                 }
             }
         }
@@ -271,7 +273,6 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
                 .replace(" ","，")
                 ;
         String[] txtAllArr = txtAll.split("，");
-        log.info("-----------------------txtAll:\n"+txtAll);
         //判断是法人还是自然人true为自然人，false为法人
         Map<String,String> map = new HashMap<String,String>();
         boolean personFlag = true;
@@ -423,8 +424,7 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
             map.put("stringDetail",stringDetail);
             mapRecord.add(map);
         }
-
-        log.info("发布主题：" + titleStr);
+        /*log.info("发布主题：" + titleStr);
         log.info("发布机构：" + publishOrg);
         log.info("发布时间：" + publishDate);
         log.info("处罚机关：" + punishOrg);
@@ -439,7 +439,7 @@ public class SiteTaskImpl_BOIS_DaLian extends SiteTaskExtendSub{
         log.info("受处罚人地址：" + priAddress);
         log.info("来源："+source);
         log.info("主题："+object);
-        log.info("正文：" + stringDetail);
+        log.info("正文：" + stringDetail);*/
         return mapRecord;
     }
     /**

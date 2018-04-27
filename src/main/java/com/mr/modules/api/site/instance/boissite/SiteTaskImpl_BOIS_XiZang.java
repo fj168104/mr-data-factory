@@ -13,10 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component("bois_xizang")
@@ -82,7 +79,9 @@ public class SiteTaskImpl_BOIS_XiZang extends SiteTaskExtendSub {
                 Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                 String resultUrl = "http://xizang.circ.gov.cn"+elementUrl.attr("href");
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
-                urlList.add(resultUrl);
+                if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                    urlList.add(resultUrl);
+                }
             }
         }
         return urlList;
@@ -111,7 +110,9 @@ public class SiteTaskImpl_BOIS_XiZang extends SiteTaskExtendSub {
                     Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                     String resultUrl = "http://xizang.circ.gov.cn"+elementUrl.attr("href");
                     log.info("编号："+i+"==resultUrl:"+resultUrl);
-                    urlList.add(resultUrl);
+                    if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                        urlList.add(resultUrl);
+                    }
                 }
             }
         }

@@ -33,7 +33,7 @@ public class SiteTaskImpl_BOIS_GanSu extends SiteTaskExtendSub{
             try{
                 getObj(map,urlResult);
             }catch (Exception e){
-                log.error("请检查此条url："+urlResult+"\n"+e.getMessage());
+                writeBizErrorLog(urlResult,"请检查此条url："+"\n"+e.getMessage());
                 continue;
             }
         }
@@ -52,7 +52,7 @@ public class SiteTaskImpl_BOIS_GanSu extends SiteTaskExtendSub{
             try{
                 getObj(map,oneFinanceMonitorPunish.getUrl());
             }catch (Exception e){
-                log.error("请检查此条url："+oneFinanceMonitorPunish.getUrl()+"\n"+e.getMessage());
+                writeBizErrorLog(oneFinanceMonitorPunish.getUrl(),"请检查此条url："+"\n"+e.getMessage());
             }
         }
         if(oneFinanceMonitorPunish.getPublishDate()!=null){
@@ -63,7 +63,7 @@ public class SiteTaskImpl_BOIS_GanSu extends SiteTaskExtendSub{
                 try{
                     getObj(map,urlResult);
                 }catch (Exception e){
-                    log.error("请检查此条url："+urlResult+"\n"+e.getMessage());
+                    writeBizErrorLog(urlResult,"请检查此条url："+"\n"+e.getMessage());
                     continue;
                 }
             }

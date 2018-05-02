@@ -75,7 +75,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 					try{
 						getObj(record,url);
 					}catch (Exception e){
-						log.error("请检查此条url："+url+"\n"+e.getMessage());
+						writeBizErrorLog(url,"请检查此条url："+"\n"+e.getMessage());
 						continue;
 					}
 				}
@@ -120,7 +120,7 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 				try{
 					getObj(record,url);
 				}catch (Exception e){
-					log.error("请检查此条url："+url+"\n"+e.getMessage());
+					writeBizErrorLog(url,"请检查此条url："+"\n"+e.getMessage());
 					continue;
 				}
 			}

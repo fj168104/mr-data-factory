@@ -13,14 +13,10 @@ import com.mr.modules.api.site.SiteTaskExtend;
 import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.sql.Struct;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by feng on 18-3-16
@@ -140,10 +136,11 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				//增量抓取
 				try {
 					if (!doFetchForRetry(financeMonitorPunish, false)) {
+						if (true) throw new Exception("这是一个错误测试");
 						return lists;
 					}
 				}catch (Exception e){
-					log.error(e.getMessage());
+					writeBizErrorLog(financeMonitorPunish.getUrl(), e.getMessage());
 					continue;
 				}
 

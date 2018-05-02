@@ -183,10 +183,12 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		} catch (RuntimeException ex) {
 			if (ex instanceof HttpClientErrorException && ex.getMessage().trim().equals("404 Not Found"))
 				return true;
-			else
-				ex.printStackTrace();
+			else{
+				writeBizErrorLog(financeMonitorPunish.getUrl(), ex.getMessage());
+			}
+
 		} catch (Throwable e) {
-			log.error(e.getMessage());
+			writeBizErrorLog(financeMonitorPunish.getUrl(), e.getMessage());
 		}
 		return true;
 

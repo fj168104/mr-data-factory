@@ -144,7 +144,7 @@ public class SiteTaskImpl_8 extends SiteTaskExtend {
 				}
 
 			} catch (Exception e) {
-				log.error(e.getMessage());
+				writeBizErrorLog(financeMonitorPunish.getUrl(), e.getMessage());
 				continue;
 			}
 

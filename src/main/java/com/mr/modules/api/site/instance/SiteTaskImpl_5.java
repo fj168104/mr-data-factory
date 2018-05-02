@@ -170,7 +170,7 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 					}
 				}
 			} catch (Exception e) {
-				log.error(e.getMessage());
+				writeBizErrorLog(financeMonitorPunish.getUrl(), e.getMessage());
 				continue;
 			}
 			lists.add(financeMonitorPunish);

@@ -531,4 +531,30 @@ public abstract class SiteTaskExtend extends SiteTask {
 		return false;
 	}
 
+	/**
+	 * 写错误日志
+	 * @param err
+	 */
+	protected void writeBizErrorLog(String url, String err){
+		String logPath = OCRUtil.DOWNLOAD_DIR + "/log.txt";
+		BufferedWriter bw = FileUtil.getWriter(logPath, "utf-8", true);
+		try {
+			bw.write(url + "\t" + err + "\n");
+			bw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			if(!Objects.isNull(bw)){
+				try {
+					bw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+
+	}
+
 }

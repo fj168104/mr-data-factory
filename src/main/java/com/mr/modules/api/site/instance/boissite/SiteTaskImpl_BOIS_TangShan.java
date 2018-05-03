@@ -14,10 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component("bois_tangshan")
@@ -87,7 +84,7 @@ public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtendSub {
         String fullTxt = getData(baseUrl);
         //获取页数
         int  pageAll= extractPage(fullTxt);
-        for(int i=1;i<=pageAll;i++){
+        ok:for(int i=1;i<=pageAll;i++){
             String url ="http://hebei.circ.gov.cn/web/site58/tab4774/module13245/page"+i+".htm";
             String resultTxt = getData(url);
             Document doc = Jsoup.parse(resultTxt);
@@ -96,7 +93,11 @@ public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtendSub {
                 Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                 String resultUrl = "http://hebei.circ.gov.cn"+elementUrl.attr("href");
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
-                urlList.add(resultUrl);
+                if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                    urlList.add(resultUrl);
+                } else{
+                    break ok;
+                }
             }
         }
         return urlList;
@@ -112,7 +113,7 @@ public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtendSub {
         String fullTxt = getData(baseUrl);
         //获取页数
         int  pageAll= extractPage(fullTxt);
-        for(int i=1;i<=pageAll;i++){
+        ok:for(int i=1;i<=pageAll;i++){
             String url ="http://hebei.circ.gov.cn/web/site58/tab4774/module13245/page"+i+".htm";
             String resultTxt = getData(url);
             Document doc = Jsoup.parse(resultTxt);
@@ -125,7 +126,11 @@ public class SiteTaskImpl_BOIS_TangShan extends SiteTaskExtendSub {
                     Element elementUrl = element.getElementById("hui1").getElementsByTag("A").get(0);
                     String resultUrl = "http://hebei.circ.gov.cn"+elementUrl.attr("href");
                     log.info("编号："+i+"==resultUrl:"+resultUrl);
-                    urlList.add(resultUrl);
+                    if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
+                        urlList.add(resultUrl);
+                    } else{
+                        break ok;
+                    }
                 }
 
             }

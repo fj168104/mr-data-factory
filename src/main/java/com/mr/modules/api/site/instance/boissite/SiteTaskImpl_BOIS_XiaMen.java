@@ -89,7 +89,7 @@ public class SiteTaskImpl_BOIS_XiaMen extends SiteTaskExtendSub {
         String fullTxt = getData(baseUrl);
         //获取页数
         int  pageAll= extractPage(fullTxt);
-        for(int i=1;i<=pageAll;i++){
+        ok:for(int i=1;i<=pageAll;i++){
             String url ="http://xiamen.circ.gov.cn/web/site36/tab3415/module8941/page"+i+".htm";
             String resultTxt = getData(url);
             Document doc = Jsoup.parse(resultTxt);
@@ -100,6 +100,8 @@ public class SiteTaskImpl_BOIS_XiaMen extends SiteTaskExtendSub {
                 log.info("编号："+i+"==resultUrl:"+resultUrl);
                 if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
                     urlList.add(resultUrl);
+                }else {
+                    break ok;
                 }
             }
         }
@@ -118,7 +120,7 @@ public class SiteTaskImpl_BOIS_XiaMen extends SiteTaskExtendSub {
         String fullTxt = getData(baseUrl);
         //获取页数
         int  pageAll= extractPage(fullTxt);
-        for(int i=1;i<=pageAll;i++){
+        ok:for(int i=1;i<=pageAll;i++){
             String url ="http://xiamen.circ.gov.cn/web/site36/tab3415/module8941/page"+i+".htm";
             String resultTxt = getData(url);
             Document doc = Jsoup.parse(resultTxt);
@@ -133,6 +135,8 @@ public class SiteTaskImpl_BOIS_XiaMen extends SiteTaskExtendSub {
                     log.info("编号："+i+"==resultUrl:"+resultUrl);
                     if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(resultUrl))){
                         urlList.add(resultUrl);
+                    }else {
+                        break ok;
                     }
                 }
             }

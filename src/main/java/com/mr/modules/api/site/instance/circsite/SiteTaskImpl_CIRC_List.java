@@ -51,15 +51,9 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 			//获取清单列表页数pageAll
 			String targetUri1 = "http://bxjg.circ.gov.cn/web/site0/tab5240/";
 			String fullTxt1 = getData(targetUri1);
-			pageAll = extractPage(fullTxt1);
 			//1.保监会处罚列表清单
-			List<List<?>> listList = new ArrayList<>();
-			for (int i = 1;i<=pageAll;i++){
-				String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
-				String fullTxt2 = getData(targetUri2);
-				listList.add(extractListByDate(fullTxt2,oneFinanceMonitorPunish.getPublishDate()));
-				log.info("看到你到这儿我可安心了哈······");
-			}
+			List<List<?>> listList = extractListByDate(fullTxt1,oneFinanceMonitorPunish.getPublishDate());
+
 			//2.获取处罚详情信息
 			for(List<?> list : listList) {//其内部实质上还是调用了迭代器遍历方式，这种循环方式还有其他限制，不建议使用。
 				for (int i=0;i<list.size();i++){
@@ -96,14 +90,8 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 		//获取清单列表页数pageAll
 		String targetUri1 = "http://bxjg.circ.gov.cn/web/site0/tab5240/";
 		String fullTxt1 = getData(targetUri1);
-		pageAll = extractPage(fullTxt1);
 		//1.保监会处罚列表清单
-		List<List<?>> listList = new ArrayList<>();
-		for (int i = 1;i<=pageAll;i++){
-			String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
-			String fullTxt2 = getData(targetUri2);
-			listList.add(extractList(fullTxt2));
-		}
+		List<List<?>> listList = extractList(fullTxt1);;
 
 		//2.获取处罚详情信息
 		for(List<?> list : listList) {//其内部实质上还是调用了迭代器遍历方式，这种循环方式还有其他限制，不建议使用。
@@ -149,47 +137,18 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 	 * @param fullTxt
 	 * @return
 	 */
-	private List<?> extractList(String fullTxt){
-		List<String> list = new ArrayList<>();
-        Document doc = Jsoup.parse(fullTxt);
-        Elements span = doc.getElementsByAttributeValue("id","lan1");
+	private List<List<?>> extractList(String fullTxt){
+		//1.保监会处罚列表清单
+		List<List<?>> listList = new ArrayList<>();
+		// 使用标识符ok标识，如果解析出的url已经存在库中，就停止继续解析
+		ok:for(int i=1;i<=extractPage(fullTxt);i++){
+			String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
+			String fullTxt2 = getData(targetUri2);
+			List<String> list = new ArrayList<>();
+			Document doc = Jsoup.parse(fullTxt2);
+			Elements span = doc.getElementsByAttributeValue("id","lan1");
 
-        for (Element elementSpan : span){
-            Elements elements = elementSpan.getElementsByTag("a");
-            Element elementA = elements.get(0);
-            //抽取编号Id
-            String id = elementA.attr("id");
-            //抽取连接
-            String href = "http://bxjg.circ.gov.cn"+elementA.attr("href");
-            //抽取标题
-            String title = elementA.attr("title").replace("(","（").replace(")","）");
-            //抽取发布的时间
-     //       String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-            Element element_td = elementSpan.parent().nextElementSibling();
-			String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
-
-            String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
-
-			if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(href))){
-				list.add(urlStr);
-			}
-        }
-		return list;
-	}
-	/**
-	 * 根据发布日期获取总页数下的所有连接url，获取指定日期的数据时格式为yyyy-mm-dd,获取某年某一个月内的数据时格式为yyyy-mm
-	 * */
-	private List<?> extractListByDate(String fullTxt,String date) throws Throwable {
-		List<String> list = new ArrayList<>();
-		Document doc = Jsoup.parse(fullTxt);
-		Elements span = doc.getElementsByAttributeValue("id","lan1");
-
-		for (Element elementSpan : span){
-			//发布时间
-			Element element_td = elementSpan.parent().nextElementSibling();
-			String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
-
-			if(new SimpleDateFormat("yyyy-MM-dd").parse(extract_Date).compareTo(new SimpleDateFormat("yyyy-MM-dd").parse(date))>=0){
+			for (Element elementSpan : span){
 				Elements elements = elementSpan.getElementsByTag("a");
 				Element elementA = elements.get(0);
 				//抽取编号Id
@@ -199,17 +158,69 @@ public class SiteTaskImpl_CIRC_List extends SiteTaskExtend {
 				//抽取标题
 				String title = elementA.attr("title").replace("(","（").replace(")","）");
 				//抽取发布的时间
-			//	String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+				//       String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+				Element element_td = elementSpan.parent().nextElementSibling();
+				String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
 
 				String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
 
 				if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(href))){
+					log.info("这是新增的URL："+href);
 					list.add(urlStr);
+				}else{
+					break  ok;
 				}
 			}
-
+			listList.add(list);
 		}
-		return list;
+
+		return listList;
+	}
+	/**
+	 * 根据发布日期获取总页数下的所有连接url，获取指定日期的数据时格式为yyyy-mm-dd,获取某年某一个月内的数据时格式为yyyy-mm
+	 * */
+	private List<List<?>> extractListByDate(String fullTxt,String date) throws Throwable {
+		List<List<?>> listList = new ArrayList<>();
+		ok: for (int i = 1;i<extractPage(fullTxt);i++){
+			String targetUri2 = "http://bxjg.circ.gov.cn/web/site0/tab5240/module14430/page"+i+".htm";
+			String fullTxt2 = getData(targetUri2);
+			List<String> list = new ArrayList<>();
+			Document doc = Jsoup.parse(fullTxt2);
+			Elements span = doc.getElementsByAttributeValue("id","lan1");
+
+			for (Element elementSpan : span){
+				//发布时间
+				Element element_td = elementSpan.parent().nextElementSibling();
+				String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
+
+				if(new SimpleDateFormat("yyyy-MM-dd").parse(extract_Date).compareTo(new SimpleDateFormat("yyyy-MM-dd").parse(date))>=0){
+					Elements elements = elementSpan.getElementsByTag("a");
+					Element elementA = elements.get(0);
+					//抽取编号Id
+					String id = elementA.attr("id");
+					//抽取连接
+					String href = "http://bxjg.circ.gov.cn"+elementA.attr("href");
+					//抽取标题
+					String title = elementA.attr("title").replace("(","（").replace(")","）");
+					//抽取发布的时间
+					//	String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+					String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
+
+					if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(href))){
+						log.info("这是新增的URL："+href);
+						list.add(urlStr);
+					}else{
+						break ok;
+					}
+				}
+
+			}
+			listList.add(list);
+			log.info("看到你到这儿我可安心了哈······");
+		}
+
+		return listList;
 	}
 
 	/**

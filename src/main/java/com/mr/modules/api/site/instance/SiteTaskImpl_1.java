@@ -99,7 +99,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 					bodyStr = postData(url, requestParams, 3)
 							.replace(strTime + "([", "");
 				} catch (Exception e) {
-					log.error("site can not be visited:" + e.getMessage() + " | sleep time:" + waitTime * 10000);
+					log.warn("site can not be visited:" + e.getMessage() + " | sleep time:" + waitTime * 10000);
 					Thread.sleep(waitTime * 10000);
 				}
 			}
@@ -136,7 +136,6 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 				//增量抓取
 				try {
 					if (!doFetchForRetry(financeMonitorPunish, false)) {
-						if (true) throw new Exception("这是一个错误测试");
 						return lists;
 					}
 				}catch (Exception e){

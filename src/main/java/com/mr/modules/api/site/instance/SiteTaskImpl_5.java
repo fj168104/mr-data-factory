@@ -248,12 +248,12 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 		if (pIndx < 0) {
 			int tmpIndex = fullTxt.indexOf(companyName);
 			if (tmpIndex < 0) {
-				log.error("格式不规则，无法解析");
+				writeBizErrorLog(financeMonitorPunish.getUrl(), "格式不规则，无法解析");
 				return;
 			}
 			String tmp1 = fullTxt.substring(tmpIndex + companyName.length());
 			if (tmp1.indexOf(companyName) < 0) {
-				log.error("格式不规则，无法解析");
+				writeBizErrorLog(financeMonitorPunish.getUrl(), "格式不规则，无法解析");
 				return;
 			}
 
@@ -307,7 +307,7 @@ public class SiteTaskImpl_5 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isEmpty(violation)) {
-			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
+			writeBizErrorLog(financeMonitorPunish.getUrl(), "内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
 		financeMonitorPunish.setIrregularities(filterErrInfo(violation));

@@ -155,7 +155,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 						financeMonitorPunish.setObject("行政处罚决定");
 
 						if (!doFetchForRetry(financeMonitorPunish, false)) {
-							return lists;
+							break;
 						}
 						lists.add(financeMonitorPunish);
 					}
@@ -201,7 +201,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 	 */
 	private void extract(String fullTxt, FinanceMonitorPunish financeMonitorPunish) {
 
-		String 根据[] = {"根据《中华人民共和国证券法》",
+		String 根据[] = {"依据《证券法》",
+				"根据《中华人民共和国证券法》",
 				"依照《中华人民共和国证券法》",
 				"依据《中华人民共和国证券法》",
 				"依据《私募投资基金监督管理暂行办法》",
@@ -423,7 +424,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					log.warn("url{} is not doc or pdf", content);
 				}
 			} catch (Exception ex) {
-				log.error(ex.getMessage());
+				log.warn(ex.getMessage());
 				return;
 			}
 
@@ -875,7 +876,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		cityMap.put("宁波", "http://www.csrc.gov.cn/pub/ningbo/nbxzcf/");
 		cityMap.put("厦门", "http://www.csrc.gov.cn/pub/xiamen/xmxzcf/");
 		cityMap.put("青岛", "http://www.csrc.gov.cn/pub/qingdao/xzcf/");
-		cityMap.put("天津", "http://www.csrc.gov.cn/pub/tianjin/xzcf/");
+//		cityMap.put("天津", "http://www.csrc.gov.cn/pub/tianjin/xzcf/");
 
 		return cityMap;
 	}

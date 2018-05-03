@@ -48,7 +48,7 @@ public class SiteTaskImpl_10 extends SiteTaskExtend {
 					fulltxt.indexOf("//共多少页")).trim());
 
 		} else {
-			log.error("page parse error.");
+			log.warn("page parse error.");
 		}
 
 		log.info("pageCount:" + pageCount);
@@ -185,7 +185,7 @@ public class SiteTaskImpl_10 extends SiteTaskExtend {
 		try {
 			fullTxt = ocrUtil.getTextFromImg(fileName);
 		} catch (RuntimeException e) {
-			log.error("ocr 解析失败，失败原因：" + e.getMessage());
+			writeBizErrorLog(financeMonitorPunish.getUrl(), "ocr 解析失败，失败原因：" + e.getMessage());
 			return true;
 		}
 		log.info(fullTxt);

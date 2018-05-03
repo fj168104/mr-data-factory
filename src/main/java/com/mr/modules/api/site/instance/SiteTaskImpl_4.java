@@ -253,7 +253,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		}
 
 		if (pIndx < 0) {
-			log.error("文本格式不规则，无法识别");
+			writeBizErrorLog(financeMonitorPunish.getUrl(), "文本格式不规则，无法识别");
 			return;
 		}
 
@@ -293,7 +293,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isEmpty(violation)) {
-			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
+			writeBizErrorLog(financeMonitorPunish.getUrl(), "内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
 
@@ -391,7 +391,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		}
 
 		if (StringUtils.isEmpty(violation)) {
-			log.error("内容不规则 URL:" + financeMonitorPunish.getUrl());
+			writeBizErrorLog(financeMonitorPunish.getUrl(), "内容不规则 URL:" + financeMonitorPunish.getUrl());
 			return;
 		}
 
@@ -401,7 +401,7 @@ public class SiteTaskImpl_4 extends SiteTaskExtend {
 		int pIndx = detail.indexOf("经查明，") == -1 ?
 				detail.indexOf("经查明") : detail.indexOf("经查明，");
 		if (pIndx < 0) {
-			log.error("文本格式不规则，无法识别");
+			writeBizErrorLog(financeMonitorPunish.getUrl(), "文本格式不规则，无法识别");
 			return;
 		}
 

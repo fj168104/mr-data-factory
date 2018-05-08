@@ -43,6 +43,7 @@ public class Site_TaskImpl_TPBOC_List extends SiteTaskExtend {
         for(List<?> list : lists) {//其内部实质上还是调用了迭代器遍历方式，这种循环方式还有其他限制，不建议使用。
             for (int i=0;i<list.size();i++){
                 String urlStr = list.get(i).toString();
+                if(!urlStr.contains("chinese")) continue;
                 String[] urlArr = urlStr.split("\\|\\|");
                 String id = urlArr[0];
                 String url = urlArr[1];
@@ -101,19 +102,21 @@ public class Site_TaskImpl_TPBOC_List extends SiteTaskExtend {
             Elements span = doc.getElementsByAttributeValue("id","testUI");
 
             for (Element elementSpan : span){
-                Elements elements = elementSpan.getElementsByTag("a");
-                for(Element elementA :elements){
+                Elements elements = elementSpan.getElementsByTag("tr");
+                for(Element elementTr :elements){
                     //抽取编号Id
                     String id = new Date().toString();
                     //抽取连接
+                    Element elementA = elementTr.getElementsByTag("a").first();
                     String href = "http://www.cbrc.gov.cn"+elementA.attr("href");
                     //抽取标题
                     String title = elementA.attr("title").replace("(","（").replace(")","）");
                     //抽取发布的时间
                     //       String extract_Date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                    Element element_td = elementSpan.parent().nextElementSibling();
-                    String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
-
+//                    Element element_td = elementSpan.parent().nextElementSibling();
+//                    String extract_Date = "20" + element_td.text().replace("(","").replace(")","");
+                    Element elementTd = elementTr.getElementsByTag("td").last();
+                    String extract_Date = elementTd.text().trim();
                     String urlStr = id+"||"+href+"||"+title+"||"+extract_Date;
 
                     if(Objects.isNull(financeMonitorPunishMapper.selectByUrl(href))){
@@ -184,7 +187,7 @@ public class Site_TaskImpl_TPBOC_List extends SiteTaskExtend {
         //主题 TODO 主题（全国中小企业股转系统-监管公告、行政处罚决定、公司监管、债券监管、交易监管、上市公司处罚与处分记录、中介机构处罚与处分记录
         String object = "行政处罚决定";
         //获取正文内容
-        Document doc = Jsoup.parse(new File(fullTxt),"utf-8");
+        Document doc = Jsoup.parse(fullTxt);
 
         //获取正文主节点
         punishDetail  = doc.getElementsByClass(" f12c").text();

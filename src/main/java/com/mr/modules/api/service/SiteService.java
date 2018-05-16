@@ -4,6 +4,7 @@ import com.mr.modules.api.model.FinanceMonitorPunish;
 import org.springframework.util.StringUtils;
 
 import java.io.FileInputStream;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,4 +34,6 @@ public interface SiteService {
 	FinanceMonitorPunish fetchOneRecord(String indexId, FinanceMonitorPunish financeMonitorPunish) throws Exception;
 
 	String importData(FileInputStream fis, String uploadFilePath) throws Exception;
+
+	List<FinanceMonitorPunish> selectYesterday();
 }

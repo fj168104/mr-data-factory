@@ -2,6 +2,10 @@ package com.mr.modules.api.mapper;
 
 import com.mr.common.base.mapper.BaseMapper;
 import com.mr.modules.api.model.FinanceMonitorPunish;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 public interface FinanceMonitorPunishMapper extends BaseMapper<FinanceMonitorPunish> {
 	/**
@@ -37,4 +41,6 @@ public interface FinanceMonitorPunishMapper extends BaseMapper<FinanceMonitorPun
 	 */
 	int deleteBySource(String source);
 
+
+	List<FinanceMonitorPunish> selectYesterday(@Param("begin") Date begin, @Param("end") Date end);
 }

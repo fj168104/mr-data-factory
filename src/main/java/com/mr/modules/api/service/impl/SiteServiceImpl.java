@@ -1,9 +1,9 @@
 package com.mr.modules.api.service.impl;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mr.common.util.EhCacheUtils;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.date.DateUtil;
 import com.mr.framework.core.io.FileUtil;
 import com.mr.modules.api.TaskStatus;
 import com.mr.modules.api.mapper.FinanceMonitorPunishMapper;
@@ -18,10 +18,12 @@ import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
 import com.mr.modules.api.xls.importfile.exception.FileImportException;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.helper.DataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -338,7 +340,7 @@ public class SiteServiceImpl implements SiteService {
 			List<Map> maps = mapResult.getResult();
 			for (Map<String, Object> map : maps) {
 
-				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+					FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
 				financeMonitorPunish.setPunishNo(String.valueOf(map.get("PUNISH_NO")));
 				financeMonitorPunish.setPunishTitle(String.valueOf(map.get("PUNISH_TITLE")));
 				financeMonitorPunish.setPartyInstitution(String.valueOf(map.get("PARTY_INSTITUTION")));
@@ -400,6 +402,12 @@ public class SiteServiceImpl implements SiteService {
 			log.error(e.getMessage());
 		}
 		return count;
+	}
+
+	public List<FinanceMonitorPunish> selectYesterday(){
+		Date begin = DateUtil.beginOfDay(DateUtil.yesterday());
+		Date end = DateUtil.beginOfDay(new Date());
+		return financeMonitorPunishMapper.selectYesterday(begin, end);
 	}
 
 

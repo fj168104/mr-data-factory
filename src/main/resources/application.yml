@@ -97,10 +97,24 @@ spring:
     url: jdbc:mysql://47.100.7.81:3306/data_factory?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
     username: root
     password: ${password}
+  mail:
+    host: smtp.ym.163.com
+    username: zt_admin@jxltech.com
+    password: zt_admin123
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+
 #日志
 logging:
   config: classpath:logback-mr.xml
   path: /home/fengjiang/Documents/export
+
 
 #数据库密码加密
 #java -cp druid-1.1.0.jar com.alibaba.druid.filter.config.ConfigTools 你的密码
@@ -122,11 +136,14 @@ spring:
     url: jdbc:mysql://172.19.9.223:3306/good_manage?useUnicode=true&characterEncoding=utf-8&useSSL=true&autoReconnect=true&allowMultiQueries=true
     username: root
     password: ${password}
+  mail:
+    host:
 
 #日志
 logging:
   config: classpath:logback-mr.xml
   path: log
+
 
 #数据库密码加密
 #java -cp druid-1.1.0.jar com.alibaba.druid.filter.config.ConfigTools 你的密码

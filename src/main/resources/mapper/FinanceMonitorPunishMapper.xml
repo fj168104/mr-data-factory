@@ -71,4 +71,9 @@
         DELETE FROM FINANCE_MONITOR_PUNISH WHERE SOURCE = #{source}
     </delete>
 
+    <!--通过日期范围查找-->
+    <select id="selectYesterday" resultMap="BaseResultMap">
+        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.CREATE_TIME BETWEEN #{begin} and #{end}
+    </select>
+
 </mapper>

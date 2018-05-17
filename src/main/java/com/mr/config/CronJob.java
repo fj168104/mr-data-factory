@@ -26,9 +26,10 @@ import java.util.List;
 public class CronJob {
 	private static Log log = LogFactory.get();
 
-	private static String pattern = "45 4 * * *";
+	@Value("${spring.mail.cron}")
+	private String pattern;
 
-	private static String testPattern = "*/1 * * * *";
+	private String testPattern = "*/1 * * * *";
 
 	@Autowired
 	private SiteService siteService;

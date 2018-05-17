@@ -108,6 +108,7 @@ spring:
           starttls:
             enable: true
             required: true
+    cron: 45 4 * * *
 
 
 #日志

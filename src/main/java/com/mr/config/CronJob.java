@@ -98,7 +98,7 @@ public class CronJob {
 			mailSender.send(message);
 			log.info("简单邮件已经发送。");
 		} catch (Exception e) {
-			log.error("发送简单邮件时发生异常！", e);
+			log.warn("发送简单邮件时发生异常！", e);
 		}
 	}
 

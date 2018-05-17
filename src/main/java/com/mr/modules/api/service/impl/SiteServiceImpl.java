@@ -76,7 +76,7 @@ public class SiteServiceImpl implements SiteService {
 			task = (ResourceGroup) SpringUtils.getBean(groupIndex);
 			task.setFinanceMonitorPunish(financeMonitorPunish);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.warn(e.getMessage());
 			return "SiteTask object instance not found";
 		}
 
@@ -98,7 +98,7 @@ public class SiteServiceImpl implements SiteService {
 		try {
 			task = (ResourceGroup) SpringUtils.getBean(groupIndex);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.warn(e.getMessage());
 			return "SiteTask object instance not found";
 		}
 
@@ -211,7 +211,7 @@ public class SiteServiceImpl implements SiteService {
 			task.setFinanceMonitorPunish(financeMonitorPunish);
 			task.start();
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.warn(e.getMessage());
 			return null;
 		}
 
@@ -248,7 +248,7 @@ public class SiteServiceImpl implements SiteService {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			log.error(uploadFilePath + "upload fail.");
+			log.warn(uploadFilePath + "upload fail.");
 			return "fail";
 		} finally {
 			if (fis != null) {
@@ -398,8 +398,7 @@ public class SiteServiceImpl implements SiteService {
 				count++;
 			}
 		} catch (FileImportException e) {
-			e.printStackTrace();
-			log.error(e.getMessage());
+			log.warn(e.getMessage());
 		}
 		return count;
 	}

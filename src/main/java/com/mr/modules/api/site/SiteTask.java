@@ -133,7 +133,7 @@ public abstract class SiteTask implements ResourceGroup, Callable<String> {
 			returnCode = TaskStatus.CALL_FAIL.index;
 			throwableInfo = e.getMessage();
 			e.printStackTrace();
-			log.error(throwableInfo);
+			log.warn(throwableInfo);
 		}
 		return "";
 	}

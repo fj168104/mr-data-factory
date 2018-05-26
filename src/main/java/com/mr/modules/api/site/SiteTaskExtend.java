@@ -537,6 +537,13 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 */
 	protected void writeBizErrorLog(String url, String err){
 		String logPath = OCRUtil.DOWNLOAD_DIR + "/log.txt";
+		if(FileUtil.exist(logPath)){
+			String logContent = FileUtil.readString(logPath, "utf-8");
+			//不重复报错
+			if(logContent.contains(url)) return;
+		}
+
+
 		BufferedWriter bw = FileUtil.getWriter(logPath, "utf-8", true);
 		try {
 			bw.write(url + "\t" + err + "\n");

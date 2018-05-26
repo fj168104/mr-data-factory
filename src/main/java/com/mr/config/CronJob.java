@@ -50,7 +50,7 @@ public class CronJob {
 				log.info("Task excuted.");
 				try {
 					List<FinanceMonitorPunish> list = siteService.selectYesterday();
-					StringBuffer sb = new StringBuffer("昨日新增记录：\n");
+					StringBuffer sb = new StringBuffer("昨日新增记录："+ list.size() + "条\n");
 					for (FinanceMonitorPunish financeMonitorPunish : list) {
 						sb.append("primaryKey").append(":").append(financeMonitorPunish.getPrimaryKey()).append("\t");
 						sb.append("punishTitle").append(":").append(financeMonitorPunish.getPunishTitle()).append("\t");
@@ -78,6 +78,7 @@ public class CronJob {
 
 
 				} catch (Exception e) {
+					log.warn(e.getMessage());
 					log.warn("定时日报邮件异常");
 				}
 			}
@@ -99,7 +100,7 @@ public class CronJob {
 			mailSender.send(message);
 			log.info("简单邮件已经发送。");
 		} catch (Exception e) {
-			log.warn("发送简单邮件时发生异常！", e);
+			log.warn("发送简单邮件时发生异常！ " + e.getMessage());
 		}
 	}
 

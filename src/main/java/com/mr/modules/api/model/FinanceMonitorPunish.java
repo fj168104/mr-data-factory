@@ -190,6 +190,11 @@ public class FinanceMonitorPunish extends BaseEntity {
     private String details;
 
     /**
+     * 工商名|所有
+     */
+    private String icName;
+
+    /**
      * 区域
      */
     @Transient

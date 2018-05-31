@@ -5,8 +5,12 @@ import com.google.common.collect.Maps;
 import com.mr.common.IdempotentOperator;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.framework.core.date.DateUtil;
 import com.mr.framework.core.io.FileUtil;
 import com.mr.framework.core.util.StrUtil;
+import com.mr.framework.json.JSONArray;
+import com.mr.framework.json.JSONObject;
+import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.mapper.FinanceMonitorPunishMapper;
 import com.mr.modules.api.model.FinanceMonitorPunish;
 import com.mr.modules.api.xls.export.FileExportor;
@@ -19,6 +23,7 @@ import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -34,6 +39,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by feng on 18-3-16
@@ -46,6 +52,14 @@ public abstract class SiteTaskExtend extends SiteTask {
 	private static String XLS_EXPORT_PATH = OCRUtil.DOWNLOAD_DIR + File.separator + "export";
 
 	protected RestTemplate restTemplate = SpringUtils.getBean(RestTemplate.class);
+
+	@Value("${ic-url}")
+	private String icQueryUrl;
+
+	//自增ID
+	private AtomicInteger incrementer = new AtomicInteger();
+
+	private volatile String currentDate = DateUtil.format(DateUtil.date(), "yyyyMMdd");
 
 	@Autowired
 	protected FinanceMonitorPunishMapper financeMonitorPunishMapper;
@@ -401,6 +415,8 @@ public abstract class SiteTaskExtend extends SiteTask {
 		log.debug("primaryKey:" + primaryKey);
 		try {
 			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByUrl(financeMonitorPunish.getUrl()))) {
+				//获取工商名
+				setICName(financeMonitorPunish);
 				insertOrUpdate(financeMonitorPunish);
 				return true;
 			} else {
@@ -410,6 +426,88 @@ public abstract class SiteTaskExtend extends SiteTask {
 			log.error(keyWords + ">>>" + e.getMessage());
 		}
 		return false;
+	}
+
+	/**
+	 * 调用工商信息查询接口，设置工商信息名
+	 */
+	protected void setICName(FinanceMonitorPunish financeMonitorPunish) {
+		if (StrUtil.isBlank(financeMonitorPunish.getPartyInstitution())) {
+			return;
+		}
+
+		Map<String, String> map = Maps.newHashMap();
+		map.put("uid", "sd0001");
+		map.put("msgid", getMsgId());
+		map.put("api", "N001_QY00100_V001");
+		map.put("args", String.format("{\"key\":\"%s\"}", financeMonitorPunish.getPartyInstitution()));
+		map.put("querymode", "0");
+
+		String jsonStr = getData(icQueryUrl, map);
+		JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+		String code = jsonObject.get("code", String.class);
+		if (code.equals("0000")) {
+			JSONArray array = jsonObject.getJSONArray("data");
+			if(array.size() == 1){
+				financeMonitorPunish.setIcName(array.getJSONObject(0).get("orgName", String.class));
+			}else{
+				writeIcFailLog(financeMonitorPunish.getUrl(), array.toString());
+			}
+
+		} else {
+			writeIcFailLog(financeMonitorPunish.getUrl(), jsonObject.get("msg", String.class));
+		}
+
+	}
+
+	/**
+	 * 写工商转化错误日志
+	 *
+	 * @param icMsg
+	 */
+	private void writeIcFailLog(String url, String icMsg) {
+		String icPath = OCRUtil.DOWNLOAD_DIR + "/ic_fail.txt";
+		if (FileUtil.exist(icPath)) {
+			String icContent = FileUtil.readString(icPath, "utf-8");
+			//不重复记录
+			if (icContent.contains(url)) return;
+		}
+
+
+		BufferedWriter bw = FileUtil.getWriter(icPath, "utf-8", true);
+		try {
+			bw.write(url + "\t" + icMsg + "\n");
+			bw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (!Objects.isNull(bw)) {
+				try {
+					bw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+	}
+
+
+	private String getMsgId() {
+		String ss = "101010";
+		String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
+
+		String creNo = String.format("%12d", incrementer.incrementAndGet());
+		ss += date + creNo;
+		if (!date.equals(currentDate)) {
+			synchronized (this) {
+				currentDate = date;
+				incrementer.set(110000000);
+			}
+
+		}
+		return ss;
+
 	}
 
 	/**
@@ -527,20 +625,21 @@ public abstract class SiteTaskExtend extends SiteTask {
 	}
 
 	protected boolean doFetch(FinanceMonitorPunish financeMonitorPunish,
-							   Boolean isForce) throws Exception{
+							  Boolean isForce) throws Exception {
 		return false;
 	}
 
 	/**
 	 * 写错误日志
+	 *
 	 * @param err
 	 */
-	protected void writeBizErrorLog(String url, String err){
+	protected void writeBizErrorLog(String url, String err) {
 		String logPath = OCRUtil.DOWNLOAD_DIR + "/log.txt";
-		if(FileUtil.exist(logPath)){
+		if (FileUtil.exist(logPath)) {
 			String logContent = FileUtil.readString(logPath, "utf-8");
 			//不重复报错
-			if(logContent.contains(url)) return;
+			if (logContent.contains(url)) return;
 		}
 
 
@@ -550,8 +649,8 @@ public abstract class SiteTaskExtend extends SiteTask {
 			bw.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}finally {
-			if(!Objects.isNull(bw)){
+		} finally {
+			if (!Objects.isNull(bw)) {
 				try {
 					bw.close();
 				} catch (IOException e) {

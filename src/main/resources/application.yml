@@ -124,6 +124,7 @@ logging:
 publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKTusxtIrx4B0a5Pi5oUImdtQrkV9spQaUYv6xpCIoAtM50Yo9d9miMTWF145+wwScNaV5QF+r+jQ0DCZL0/+j8CAwEAAQ==
 password: Root@1234
 download-dir: /home/fengjiang/Documents
+ic-url: http://112.65.144.19:10003/edh/api
 
 
 

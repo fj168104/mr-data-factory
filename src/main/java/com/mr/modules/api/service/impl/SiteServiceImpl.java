@@ -5,6 +5,7 @@ import com.mr.common.util.EhCacheUtils;
 import com.mr.common.util.SpringUtils;
 import com.mr.framework.core.date.DateUtil;
 import com.mr.framework.core.io.FileUtil;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.TaskStatus;
 import com.mr.modules.api.mapper.FinanceMonitorPunishMapper;
 import com.mr.modules.api.model.FinanceMonitorPunish;
@@ -284,7 +285,7 @@ public class SiteServiceImpl implements SiteService {
 	 * @throws FileNotFoundException
 	 * @throws URISyntaxException
 	 */
-	public int importXlsByNoConfig(String filePath) throws FileImportException,
+	private int importXlsByNoConfig(String filePath) throws FileImportException,
 			FileNotFoundException,
 			URISyntaxException {
 		int count = 0;
@@ -340,7 +341,7 @@ public class SiteServiceImpl implements SiteService {
 			List<Map> maps = mapResult.getResult();
 			for (Map<String, Object> map : maps) {
 
-					FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
+				FinanceMonitorPunish financeMonitorPunish = new FinanceMonitorPunish();
 				financeMonitorPunish.setPunishNo(String.valueOf(map.get("PUNISH_NO")));
 				financeMonitorPunish.setPunishTitle(String.valueOf(map.get("PUNISH_TITLE")));
 				financeMonitorPunish.setPartyInstitution(String.valueOf(map.get("PARTY_INSTITUTION")));
@@ -403,11 +404,110 @@ public class SiteServiceImpl implements SiteService {
 		return count;
 	}
 
-	public List<FinanceMonitorPunish> selectYesterday(){
+	@Override
+	public String importICName(FileInputStream fis, String uploadFilePath) throws Exception {
+
+		/******接受上传的文件并临时保存*****/
+
+		log.info("uploadFlePath:" + uploadFilePath);
+		// 截取上传文件的文件名
+		String uploadFileName = uploadFilePath.substring(
+				uploadFilePath.lastIndexOf('\\') + 1, uploadFilePath.indexOf('.'));
+		log.info("multiReq.getFile():" + uploadFileName);
+		// 截取上传文件的后缀
+		String uploadFileSuffix = uploadFilePath.substring(
+				uploadFilePath.indexOf('.') + 1, uploadFilePath.length());
+		log.info("uploadFileSuffix:" + uploadFileSuffix);
+		FileOutputStream fos = null;
+		//文件全路径名
+		String fullPath = downloadDir + File.separator + uploadFilePath;
+		try {
+
+			fos = new FileOutputStream(new File(downloadDir + File.separator + uploadFilePath));
+			byte[] temp = new byte[1024];
+			int i = fis.read(temp);
+			while (i != -1) {
+				fos.write(temp, 0, temp.length);
+				fos.flush();
+				i = fis.read(temp);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.warn(uploadFilePath + "upload fail.");
+			return "fail";
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		log.info(uploadFilePath + "upload success.");
+		/******解析uploadFilePath并导入*****/
+		int count = updateIcNameByXls(fullPath);
+		log.info("导入成功条数:{}", count);
+		//删除导入的文件
+		FileUtil.del(fullPath);
+		if (count <= 0) return "fail";
+		return "success " + count;
+	}
+
+	/**
+	 * 把excel导入，变成map, 更新icName
+	 *
+	 * @throws FileImportException
+	 * @throws FileNotFoundException
+	 * @throws URISyntaxException
+	 */
+	private int updateIcNameByXls(String filePath) throws FileImportException,
+			FileNotFoundException,
+			URISyntaxException {
+		int count = 0;
+		File importFile = new File(filePath);
+		Configuration configuration = new Configuration();
+		try {
+			configuration.setStartRowNo(1);
+			int i = 0;
+			List<ImportCell> importCells = Lists.newArrayList(
+					new ImportCell(i++, "url"),
+					new ImportCell(i++, "icName")
+			);
+			configuration.setImportCells(importCells);
+			configuration.setImportFileType(Configuration.ImportFileType.EXCEL);
+			MapResult mapResult = (MapResult) FileImportExecutor.importFile(configuration, importFile, importFile.getName());
+			List<Map> maps = mapResult.getResult();
+			for (Map<String, Object> map : maps) {
+				if(StrUtil.isEmpty(String.valueOf(map.get("url")))) continue;
+				FinanceMonitorPunish financeMonitorPunish = financeMonitorPunishMapper.selectByUrl(String.valueOf(map.get("url")));
+				financeMonitorPunish.setIcName(String.valueOf(map.get("icName")));
+
+				Example example = new Example(FinanceMonitorPunish.class);
+				example.createCriteria().andEqualTo("url", financeMonitorPunish.getUrl());
+				financeMonitorPunishMapper.updateByExample(financeMonitorPunish, example);
+
+				count++;
+			}
+		} catch (FileImportException e) {
+			log.warn(e.getMessage());
+		}
+		return count;
+	}
+
+
+	public List<FinanceMonitorPunish> selectYesterday() {
 		Date begin = DateUtil.beginOfDay(DateUtil.yesterday());
 		Date end = DateUtil.beginOfDay(new Date());
 		return financeMonitorPunishMapper.selectYesterday(begin, end);
 	}
-
 
 }

@@ -142,7 +142,7 @@ public class SiteController extends BaseController {
 	}
 
 	/**
-	 * curl -F "file=@xxx.xlsx" http://localhost:8082/importData
+	 * curl -F "file=@xxx.xlsx" http://localhost:8082/api/importData
 	 *
 	 * @param multiReq
 	 * @return
@@ -156,6 +156,25 @@ public class SiteController extends BaseController {
 
 		FileInputStream fis = (FileInputStream) multiReq.getFile("file").getInputStream();
 		String result = siteService.importData(fis, uploadFilePath);
+		map.addAttribute("imort_result", result);
+		return map;
+	}
+
+	/**
+	 * curl -F "file=@xxx.xlsx" http://localhost:8082/api/importICName
+	 * 手动更新工商名
+	 * @param multiReq
+	 * @return
+	 */
+	@RequestMapping(value = "/importICName", method = RequestMethod.POST)
+	public ModelMap importICName(
+			MultipartHttpServletRequest multiReq) throws Exception {
+		ModelMap map = new ModelMap();
+		// 获取上传文件的路径
+		String uploadFilePath = multiReq.getFile("file").getOriginalFilename();
+
+		FileInputStream fis = (FileInputStream) multiReq.getFile("file").getInputStream();
+		String result = siteService.importICName(fis, uploadFilePath);
 		map.addAttribute("imort_result", result);
 		return map;
 	}

@@ -36,4 +36,6 @@ public interface SiteService {
 	String importData(FileInputStream fis, String uploadFilePath) throws Exception;
 
 	List<FinanceMonitorPunish> selectYesterday();
+
+	String importICName(FileInputStream fis, String uploadFilePath) throws Exception;
 }

@@ -36,6 +36,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -436,15 +437,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			return;
 		}
 
-		Map<String, String> map = Maps.newHashMap();
-		map.put("uid", "sd0001");
-		map.put("msgid", getMsgId());
-		map.put("api", "N001_QY00100_V001");
-		map.put("args", String.format("{\"key\":\"%s\"}", financeMonitorPunish.getPartyInstitution()));
-		map.put("querymode", "0");
-
-		String jsonStr = getData(icQueryUrl, map);
-		JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+		JSONObject jsonObject = fetchDataByICUrl(financeMonitorPunish.getPartyInstitution());
 		String code = jsonObject.get("code", String.class);
 		if (code.equals("0000")) {
 			JSONArray array = jsonObject.getJSONArray("data");
@@ -457,6 +450,32 @@ public abstract class SiteTaskExtend extends SiteTask {
 		} else {
 			writeIcFailLog(financeMonitorPunish.getUrl(), jsonObject.get("msg", String.class));
 		}
+
+	}
+
+	/**
+	 * 通过工商URL获取数据
+	 * @return
+	 */
+	private JSONObject fetchDataByICUrl(String partyInstitution){
+		Map<String, String> map = Maps.newHashMap();
+
+		String json = "{"+String.format("\"key\":\"%s\"", partyInstitution)+"}";
+		map.put("uid", "sd0001");
+		map.put("msgid", getMsgId());
+		map.put("api", "N001_QY00100_V001");
+		map.put("args","{json}");
+		map.put("querymode", "0");
+		String jsonStr  = restTemplate.getForObject(icQueryUrl + showParams(map), String.class, json);
+
+		JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+		String code = jsonObject.get("code", String.class);
+		//msgId重复
+		if(code.equals("0112")){
+			incrementer.set(incrementer.intValue() + 100);
+			jsonObject = fetchDataByICUrl(partyInstitution);
+		}
+		return jsonObject;
 
 	}
 
@@ -497,7 +516,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 		String ss = "101010";
 		String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
 
-		String creNo = String.format("%12d", incrementer.incrementAndGet());
+		String creNo = String.format("%012d", incrementer.incrementAndGet());
 		ss += date + creNo;
 		if (!date.equals(currentDate)) {
 			synchronized (this) {

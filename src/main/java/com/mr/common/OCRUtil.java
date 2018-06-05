@@ -83,7 +83,7 @@ public class OCRUtil {
 			}
 
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.warn(e.getMessage());
 		} finally {
 			FileUtil.del(entirePath);
 		}

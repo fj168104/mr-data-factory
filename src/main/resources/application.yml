@@ -97,16 +97,34 @@ spring:
     url: jdbc:mysql://47.100.7.81:3306/data_factory?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
     username: root
     password: ${password}
+  mail:
+    host: smtp.ym.163.com
+    username: zt_admin@jxltech.com
+    password: zt_admin123
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: smtp.ym.163.com
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    cron: 45 4 * * *
+
+
 #日志
 logging:
   config: classpath:logback-mr.xml
   path: /home/fengjiang/Documents/export
+
 
 #数据库密码加密
 #java -cp druid-1.1.0.jar com.alibaba.druid.filter.config.ConfigTools 你的密码
 publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKTusxtIrx4B0a5Pi5oUImdtQrkV9spQaUYv6xpCIoAtM50Yo9d9miMTWF145+wwScNaV5QF+r+jQ0DCZL0/+j8CAwEAAQ==
 password: Root@1234
 download-dir: /home/fengjiang/Documents
+ic-url: http://112.65.144.19:10003/edh/api
 
 
 
@@ -122,11 +140,14 @@ spring:
     url: jdbc:mysql://172.19.9.223:3306/good_manage?useUnicode=true&characterEncoding=utf-8&useSSL=true&autoReconnect=true&allowMultiQueries=true
     username: root
     password: ${password}
+  mail:
+    host:
 
 #日志
 logging:
   config: classpath:logback-mr.xml
   path: log
+
 
 #数据库密码加密
 #java -cp druid-1.1.0.jar com.alibaba.druid.filter.config.ConfigTools 你的密码

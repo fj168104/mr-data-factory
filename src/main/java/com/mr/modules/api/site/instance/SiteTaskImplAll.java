@@ -29,6 +29,6 @@ public class SiteTaskImplAll extends SiteTaskExtend {
 	}
 
 	String groupIndexs[] = {"site1", "site2", "site3", "site4", "site5",
-							"site6", "site7", "site8", "site9", "site10"};
+							"site6", "site7", "site8", "site9", "site10", "tpboc"};
 
 }

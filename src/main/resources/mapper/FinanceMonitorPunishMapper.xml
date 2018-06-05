@@ -44,6 +44,7 @@
         <result column="RELATED_LAW" property="relatedLaw" jdbcType="LONGVARCHAR"/>
         <result column="PUNISH_RESULT_SUPPLEMENT" property="punishResultSupplement" jdbcType="LONGVARCHAR"/>
         <result column="DETAILS" property="details" jdbcType="LONGVARCHAR"/>
+        <result column="IC_NAME" property="icName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--通过业务主键删除-->
@@ -70,5 +71,10 @@
     <delete id="deleteBySource" parameterType="java.lang.String">
         DELETE FROM FINANCE_MONITOR_PUNISH WHERE SOURCE = #{source}
     </delete>
+
+    <!--通过日期范围查找-->
+    <select id="selectYesterday" resultMap="BaseResultMap">
+        SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.CREATE_TIME BETWEEN #{begin} and #{end}
+    </select>
 
 </mapper>

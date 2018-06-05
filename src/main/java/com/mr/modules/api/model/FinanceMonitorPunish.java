@@ -192,7 +192,7 @@ public class FinanceMonitorPunish extends BaseEntity {
     /**
      * 工商名|所有
      */
-    private String icName;
+//    private String icName;
 
     /**
      * 区域

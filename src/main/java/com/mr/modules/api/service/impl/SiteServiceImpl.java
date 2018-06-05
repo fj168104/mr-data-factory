@@ -489,7 +489,7 @@ public class SiteServiceImpl implements SiteService {
 			for (Map<String, Object> map : maps) {
 				if(StrUtil.isEmpty(String.valueOf(map.get("url")))) continue;
 				FinanceMonitorPunish financeMonitorPunish = financeMonitorPunishMapper.selectByUrl(String.valueOf(map.get("url")));
-				financeMonitorPunish.setIcName(String.valueOf(map.get("icName")));
+				financeMonitorPunish.setCompanyFullName(String.valueOf(map.get("icName")));
 
 				Example example = new Example(FinanceMonitorPunish.class);
 				example.createCriteria().andEqualTo("url", financeMonitorPunish.getUrl());

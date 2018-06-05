@@ -44,7 +44,7 @@ CREATE TABLE `FINANCE_MONITOR_PUNISH` (
   `SOURCE` varchar(255) DEFAULT 'NULL' COMMENT '来源（全国中小企业股转系统、地方证监局、保监会、上交所、深交所、证监会）',
   `URL` varchar(255) DEFAULT 'NULL' COMMENT '来源url',
   `OBJECT` varchar(255) DEFAULT 'NULL' COMMENT '主题（全国中小企业股转系统-监管公告、行政处罚决定、公司监管、债券监管、交易监管、上市公司处罚与处分记录、中介机构处罚与处分记录',
-  `IC_NAME` varchar(255) DEFAULT 'NULL' COMMENT '工商名',
+#   `IC_NAME` varchar(255) DEFAULT 'NULL' COMMENT '工商名',
   `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
   `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`ID`)

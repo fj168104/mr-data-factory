@@ -411,7 +411,6 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtendSub{
         financeMonitorPunish.setUrl(href);
         financeMonitorPunish.setSource(mapInfo.get("source"));
         financeMonitorPunish.setObject(mapInfo.get("object"));
-        log.info("-----------------------");
         //保存入库
         saveOne(financeMonitorPunish,false);
         return financeMonitorPunish;

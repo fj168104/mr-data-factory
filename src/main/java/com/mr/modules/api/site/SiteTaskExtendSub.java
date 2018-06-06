@@ -118,5 +118,15 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 		//		ResponseEntity<File> getFile = restTemplate.execute(targetUri, HttpMethod.GET, (RequestCallback) null, responseExtractor);
 
 	}
+	/**
+	 * 去除字符串中最后一个指定的字符串
+	 */
+	public String delFinallyString(String strOld,String delString){
+		String strNew = strOld;
+		if(strOld.length()>0&&strOld.trim().endsWith(delString)){
+			strNew = strOld.substring(0,strOld.length()-1);
+		}
+		return strNew.toString();
+	}
 
 }

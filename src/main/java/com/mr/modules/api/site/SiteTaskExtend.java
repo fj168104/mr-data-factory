@@ -442,12 +442,14 @@ public abstract class SiteTaskExtend extends SiteTask {
 		if (code.equals("0000")) {
 			JSONArray array = jsonObject.getJSONArray("data");
 			if(array.size() == 1){
-				financeMonitorPunish.setIcName(array.getJSONObject(0).get("orgName", String.class));
+				financeMonitorPunish.setCompanyFullName(array.getJSONObject(0).get("orgName", String.class));
 			}else{
+				financeMonitorPunish.setCompanyFullName("NULL");
 				writeIcFailLog(financeMonitorPunish.getUrl(), array.toString());
 			}
 
 		} else {
+			financeMonitorPunish.setCompanyFullName("NULL");
 			writeIcFailLog(financeMonitorPunish.getUrl(), jsonObject.get("msg", String.class));
 		}
 

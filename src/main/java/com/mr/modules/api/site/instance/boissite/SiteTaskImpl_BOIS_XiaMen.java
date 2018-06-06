@@ -410,14 +410,14 @@ public class SiteTaskImpl_BOIS_XiaMen extends SiteTaskExtendSub {
         financeMonitorPunish.setPublishDate(mapInfo.get("publishDate"));//发布时间
         financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
         financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
-        financeMonitorPunish.setPartyInstitution(mapInfo.get("punishToOrg"));//当事人（公司）=处罚对象
-        financeMonitorPunish.setCompanyFullName(mapInfo.get("companyFullName"));//公司全称
-        financeMonitorPunish.setDomicile(mapInfo.get("punishToOrgAddress"));//机构住址
-        financeMonitorPunish.setLegalRepresentative(mapInfo.get("punishToOrgHolder"));//机构负责人
-        financeMonitorPunish.setPartyPerson(mapInfo.get("priPerson"));//受处罚人
-        financeMonitorPunish.setPartyPersonId(mapInfo.get("priPersonCert"));//受处罚人证件号码
-        financeMonitorPunish.setPartyPersonTitle(mapInfo.get("priJob"));//职务
-        financeMonitorPunish.setPartyPersonDomi(mapInfo.get("priAddress"));//自然人住址
+        financeMonitorPunish.setPartyInstitution(delFinallyString(mapInfo.get("punishToOrg"),"，"));//当事人（公司）=处罚对象
+        financeMonitorPunish.setCompanyFullName(delFinallyString(mapInfo.get("punishToOrg"),"，"));//公司全称
+        financeMonitorPunish.setDomicile(delFinallyString(mapInfo.get("punishToOrgAddress"),"，"));//机构住址
+        financeMonitorPunish.setLegalRepresentative(delFinallyString(mapInfo.get("punishToOrgHolder"),"，"));//机构负责人
+        financeMonitorPunish.setPartyPerson(delFinallyString(mapInfo.get("priPerson"),"，"));//受处罚人
+        financeMonitorPunish.setPartyPersonId(delFinallyString(mapInfo.get("priPersonCert"),"，"));//受处罚人证件号码
+        financeMonitorPunish.setPartyPersonTitle(delFinallyString(mapInfo.get("priJob"),"，"));//职务
+        financeMonitorPunish.setPartyPersonDomi(delFinallyString(mapInfo.get("priAddress"),"，"));//自然人住址
         financeMonitorPunish.setDetails(mapInfo.get("stringDetail"));//详情
         financeMonitorPunish.setUrl(href);
         financeMonitorPunish.setSource(mapInfo.get("source"));

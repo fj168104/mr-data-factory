@@ -77,7 +77,6 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
         String pdfString = "";
         //重试次数
         int resetCount = 1;
-        System.out.println("fileName-----------------------\n"+fileName);
         try{
             pdfString = ocrUtil.getTextFromPdf(fileName);
         }catch (Exception e){
@@ -88,59 +87,79 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
             }
 
         }
+       // pdfString = pdfString.replace(" ","");
         pdfString = pdfString.replaceAll("(\\r\\n|\\r|\\n|\\n\\r)","");
         pdfString = pdfString.replaceAll("附件 2017年环境违法企业“黑名单” ","");
         pdfString = pdfString.replaceAll("序号 企业名称 组织机构代码/统一社会信用代码/工商登记注册号 法定代表人/实际经营者姓名 详细地址 环境违法情形 ","").trim();
-        String[] strPdf = pdfString.split(" ");
+        pdfString = pdfString.replace("23号之 501","23号之501");
+        pdfString = pdfString.replace("一路文锦广场文安中心 2904","一路文锦广场文安中心2904");
+        pdfString = pdfString.replace("5016号京基一百大厦 A座 7201","5016号京基一百大厦A座7201");
+        pdfString = pdfString.replace("广场五楼 583","广场五楼583");
+        pdfString = pdfString.replace("社区广田路58号厂房 2栋 101","社区广田路58号厂房2栋101");
+        pdfString = pdfString.replace("围工业区一路 1号 B栋 3楼 301","围工业区一路1号B栋3楼301");
+        pdfString = pdfString.replace("八卦四路 430栋第三层 301","八卦四路430栋第三层301");
+        pdfString = pdfString.replace("富文工业园 C栋 101","富文工业园C栋101");
+        pdfString = pdfString.replace("秀峰工业区 A3栋 4楼东南座 403","秀峰工业区A3栋4楼东南座403");
+        pdfString = pdfString.replace("龙东龙南路 289号 3区 101","龙东龙南路289号3区101");
+        pdfString = pdfString.replace("玉石新村 425栋 103","玉石新村425栋103");
+        pdfString = pdfString.replace("观澜桔塘社区下新塘 38号 301","观澜桔塘社区下新塘38号301");
+        pdfString = pdfString.replace("口社区华苑路 3号 501","口社区华苑路3号501");
+        pdfString = pdfString.replace("大林南路 890号办公楼第一层 102","大林南路890号办公楼第一层102");
+        pdfString = pdfString.replace("日本中小企业工业园厂房 2-1首层 102","日本中小企业工业园厂房2-1首层102");
+        pdfString = pdfString.replace("9144180309    23635000","914418030923635000");
 
-        for(int i = 0 ;i<strPdf.length;i++){
-            int countFlag = strPdf.length%6;
+        //通过空格 数字 空格 来处理
+        //replaceAll("\\u0020+([0-9]+)\\u0020+", "(\r\n|\r|\n|\n\r)")
+        String[] strPdf = pdfString.split("\\u0020+([0-9]{1,6})\\u0020+");
+        for(String str : strPdf){
+            String[] resultList = str.trim().split(" ");
+            StringBuffer detailAdd = new StringBuffer("");
 
-
-            if(i%6==1){
+            if(resultList.length>=5){
+                for(int h=3;h<resultList.length-1;h++){
+                    detailAdd = detailAdd.append(resultList[h]);
+                }
                 //企业名称、String commpanyName = "";
-                commpanyName = strPdf[i];
-
-            }
-            if(i%6==2){
+                commpanyName = resultList[0];
                 // 统一社会信用代码（或组织机构代码或工商注册号）、String nnifiedSocialCreditCode = "";
-                nnifiedSocialCreditCode = strPdf[i];
-
-            }
-            if(i%6==3){
+                nnifiedSocialCreditCode = resultList[1];
                 // 法定代表人/实际经营者姓名、String legalRepresentative = "";
-                legalRepresentative = strPdf[i];
-
-            }
-            if(i%6==4){
+                legalRepresentative = resultList[2];
                 // 详细地址、String detailAddress = "";
-                detailAddress = strPdf[i];
-
-            }
-            if(i%6==4){
+                detailAddress = detailAdd.toString();
                 // 违法情形、String transgress = "";
-                transgress = strPdf[i];
+                transgress = resultList[resultList.length-1];
 
             }
-            if(countFlag==0){
-                Map<String,String> personObjectMap  = new HashMap<>();
-                //来源String source = "信用中国";
-                personObjectMap.put("source",source);
-                //来源地址String sourceUrl = url;
-                personObjectMap.put("sourceUrl",sourceUrl);
-                // 日期String dateString = "";
-                personObjectMap.put("dateString",dateString);
-                personObjectMap.put("commpanyName",commpanyName);
-                personObjectMap.put("nnifiedSocialCreditCode",nnifiedSocialCreditCode);
-                personObjectMap.put("legalRepresentative",legalRepresentative);
-                personObjectMap.put("detailAddress",detailAddress);
-                personObjectMap.put("transgress",transgress);
 
-                listPersonObjectMap.add(personObjectMap);
-            }
+            Map<String,String> personObjectMap  = new HashMap<>();
+            //来源String source = "信用中国";
+            personObjectMap.put("source",source);
+            //来源地址String sourceUrl = url;
+            personObjectMap.put("sourceUrl",sourceUrl);
+            // 日期String dateString = "";
+            personObjectMap.put("dateString",dateString);
+            personObjectMap.put("commpanyName",commpanyName);
+            personObjectMap.put("nnifiedSocialCreditCode",nnifiedSocialCreditCode);
+            personObjectMap.put("legalRepresentative",legalRepresentative);
+            personObjectMap.put("detailAddress",detailAddress);
+            personObjectMap.put("transgress",transgress);
+
+            listPersonObjectMap.add(personObjectMap);
+            /*log.info(
+                    "\n来源："+personObjectMap.get("source") +
+                            "\n来源地址："+personObjectMap.get("sourceUrl") +
+                            "\n日期："+personObjectMap.get("dateString")+
+                            "\n企业名称："+personObjectMap.get("commpanyName")+
+                            "\n统一社会信用代码："+personObjectMap.get("nnifiedSocialCreditCode")+
+                            "\n法定代表人："+personObjectMap.get("legalRepresentative")+
+                            "\n详细地址："+personObjectMap.get("detailAddress")+
+                            "\n违法情形："+personObjectMap.get("transgress")
+            );*/
+
         }
 
-        //System.out.println("-----------------------\n"+pdfString);
+
         for(Map<String,String> map : listPersonObjectMap){
             log.info(
                     "\n来源："+map.get("source") +

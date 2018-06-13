@@ -18,6 +18,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.*;
 
+/**
+ * @auterh 2018-06
+ */
 @Slf4j
 public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     @Autowired

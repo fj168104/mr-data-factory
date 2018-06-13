@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mr.modules.api.mapper.ProxypoolMapper" >
+  <resultMap id="BaseResultMap" type="com.mr.modules.api.model.Proxypool" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="IPAddress" property="ipaddress" jdbcType="VARCHAR" />
+    <result column="IPPort" property="ipport" jdbcType="VARCHAR" />
+    <result column="serverAddress" property="serveraddress" jdbcType="VARCHAR" />
+    <result column="IPType" property="iptype" jdbcType="VARCHAR" />
+    <result column="IPSpeed" property="ipspeed" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!--通过业务主键删除-->
+  <delete id="deleteByBizKey" parameterType="java.lang.String">
+    DELETE FROM PROXYPOOL WHERE IPAddress = #{ipaddress}
+  </delete>
+
+  <!--通过业务主键查找-->
+  <select id="selectProxyPool" resultMap="BaseResultMap">
+    SELECT * FROM PROXYPOOL
+  </select>
+</mapper>

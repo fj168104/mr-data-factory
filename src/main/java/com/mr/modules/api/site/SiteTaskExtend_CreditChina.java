@@ -3,6 +3,8 @@ package com.mr.modules.api.site;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.mr.common.OCRUtil;
+import com.mr.common.util.CrawlerUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.RequestEntity;
@@ -24,7 +26,18 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     protected String executeOne() throws Throwable {
         return super.executeOne();
     }
-    public static String getHtmlPage(String url, int waitTime) {
+    
+    @Override
+	protected String getData(String url) {
+    	try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return CrawlerUtil.getHtmlPage(url);
+	}
+
+	public static String getHtmlPage(String url, int waitTime) {
         if(waitTime<0){
             waitTime = 1000;
         }

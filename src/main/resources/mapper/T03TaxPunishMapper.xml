@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mr.modules.api.mapper.T03TaxPunishMapper" >
+  <resultMap id="BaseResultMap" type="com.mr.modules.api.model.T03TaxPunish" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="tax_name" property="taxName" jdbcType="VARCHAR" />
+    <result column="tax_id" property="taxId" jdbcType="VARCHAR" />
+    <result column="credit_no" property="creditNo" jdbcType="VARCHAR" />
+    <result column="org_code" property="orgCode" jdbcType="VARCHAR" />
+    <result column="reg_no" property="regNo" jdbcType="VARCHAR" />
+    <result column="reg_address" property="regAddress" jdbcType="VARCHAR" />
+    <result column="fr_name" property="frName" jdbcType="VARCHAR" />
+    <result column="fr_sex" property="frSex" jdbcType="VARCHAR" />
+    <result column="fr_cert_type" property="frCertType" jdbcType="VARCHAR" />
+    <result column="fr_cert_no" property="frCertNo" jdbcType="VARCHAR" />
+    <result column="finance_name" property="financeName" jdbcType="VARCHAR" />
+    <result column="finance_sex" property="financeSex" jdbcType="VARCHAR" />
+    <result column="finance_cert_type" property="financeCertType" jdbcType="VARCHAR" />
+    <result column="finance_cert_no" property="financeCertNo" jdbcType="VARCHAR" />
+    <result column="agency" property="agency" jdbcType="VARCHAR" />
+    <result column="case_nature" property="caseNature" jdbcType="VARCHAR" />
+    <result column="pen_basis" property="penBasis" jdbcType="VARCHAR" />
+    <result column="pen_result" property="penResult" jdbcType="VARCHAR" />
+    <result column="publish_level" property="publishLevel" jdbcType="VARCHAR" />
+    <result column="publish_date" property="publishDate" jdbcType="VARCHAR" />
+    <result column="cancel_date" property="cancelDate" jdbcType="VARCHAR" />
+    <result column="cancel_reason" property="cancelReason" jdbcType="VARCHAR" />
+    <result column="inspect__org" property="inspectOrg" jdbcType="VARCHAR" />
+    <result column="fine" property="fine" jdbcType="VARCHAR" />
+    <result column="if_pay_off" property="ifPayOff" jdbcType="VARCHAR" />
+    <result column="if_pay_tax" property="ifPayTax" jdbcType="VARCHAR" />
+    <result column="if_pay_latefee" property="ifPayLatefee" jdbcType="VARCHAR" />
+    <result column="if_pay_fine" property="ifPayFine" jdbcType="VARCHAR" />
+    <result column="business_state" property="businessState" jdbcType="VARCHAR" />
+    <result column="credit_status" property="creditStatus" jdbcType="VARCHAR" />
+    <result column="publish_source" property="publishSource" jdbcType="VARCHAR" />
+    <result column="data_time" property="dataTime" jdbcType="VARCHAR" />
+    <result column="data_source" property="dataSource" jdbcType="VARCHAR" />
+    <result column="data_source_code" property="dataSourceCode" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="illeg_fact" property="illegFact" jdbcType="LONGVARCHAR" />
+  </resultMap>
+</mapper>

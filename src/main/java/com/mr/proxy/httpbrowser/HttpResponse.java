@@ -21,7 +21,7 @@ import java.io.IOException;
  * setSocketTimeout：请求获取数据的超时时间，单位毫秒.如果访问一个接口，多少时间内无法返回数据，就直接放弃此次调用。
  */
 
-public class HttpResponseDemo {
+public class HttpResponse {
     public static String getHtml( String url, String ip, String port) {
         String entity = null;
         CloseableHttpClient httpClient = HttpClients.createDefault();

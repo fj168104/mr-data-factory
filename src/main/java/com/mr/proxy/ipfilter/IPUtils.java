@@ -20,9 +20,10 @@ import java.util.List;
  * 测试此Ip是否有效
  */
 @Slf4j
-@Component
 public class IPUtils {
-    @Autowired DataBaseBusinessOperation dataBaseBusinessOperation;
+
+    DataBaseBusinessOperation dataBaseBusinessOperation = new DataBaseBusinessOperation();
+
     public  List<IPMessage> IPIsable(List<IPMessage> ipMessages) {
         String ip;
         String port;

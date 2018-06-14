@@ -1,19 +1,14 @@
 package com.mr.proxy.htmlparse;
 
 import com.mr.proxy.IPModel.IPMessage;
-import com.mr.proxy.httpbrowser.HttpResponseDemo;
+import com.mr.proxy.httpbrowser.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
-
-import static java.lang.System.out;
 
 /**
  * @author  zjxu 18-4-10.
@@ -25,7 +20,7 @@ public class URLFecter {
             (String url, String ip, String port,
              List<IPMessage> ipMessages) throws ClassNotFoundException, IOException {
         //调用一个类使其返回html源码
-        String html = HttpResponseDemo.getHtml(url, ip, port);
+        String html = HttpResponse.getHtml(url, ip, port);
 
         if(html != null) {
             //将html解析成DOM结构
@@ -61,7 +56,7 @@ public class URLFecter {
     //使用本机IP爬取xici代理网站的第一页
     public static List<IPMessage> urlParse(String url, List<IPMessage> list)
             throws IOException, ClassNotFoundException {
-        String html = HttpResponseDemo.getHtml(url);
+        String html = HttpResponse.getHtml(url);
 
         //将html解析成DOM结构
         Document document = Jsoup.parse(html);

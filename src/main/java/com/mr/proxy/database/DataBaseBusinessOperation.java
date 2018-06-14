@@ -2,6 +2,7 @@ package com.mr.proxy.database;
 
 import com.mr.proxy.IPModel.DatabaseMessage;
 import com.mr.proxy.IPModel.IPMessage;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +22,18 @@ import java.util.Map;
  * Created by zjxu on 18-4-12.
  */
 @Slf4j
-@Component
 public class DataBaseBusinessOperation {
+   /* @Autowired
+    ProxyIPDatabaseConnectionParam proxyIPDatabaseConnectionParam ;
 
-    @Autowired
-    private ProxyIPDatabaseConnectionParam proxyIPDatabaseConnectionParam;
-
-    private  String dbdriver = proxyIPDatabaseConnectionParam.getDbdriver();    //数据库驱动
+    private  String dbdriver =  proxyIPDatabaseConnectionParam.getDbdriver();    //数据库驱动
     private  String dburl  = proxyIPDatabaseConnectionParam.getDbuser();    //操作的数据库地址，端口及库名
-    private  String dbuser = proxyIPDatabaseConnectionParam.getDbpassword();                       //数据库用户名
-    private  String dbpassword = proxyIPDatabaseConnectionParam.getDbpassword();            //数据库密码
-
+    private  String dbuser  = proxyIPDatabaseConnectionParam.getDbpassword();                      //数据库用户名
+    private  String dbpassword  = proxyIPDatabaseConnectionParam.getDbpassword();           //数据库密码*/
+   String dbdriver="com.mysql.jdbc.Driver";    //数据库驱动
+   String dburl="jdbc:mysql://47.100.7.81:3306/data_factory_xu?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true";    //操作的数据库地址，端口及库名
+    String dbuser="root";                      //数据库用户名
+    String dbpassword="Root@1234";           //数据库密码*D03F98CADA08CB3823AFFF3EED680782213A28FE
     //数据库添加功能
     public  void add(List<IPMessage> list) throws ClassNotFoundException {
         Class.forName(dbdriver);                         //加载数据库驱动

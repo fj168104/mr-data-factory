@@ -1,36 +1,30 @@
 package com.mr.proxy.timeutils;
 
-import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.proxy.IPModel.DatabaseMessage;
 import com.mr.proxy.IPModel.IPMessage;
 import com.mr.proxy.database.DataBaseBusinessOperation;
 import com.mr.proxy.htmlparse.URLFecter;
-import com.mr.proxy.httpbrowser.HtmlUnit66IPResponse;
 import com.mr.proxy.ipfilter.IPFilter;
 import com.mr.proxy.ipfilter.IPUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * @Auther zjxu
- * @Date 201805
+ * Created by paranoid on 17-4-13.
  */
-@Scope("prototype")
 @Slf4j
-@Component("crawler_proxy_ip")
-public class MyTask_Crawler_IP_Proxy extends SiteTaskExtend{
-    IPUtils ipUtils = new IPUtils();
-    DataBaseBusinessOperation dataBaseBusinessOperation = new DataBaseBusinessOperation();
-    @Override
-    protected String execute() throws Throwable {
-
+public class MyTimeJob implements Job {
+    @Autowired
+    IPUtils ipUtils;
+    DataBaseBusinessOperation dataBaseBusinessOperation;
+    public void execute(JobExecutionContext argv) throws JobExecutionException {
         List<String> Urls = new ArrayList<>();
         List<DatabaseMessage> databaseMessages = new ArrayList<>();
         List<IPMessage> list = new ArrayList<>();
@@ -38,12 +32,11 @@ public class MyTask_Crawler_IP_Proxy extends SiteTaskExtend{
         String url = "http://www.xicidaili.com/nn/1";
         String IPAddress;
         String IPPort;
-        /*int k, j;
+        int k, j;
 
         //首先使用本机ip进行爬取
         try {
             list = URLFecter.urlParse(url, list);
-            log.info("本机获取第一页的ip："+list.toString());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -51,10 +44,10 @@ public class MyTask_Crawler_IP_Proxy extends SiteTaskExtend{
         }
 
         //对得到的IP进行筛选，选取链接速度前200名的
-        //list = IPFilter.Filter(list);
-
+        list = IPFilter.Filter(list);
+        log.info("-----------====+++++++"+list.toString());
         //构造种子Url
-        for (int i = 1; i <= 2; i++) {
+        for (int i = 1; i <= 20; i++) {
             Urls.add("http://www.xicidaili.com/nn/" + i);
         }
 
@@ -83,14 +76,13 @@ public class MyTask_Crawler_IP_Proxy extends SiteTaskExtend{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }*/
-        //合同ip对象
-        ipMessages.addAll(new HtmlUnit66IPResponse().AddIpMessage());
+        }
+
         //对得到的IP进行筛选，选取链接速度前100名的
-        //ipMessages = IPFilter.Filter(ipMessages);
+        ipMessages = IPFilter.Filter(ipMessages);
 
         //对ip进行测试，不可用的从数组中删除
-        //ipMessages = ipUtils.IPIsable(ipMessages);
+        ipMessages = ipUtils.IPIsable(ipMessages);
 
         for(IPMessage ipMessage : ipMessages){
             log.info(ipMessage.getIPAddress());
@@ -123,6 +115,5 @@ public class MyTask_Crawler_IP_Proxy extends SiteTaskExtend{
             log.info(databaseMessage.getIPType());
             log.info(databaseMessage.getIPSpeed());
         }
-        return null;
     }
 }

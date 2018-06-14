@@ -378,8 +378,8 @@ public class SiteTaskImpl_BOIS_FuJian extends SiteTaskExtendSub{
         financeMonitorPunish.setPublishDate(mapInfo.get("publishDate"));//发布时间
         financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
         financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
-        financeMonitorPunish.setPartyInstitution(delFinallyString(mapInfo.get("punishToOrg"),"，"));//当事人（公司）=处罚对象
-        financeMonitorPunish.setCompanyFullName(delFinallyString(mapInfo.get("punishToOrg"),"，"));//公司全称
+        financeMonitorPunish.setPartyInstitution(delFinallyString(mapInfo.get("punishToOrg"),"，").replace("（"," ").replace("）"," "));//当事人（公司）=处罚对象
+        financeMonitorPunish.setCompanyFullName(delFinallyString(mapInfo.get("punishToOrg"),"，").replace("（"," ").replace("）"," "));//公司全称
         financeMonitorPunish.setDomicile(delFinallyString(mapInfo.get("punishToOrgAddress"),"，"));//机构住址
         financeMonitorPunish.setLegalRepresentative(delFinallyString(mapInfo.get("punishToOrgHolder"),"，"));//机构负责人
         financeMonitorPunish.setPartyPerson(delFinallyString(mapInfo.get("priPerson"),"，"));//受处罚人

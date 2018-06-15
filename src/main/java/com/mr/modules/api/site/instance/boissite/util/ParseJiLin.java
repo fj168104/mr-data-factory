@@ -452,9 +452,23 @@ public class ParseJiLin {
                     log.info(currentPersonStr[0]+"-----------"+currentPersonStr[1]);
 
                     if(currentPersonStr[1].length()>5&&currentPersonStr[0].trim().equals("当事人")){
-                        m = i;
-                        busiPersonFlag =true;
-                        punishToOrg = currentPersonStr[1];
+                        //判断当时人名称中是否带有职务
+                        if(currentPersonStr[1].contains("，")){
+                            String[] strPerson = currentPersonStr[1].split("，");
+                            if(strPerson[0].length()<6){
+                                priPerson = priPerson.append(strPerson[0]);
+                                priJob = priPerson.append(strPerson[1]);
+                            }else {
+                                m = i;
+                                busiPersonFlag =true;
+                                punishToOrg = currentPersonStr[1];
+                            }
+                        }else{
+                            m = i;
+                            busiPersonFlag =true;
+                            punishToOrg = currentPersonStr[1];
+                        }
+
                     }
                     // TODO 法人
                     if(busiPersonFlag==true&&currentPersonStr[0].trim().equals("地址")){
@@ -552,9 +566,23 @@ public class ParseJiLin {
                 log.info("-------strArray2[1]--------"+strArray2[1]);
                 // TODO 法人
                 if(strArray2[1].length()>5 && strArray2[0].trim().equalsIgnoreCase("当事人")){
-                    busiPersonFlag = true;
-                    k=i;
-                    punishToOrg = strArray2[1];
+                    //判断当时人名称中是否带有职务
+                    if(strArray2[1].contains("，")){
+                        String[] strPerson = strArray2[1].split("，");
+                        if(strPerson[0].length()<6){
+                            priPerson = priPerson.append(strPerson[0]);
+                            priJob = priPerson.append(strPerson[1]);
+                        }else {
+                            busiPersonFlag = true;
+                            k=i;
+                            punishToOrg = strArray2[1];
+                        }
+                    }else{
+                        busiPersonFlag = true;
+                        k=i;
+                        punishToOrg = strArray2[1];
+                    }
+
                     log.info("punishToOrg---"+punishToOrg);
                 }
                 if(busiPersonFlag == true  && strArray2[0].trim().equalsIgnoreCase("地址")){

@@ -1,9 +1,8 @@
 package com.mr.modules.api.site.instance.boissite;
 
 import com.mr.modules.api.model.FinanceMonitorPunish;
-import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.site.SiteTaskExtendSub;
-import com.mr.modules.api.site.instance.boissite.util.ParseUtil;
+import com.mr.modules.api.site.instance.boissite.util.ParseSiChuan;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -188,7 +187,7 @@ public class SiteTaskImpl_BOIS_SiChuan extends SiteTaskExtendSub {
 
         String titleStr = "";
 
-        Map resMap = new ParseUtil().parseInfo(fullTxt);
+        Map resMap = new ParseSiChuan().parseInfo(fullTxt);
         publishDate = (String)resMap.get("publishDate");
         punishDate = (String)resMap.get("punishDate");
         punishNo = (String)resMap.get("punishNo");

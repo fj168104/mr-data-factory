@@ -27,28 +27,28 @@ public class SiteTaskImpl_BOIS_JiLin extends SiteTaskExtendSub {
     @Override
     protected String execute() throws Throwable {
 //        String url = "http://anhui.circ.gov.cn/web/site11/tab3388/module8940/page1.htm";
-        List<String> urlList = extractPageUrlList();
-        for(String urlResult : urlList){
-            log.info("urlResult:"+urlResult);
-            Map map = extractContent(getData(urlResult));
-            try{
-                getObj(map,urlResult);
-            }catch (Exception e){
-                writeBizErrorLog(urlResult,"请检查此条url："+"\n"+e.getMessage());
-                continue;
+                List<String> urlList = extractPageUrlList();
+                for(String urlResult : urlList){
+                    log.info("urlResult:"+urlResult);
+                    Map map = extractContent(getData(urlResult));
+                    try{
+                        getObj(map,urlResult);
+                    }catch (Exception e){
+                        writeBizErrorLog(urlResult,"请检查此条url："+"\n"+e.getMessage());
+                        continue;
+                    }
+                }
+                return null;
             }
-        }
-        return null;
-    }
-    /**
-     * 获取：单笔
-     * 注：请求参数传入：url
-     */
-    @Override
-    protected String executeOne() throws Throwable {
-        if(oneFinanceMonitorPunish.getUrl()!=null){
-            log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
-            Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
+            /**
+             * 获取：单笔
+             * 注：请求参数传入：url
+             */
+            @Override
+            protected String executeOne() throws Throwable {
+                if(oneFinanceMonitorPunish.getUrl()!=null){
+                    log.info("oneUrl:"+oneFinanceMonitorPunish.getUrl());
+                    Map map = extractContent(getData(oneFinanceMonitorPunish.getUrl()));
 
             try{
                 getObj(map,oneFinanceMonitorPunish.getUrl());

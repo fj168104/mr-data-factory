@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,20 +87,41 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
 
         }
 
-        pdfString = pdfString.replace(" ","");
-        pdfString = pdfString.replaceAll("(\\r\\n|\\r|\\n|\\n\\r)"," ");
-        pdfString = pdfString.replace("附件 2017年第一季度国家重点监控企业主要污染物排放严重超标和处罚情况 ","");
-        pdfString = pdfString.replace("序 号 行政区划企业名称处罚情况整改情况","");
-        pdfString = pdfString.replaceAll("—(.*)— ","");
-        pdfString = pdfString.replaceAll("\\u0020+([0-9]{1,3})","\n");
+        pdfString = pdfString.replace(" ","#");
+        pdfString = pdfString.replaceAll("(\\r\\n|\\r|\\n|\\n\\r)","@");
+        pdfString = pdfString.replaceAll("([—]{1}[#]{1}[0-9]+[#]{1}[—]{1})","");
+        pdfString = pdfString.replace("@附件@2017#年第一季度国家重点监控企业主要污染物排放严重超标和处罚情况@","");
+        pdfString = pdfString.replace("序@号@行政区划#企#业#名#称#处#罚#情#况#整#改#情#况","");
+        pdfString = pdfString.replace("年","&年");
+        pdfString = pdfString.replace("月","&月");
+        pdfString = pdfString.replace("日","&日");
+        pdfString = pdfString.replace("万","&万");
+        pdfString = pdfString.replace("@&","");
+        pdfString = pdfString.replace("#&","");
+        pdfString = pdfString.replace("&","");
+        pdfString = pdfString.replaceAll("([。,@])+([0-9]+)+([#]+)","\n");
+        pdfString = pdfString.replaceAll("([@])+([0-9]+)+([@]+)","\n");
+        pdfString = pdfString.replace("@@序号#行政区划#企#业#名#称#处#罚#情#况#整#改#情#况","");
+        pdfString = pdfString.replace("@序号#行政区划#企#业#名#称#处#罚#情#况#整#改#情#况","");
+        //替换特殊字符(数字，小数)
+        Matcher dd = java.util.regex.Pattern.compile("([1-9]\\d*\\.?\\d*)|(0\\.\\d*[1-9])").matcher(pdfString);
+        Matcher ss = java.util.regex.Pattern.compile("[@,&,#]{0,2}([1-9]\\d*\\.?\\d*)|(0\\.\\d*[1-9])[@,&,#]{0,2}").matcher(pdfString) ;
 
-        System.out.println("----------\n"+pdfString);
+        while(dd.find()&&ss.find()){
+            pdfString = pdfString.replace(ss.group(), dd.group());
+        }
+        pdfString = pdfString.replaceAll("#","@");
+        pdfString = pdfString.replaceAll("。2017","。@2017");
+        pdfString = pdfString.replaceAll("@自治区@","自治区@");
+        pdfString = pdfString.replaceAll("@建设兵团@","建设兵团@");
+        log.info("换行处理后的文档：\n"+pdfString);
 
         //通过空格 数字 空格 来处理
-        //replaceAll("\\u0020+([0-9]+)\\u0020+", "(\r\n|\r|\n|\n\r)")
-       /* String[] strPdf = pdfString.split("\\u0020+([0-9]{1,6})\\u0020+");
+        pdfString = pdfString.replaceAll("(\\r\\n|\\r|\\n|\\n\\r)", "#");
+        log.info("去掉换行处理后的文档：\n"+pdfString);
+        String[] strPdf = pdfString.split("#");
         for(String str : strPdf){
-            String[] resultList = str.trim().split(" ");
+            String[] resultList = str.trim().split("@");
             StringBuffer detailAdd = new StringBuffer("");
 
             if(resultList.length>=5){
@@ -108,15 +130,30 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
                 }
                 //企业名称、String commpanyName = "";
                 commpanyName = resultList[0];
-                // 统一社会信用代码（或组织机构代码或工商注册号）、String nnifiedSocialCreditCode = "";
-                nnifiedSocialCreditCode = resultList[1];
-                // 法定代表人/实际经营者姓名、String legalRepresentative = "";
-                legalRepresentative = resultList[2];
-                // 详细地址、String detailAddress = "";
-                detailAddress = detailAdd.toString();
-                // 违法情形、String transgress = "";
-                transgress = resultList[resultList.length-1];
+                // 行政区划
+                administrativeArea = resultList[1];
 
+                // 违法情形、
+                punishGress = resultList[2];
+                // 整改情况、
+                rectifyAndReform = detailAdd.toString();
+                //存储对象
+            }
+            if(resultList.length==4){
+                detailAdd = detailAdd.append(resultList[3]);
+                //企业名称、String commpanyName = "";
+                commpanyName = resultList[0];
+                // 行政区划
+                administrativeArea = resultList[1];
+
+                // 违法情形、
+                punishGress = resultList[2];
+                // 整改情况、
+                rectifyAndReform = detailAdd.toString();
+                //存储对象
+            }
+            if(resultList.length<4){
+                log.info("这条记录有异常，请查验···\n"+str);
             }
 
             Map<String,String> personObjectMap  = new HashMap<>();
@@ -127,22 +164,20 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
             // 日期String dateString = "";
             personObjectMap.put("dateString",dateString);
             personObjectMap.put("commpanyName",commpanyName);
-            personObjectMap.put("nnifiedSocialCreditCode",nnifiedSocialCreditCode);
-            personObjectMap.put("legalRepresentative",legalRepresentative);
-            personObjectMap.put("detailAddress",detailAddress);
-            personObjectMap.put("transgress",transgress);
+            personObjectMap.put("administrativeArea",administrativeArea);
+            personObjectMap.put("punishGress",punishGress);
+            personObjectMap.put("rectifyAndReform",rectifyAndReform);
 
             listPersonObjectMap.add(personObjectMap);
-            *//*log.info(
+            /*log.info(
                     "\n来源："+personObjectMap.get("source") +
                             "\n来源地址："+personObjectMap.get("sourceUrl") +
                             "\n日期："+personObjectMap.get("dateString")+
                             "\n企业名称："+personObjectMap.get("commpanyName")+
-                            "\n统一社会信用代码："+personObjectMap.get("nnifiedSocialCreditCode")+
-                            "\n法定代表人："+personObjectMap.get("legalRepresentative")+
-                            "\n详细地址："+personObjectMap.get("detailAddress")+
-                            "\n违法情形："+personObjectMap.get("transgress")
-            );*//*
+                            "\n行政区划："+personObjectMap.get("administrativeArea")+
+                            "\n处罚情况："+personObjectMap.get("punishGress")+
+                            "\n整改情况："+personObjectMap.get("rectifyAndReform")
+            );*/
 
         }
 
@@ -153,13 +188,12 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
                             "\n来源地址："+map.get("sourceUrl") +
                             "\n日期："+map.get("dateString")+
                             "\n企业名称："+map.get("commpanyName")+
-                            "\n统一社会信用代码："+map.get("nnifiedSocialCreditCode")+
-                            "\n法定代表人："+map.get("legalRepresentative")+
-                            "\n详细地址："+map.get("detailAddress")+
-                            "\n违法情形："+map.get("transgress")
+                            "\n行政区划："+map.get("administrativeArea")+
+                            "\n处罚情况："+map.get("punishGress")+
+                            "\n整改情况："+map.get("rectifyAndReform")
             );
 
-        }*/
+        }
 
 
 

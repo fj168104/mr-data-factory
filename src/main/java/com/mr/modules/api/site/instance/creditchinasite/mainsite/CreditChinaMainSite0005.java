@@ -9,4 +9,7 @@ package com.mr.modules.api.site.instance.creditchinasite.mainsite;
  */
 
 public class CreditChinaMainSite0005 {
+    /**
+     * TODO 与0001与0002 一样需求
+     */
 }

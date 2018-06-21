@@ -386,13 +386,13 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * 设置单条抓取的更新日期
 	 */
 	protected void initDate() {
-		try {
+		/*try {
 			//通过source查找
 			FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 					.selectByUrl(oneFinanceMonitorPunish.getUrl());
 			if (Objects.isNull(originFinanceMonitorPunish)) {
-				oneFinanceMonitorPunish.setCreateTime(new Date());
-				oneFinanceMonitorPunish.setUpdateTime(new Date());
+				//oneFinanceMonitorPunish.setCreateTime(new Date());
+				//oneFinanceMonitorPunish.setUpdateTime(new Date());
 			} else {
 				oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
 				oneFinanceMonitorPunish.setUpdateTime(new Date());
@@ -402,7 +402,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			financeMonitorPunishMapper.deleteByUrl(oneFinanceMonitorPunish.getUrl());
 		} catch (Exception e) {
 			log.error(keyWords + ">>>" + e.getMessage());
-		}
+		}*/
 
 	}
 
@@ -538,7 +538,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * @return
 	 */
 	private FinanceMonitorPunish insertOrUpdate(FinanceMonitorPunish financeMonitorPunish) {
-		if (StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())) {
+		/*if (StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())) {
 			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		}
 
@@ -556,7 +556,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			financeMonitorPunishMapper.insert(filterPlace(financeMonitorPunish));
 		} catch (Exception e) {
 			log.error(keyWords + ">>>" + e.getMessage());
-		}
+		}*/
 		return financeMonitorPunish;
 	}
 

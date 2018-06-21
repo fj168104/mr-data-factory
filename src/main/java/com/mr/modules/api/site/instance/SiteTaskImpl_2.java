@@ -80,8 +80,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 				.selectByUrl(oneFinanceMonitorPunish.getUrl());
 		if (!Objects.isNull(oneFinanceMonitorPunish)) {
-			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
-			oneFinanceMonitorPunish.setUpdateTime(new Date());
+			/*oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
+			oneFinanceMonitorPunish.setUpdateTime(new Date());*/
 		}
 
 		initDate();

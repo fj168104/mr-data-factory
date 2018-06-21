@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mr.modules.api.mapper.DiscreditBlacklistMapper" >
+  <resultMap id="BaseResultMap" type="com.mr.modules.api.model.DiscreditBlacklist" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="source" property="source" jdbcType="VARCHAR" />
+    <result column="subject" property="subject" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="object_type" property="objectType" jdbcType="VARCHAR" />
+    <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR" />
+    <result column="enterprise_code1" property="enterpriseCode1" jdbcType="VARCHAR" />
+    <result column="enterprise_code2" property="enterpriseCode2" jdbcType="VARCHAR" />
+    <result column="enterprise_code3" property="enterpriseCode3" jdbcType="VARCHAR" />
+    <result column="person_name" property="personName" jdbcType="VARCHAR" />
+    <result column="person_id" property="personId" jdbcType="VARCHAR" />
+    <result column="discredit_type" property="discreditType" jdbcType="VARCHAR" />
+    <result column="discredit_action" property="discreditAction" jdbcType="VARCHAR" />
+    <result column="punish_reason" property="punishReason" jdbcType="VARCHAR" />
+    <result column="punish_result" property="punishResult" jdbcType="VARCHAR" />
+    <result column="judge_no" property="judgeNo" jdbcType="VARCHAR" />
+    <result column="judge_date" property="judgeDate" jdbcType="VARCHAR" />
+    <result column="judge_auth" property="judgeAuth" jdbcType="VARCHAR" />
+    <result column="publish_date" property="publishDate" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>

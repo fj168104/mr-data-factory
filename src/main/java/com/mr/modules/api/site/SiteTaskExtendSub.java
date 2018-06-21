@@ -77,10 +77,10 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 
 		financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
 		//设置createTime
-		if (StringUtils.isEmpty(financeMonitorPunish.getCreateTime())) {
+		/*if (StringUtils.isEmpty(financeMonitorPunish.getCreateTime())) {
 			financeMonitorPunish.setCreateTime(new Date());
 			financeMonitorPunish.setUpdateTime(new Date());
-		}
+		}*/
 		try {
 			if (StrUtil.isEmpty(financeMonitorPunish.getCompanyFullName())) {
 				financeMonitorPunish.setCompanyFullName(financeMonitorPunish.getPartyInstitution());

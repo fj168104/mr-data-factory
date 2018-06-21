@@ -382,13 +382,13 @@ public class SiteServiceImpl implements SiteService {
 				// 通过source查找
 				FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 						.selectByUrl(financeMonitorPunish.getUrl());
-				if (Objects.isNull(originFinanceMonitorPunish)) {
+				/*if (Objects.isNull(originFinanceMonitorPunish)) {
 					financeMonitorPunish.setCreateTime(new Date());
 					financeMonitorPunish.setUpdateTime(new Date());
 				} else {
 					financeMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
 					financeMonitorPunish.setUpdateTime(new Date());
-				}
+				}*/
 
 				//通过url先删除，确保不产生多余数据
 				financeMonitorPunishMapper.deleteByUrl(financeMonitorPunish.getUrl());

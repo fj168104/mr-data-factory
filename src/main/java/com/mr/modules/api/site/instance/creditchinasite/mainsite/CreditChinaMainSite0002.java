@@ -1,17 +1,17 @@
 package com.mr.modules.api.site.instance.creditchinasite.mainsite;
 
+import com.mr.modules.api.mapper.AdminPunishMapper;
+import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @auther
@@ -24,6 +24,9 @@ import java.util.Map;
 @Component("creditChinaMainSite0002")
 public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
     String url ="https://www.creditchina.gov.cn/xinxigongshi/huanbaolingyu/201804/t20180419_113582.html";
+
+    @Autowired
+    AdminPunishMapper adminPunishMapper;
     @Override
     protected String executeOne() throws Throwable {
         return super.executeOne();
@@ -41,6 +44,8 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         List<Map<String,String>> listPersonObjectMap = new ArrayList<>();
         //来源
         String source = "信用中国";
+        //主题
+        String subject = "受到环保部门两次及以上行政处理的环评工程师名单记录";
         //来源地址
         String sourceUrl = url;
 
@@ -55,7 +60,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         // 奖惩部门、
         String executeOrg = "";
         // 惩罚类型、
-        String punishType = "受到环保部门两次及以上行政处理的环评工程师名单记录";
+        String punishType = "行政处理";
         // 惩罚原因
         String punishReason = "";
         //行政处理方式
@@ -102,6 +107,8 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
                 personObjectMap.put("punishReason",punishReason);
                 //行政处理方式 String punishMethod = "";
                 personObjectMap.put("punishMethod",punishMethod);
+                //主题
+                personObjectMap.put("subject",subject);
                 listPersonObjectMap.add(personObjectMap);
             }
         }
@@ -117,9 +124,57 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
                             +"惩罚类型："+  map.get("punishType")+"\n"
                             +"惩罚原因："+  map.get("punishReason")+"\n"
                             +"行政处理方式："+  map.get("punishMethod")+"\n" );
+            adminPunishInsert(map);
             log.info("-----------------------------------------------------------------------------------");
         }
         log.info(document.text());
+    }
+
+    public AdminPunish adminPunishInsert(Map<String,String> map){
+        AdminPunish adminPunish = new AdminPunish();
+        //created_at	本条记录创建时间
+        adminPunish.setCreatedAt(new Date());
+        //updated_at	本条记录最后更新时间
+        adminPunish.setUpdatedAt(new Date());
+        //source	数据来源
+        adminPunish.setSource(map.get("source"));
+        //subject	主题
+        adminPunish.setSubject(map.get("subject"));
+        //url	url
+        adminPunish.setUrl(map.get("sourceUrl"));
+        //object_type	主体类型: 01-企业 02-个人
+        adminPunish.setObjectType("02");
+        //enterprise_name	企业名称
+        adminPunish.setEnterpriseName(map.get(""));
+        //enterprise_code1	统一社会信用代码
+        adminPunish.setEnterpriseCode1("");
+        //enterprise_code2	营业执照注册号
+        adminPunish.setEnterpriseCode2("");
+        //enterprise_code3	组织机构代码
+        adminPunish.setEnterpriseCode3("");
+        //person_name	法定代表人/负责人姓名|负责人姓名
+        adminPunish.setPersonName(map.get("environDiscussPerson"));
+        //person_id	法定代表人身份证号|负责人身份证号
+        adminPunish.setPersonId("");
+        //punish_type	处罚类型
+        adminPunish.setPunishType(map.get("punishType"));
+        //punish_reason	处罚事由
+        adminPunish.setPunishReason(map.get("punishReason"));
+        //punish_according	处罚依据
+        adminPunish.setPunishAccording("");
+        //punish_result	处罚结果
+        adminPunish.setPunishResult("");
+        //judge_no	执行文号
+        adminPunish.setJudgeNo("");
+        //judge_date	执行时间
+        adminPunish.setJudgeDate(map.get("punishDate"));
+        //judge_auth	判决机关
+        adminPunish.setJudgeAuth(map.get("executeOrg"));
+        //publish_date	发布日期
+        adminPunish.setPublishDate(map.get("punishDate"));
+
+        adminPunishMapper.insert(adminPunish);
+        return adminPunish;
     }
 
 }

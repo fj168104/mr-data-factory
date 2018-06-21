@@ -5,19 +5,19 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.modules.api.mapper.AdminPunishMapper;
+import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
 import java.util.regex.Matcher;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @auther
@@ -31,7 +31,8 @@ import java.util.Map;
 @Scope("prototype")
 public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
     protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
-
+    @Autowired
+    AdminPunishMapper adminPunishMapper;
 
     String url ="http://www.creditchina.gov.cn/xinxigongshi/huanbaolingyu/201804/t20180418_113468.html";
     @Override
@@ -51,6 +52,8 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
         List<Map<String, String>> listPersonObjectMap = new ArrayList<>();
         //来源
         String source = "信用中国";
+        //主题
+        String subject = "2017年第一季度国家重点监控企业主要污染物排放严重超标和处罚情况";
         //来源地址
         String sourceUrl = url;
         //企业名称、
@@ -128,10 +131,10 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
                 for(int h=3;h<resultList.length-1;h++){
                     detailAdd = detailAdd.append(resultList[h]);
                 }
-                //企业名称、String commpanyName = "";
-                commpanyName = resultList[0];
                 // 行政区划
-                administrativeArea = resultList[1];
+                administrativeArea = resultList[0];
+                //企业名称、String commpanyName = "";
+                commpanyName = resultList[1];
 
                 // 违法情形、
                 punishGress = resultList[2];
@@ -141,10 +144,11 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
             }
             if(resultList.length==4){
                 detailAdd = detailAdd.append(resultList[3]);
-                //企业名称、String commpanyName = "";
-                commpanyName = resultList[0];
                 // 行政区划
-                administrativeArea = resultList[1];
+                administrativeArea = resultList[0];
+                //企业名称、String commpanyName = "";
+                commpanyName = resultList[1];
+
 
                 // 违法情形、
                 punishGress = resultList[2];
@@ -167,6 +171,7 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
             personObjectMap.put("administrativeArea",administrativeArea);
             personObjectMap.put("punishGress",punishGress);
             personObjectMap.put("rectifyAndReform",rectifyAndReform);
+            personObjectMap.put("subject",subject);
 
             listPersonObjectMap.add(personObjectMap);
             /*log.info(
@@ -192,11 +197,58 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
                             "\n处罚情况："+map.get("punishGress")+
                             "\n整改情况："+map.get("rectifyAndReform")
             );
+            adminPunishInsert(map);
 
         }
 
 
 
+    }
+    public AdminPunish adminPunishInsert(Map<String,String> map){
+        AdminPunish adminPunish = new AdminPunish();
+        //created_at	本条记录创建时间
+        adminPunish.setCreatedAt(new Date());
+        //updated_at	本条记录最后更新时间
+        adminPunish.setUpdatedAt(new Date());
+        //source	数据来源
+        adminPunish.setSource(map.get("source"));
+        //subject	主题
+        adminPunish.setSubject(map.get("subject"));
+        //url	url
+        adminPunish.setUrl(map.get("sourceUrl"));
+        //object_type	主体类型: 01-企业 02-个人
+        adminPunish.setObjectType("01");
+        //enterprise_name	企业名称
+        adminPunish.setEnterpriseName(map.get("commpanyName"));
+        //enterprise_code1	统一社会信用代码
+        adminPunish.setEnterpriseCode1("");
+        //enterprise_code2	营业执照注册号
+        adminPunish.setEnterpriseCode2("");
+        //enterprise_code3	组织机构代码
+        adminPunish.setEnterpriseCode3(map.get(""));
+        //person_name	法定代表人/负责人姓名|负责人姓名
+        adminPunish.setPersonName("");
+        //person_id	法定代表人身份证号|负责人身份证号
+        adminPunish.setPersonId("");
+        //punish_type	处罚类型
+        adminPunish.setPunishType(map.get(""));
+        //punish_reason	处罚事由
+        adminPunish.setPunishReason(map.get("污染物排放严重超标和处罚"));
+        //punish_according	处罚依据
+        adminPunish.setPunishAccording("");
+        //punish_result	处罚结果
+        adminPunish.setPunishResult(map.get("punishGress"));
+        //judge_no	执行文号
+        adminPunish.setJudgeNo("2017年第一季度国家重点监控企业主要污染物排放严重超标和处罚情况");
+        //judge_date	执行时间
+        adminPunish.setJudgeDate(map.get("dateString"));
+        //judge_auth	判决机关
+        adminPunish.setJudgeAuth(map.get("生态环境部"));
+        //publish_date	发布日期
+        adminPunish.setPublishDate(map.get("dateString"));
+
+        adminPunishMapper.insert(adminPunish);
+        return adminPunish;
     }
 
 }

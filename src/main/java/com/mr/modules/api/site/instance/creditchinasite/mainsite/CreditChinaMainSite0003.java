@@ -5,19 +5,21 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
+import com.mr.modules.api.mapper.AdminPunishMapper;
+import com.mr.modules.api.mapper.DiscreditBlacklistMapper;
+import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @auther
@@ -32,7 +34,8 @@ import java.util.Map;
 public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
     protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
-
+    @Autowired
+    DiscreditBlacklistMapper discreditBlacklistMapper;
     String url ="https://www.creditchina.gov.cn/xinxigongshi/huanbaolingyu/201804/t20180425_114081.html";
     @Override
     protected String executeOne() throws Throwable {
@@ -51,6 +54,8 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
         List<Map<String, String>> listPersonObjectMap = new ArrayList<>();
         //来源
         String source = "信用中国";
+        //主题
+        String subject = "2017年环境违法企业“黑名单”";
         //来源地址
         String sourceUrl = url;
         //企业名称、
@@ -112,6 +117,9 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
         //replaceAll("\\u0020+([0-9]+)\\u0020+", "(\r\n|\r|\n|\n\r)")
         String[] strPdf = pdfString.split("\\u0020+([0-9]{1,6})\\u0020+");
         for(String str : strPdf){
+            if(str.contains("1 广州永和肉食加工有限公司")){
+                str = str.replace("1 广州永和肉食加工有限公司","广州永和肉食加工有限公司");//1 广州永和肉食加工有限公司
+            }
             String[] resultList = str.trim().split(" ");
             StringBuffer detailAdd = new StringBuffer("");
 
@@ -144,7 +152,7 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
             personObjectMap.put("legalRepresentative",legalRepresentative);
             personObjectMap.put("detailAddress",detailAddress);
             personObjectMap.put("transgress",transgress);
-
+            personObjectMap.put("subject",subject);
             listPersonObjectMap.add(personObjectMap);
             /*log.info(
                     "\n来源："+personObjectMap.get("source") +
@@ -171,11 +179,60 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
                     "\n详细地址："+map.get("detailAddress")+
                     "\n违法情形："+map.get("transgress")
             );
+            discreditBlacklistInsert(map);
 
         }
 
 
 
+    }
+    public DiscreditBlacklist discreditBlacklistInsert(Map<String,String> map){
+        DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
+        //created_at	本条记录创建时间
+        discreditBlacklist.setCreatedAt(new Date());
+        //updated_at	本条记录最后更新时间
+        discreditBlacklist.setUpdatedAt(new Date());
+        //source	数据来源
+        discreditBlacklist.setSource(map.get("source"));
+        //subject	主题
+        discreditBlacklist.setSubject(map.get("subject"));
+        //url	url
+        discreditBlacklist.setUrl(map.get("sourceUrl"));
+        //object_type	主体类型: 01-企业 02-个人
+        discreditBlacklist.setObjectType("01");
+        //enterprise_name	企业名称
+        discreditBlacklist.setEnterpriseName(map.get("commpanyName"));
+        //enterprise_code1	统一社会信用代码
+        discreditBlacklist.setEnterpriseCode1(map.get("nnifiedSocialCreditCode"));
+        //enterprise_code2	营业执照注册号
+        discreditBlacklist.setEnterpriseCode2("");
+        //enterprise_code3	组织机构代码
+        discreditBlacklist.setEnterpriseCode3("");
+        //person_name	法定代表人/负责人姓名|负责人姓名
+        discreditBlacklist.setPersonName(map.get("legalRepresentative"));
+        //person_id	法定代表人身份证号|负责人身份证号
+        discreditBlacklist.setPersonId("");
+        //discredit_type	失信类型
+        discreditBlacklist.setDiscreditType("环境违法");
+        //discredit_action	失信行为
+        discreditBlacklist.setDiscreditAction(map.get("transgress"));
+        //punish_reason	列入原因
+        discreditBlacklist.setPunishReason(map.get("transgress"));
+        //punish_result	处罚结果
+        discreditBlacklist.setPunishReason("");
+        //judge_no	执行文号
+        discreditBlacklist.setJudgeNo("广东省环境保护厅文件粤环〔2018〕3号");
+        //judge_date	执行时间
+        discreditBlacklist.setJudgeDate(map.get("dateString"));
+        //judge_auth	判决机关
+        discreditBlacklist.setJudgeAuth("广东省环境保护厅");
+        //publish_date	发布日期
+        discreditBlacklist.setPublishDate(map.get("dateString"));
+        //status	当前状态
+        discreditBlacklist.setStatus("黑名单");
+
+        discreditBlacklistMapper.insert(discreditBlacklist);
+        return discreditBlacklist;
     }
 
 }

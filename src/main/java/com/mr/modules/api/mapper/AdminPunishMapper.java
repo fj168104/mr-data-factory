@@ -7,6 +7,13 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface AdminPunishMapper extends BaseMapper<AdminPunish> {
+	
+	/**
+	 * 通过链接地址删除全部
+	 * @param url
+	 * @return
+	 */
+	int deleteAllByUrl(String url);
 
     /**
      * 判断记录此url地址是否已经存在

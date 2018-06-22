@@ -1,13 +1,21 @@
 package com.mr.modules.api.mapper;
 
-import com.mr.common.base.mapper.BaseMapper;
-import com.mr.modules.api.model.AdminPunish;
-import com.mr.modules.api.model.DiscreditBlacklist;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.mr.common.base.mapper.BaseMapper;
+import com.mr.modules.api.model.DiscreditBlacklist;
+
 public interface DiscreditBlacklistMapper extends BaseMapper<DiscreditBlacklist> {
+	
+	/**
+	 * 通过链接地址删除全部
+	 * @param url
+	 * @return
+	 */
+	int deleteAllByUrl(String url);
+	
     /**
      * 判断记录此url地址是否已经存在
      * @param url

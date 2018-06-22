@@ -28,7 +28,10 @@
     <result column="publish_date" property="publishDate" jdbcType="VARCHAR" />
   </resultMap>
 
-
+  <!--通过链接地址删除全部-->
+  <delete id="deleteAllByUrl" parameterType="java.lang.String">
+    DELETE FROM ADMIN_PUNISH WHERE URL = #{url}
+  </delete>
 
   <!--通过链接地址删除-->
   <delete id="deleteByUrl" parameterType="java.lang.String">

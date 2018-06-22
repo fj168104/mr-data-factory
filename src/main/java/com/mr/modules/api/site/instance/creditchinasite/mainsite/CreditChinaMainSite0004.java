@@ -64,6 +64,8 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
         String punishGress = "";
         // 整改情况、
         String rectifyAndReform = "";
+        // 惩罚类型、
+        String punishType = "";
 
         // 日期
         String dateString = "　2018年4月10日";
@@ -117,6 +119,8 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
         pdfString = pdfString.replaceAll("。2017","。@2017");
         pdfString = pdfString.replaceAll("@自治区@","自治区@");
         pdfString = pdfString.replaceAll("@建设兵团@","建设兵团@");
+        pdfString = pdfString.replaceAll("@（","（");
+        pdfString = pdfString.replaceAll("@理分公司仁和污水处理厂","理分公司仁和污水处理厂");
         log.info("换行处理后的文档：\n"+pdfString);
 
         //通过空格 数字 空格 来处理
@@ -136,7 +140,16 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
                 //企业名称、String commpanyName = "";
                 commpanyName = resultList[1];
 
-                // 违法情形、
+                // 惩罚类型
+                if(resultList[2].matches("[0-9]+")&&!resultList[2].contains("警告")){
+                    // 惩罚类型、
+                    punishType = "罚款";
+                }else if(resultList[2].contains("警告")){
+                    punishType = "警告";
+                }else {
+                    punishType = "其他";
+                }
+                //违法情形、
                 punishGress = resultList[2];
                 // 整改情况、
                 rectifyAndReform = detailAdd.toString();
@@ -149,7 +162,15 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
                 //企业名称、String commpanyName = "";
                 commpanyName = resultList[1];
 
-
+                // 惩罚类型
+                if(resultList[2].matches("[0-9]+")&&!resultList[2].contains("警告")){
+                    // 惩罚类型、
+                    punishType = "罚款";
+                }else if(resultList[2].contains("警告")){
+                    punishType = "警告";
+                }else {
+                    punishType = "其他";
+                }
                 // 违法情形、
                 punishGress = resultList[2];
                 // 整改情况、
@@ -172,6 +193,7 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
             personObjectMap.put("punishGress",punishGress);
             personObjectMap.put("rectifyAndReform",rectifyAndReform);
             personObjectMap.put("subject",subject);
+            personObjectMap.put("punishType",punishType);
 
             listPersonObjectMap.add(personObjectMap);
             /*log.info(
@@ -229,25 +251,25 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
         //person_name	法定代表人/负责人姓名|负责人姓名
         adminPunish.setPersonName("");
         //person_id	法定代表人身份证号|负责人身份证号
-        adminPunish.setPersonId("");
+        adminPunish.setPersonId(map.get(""));
         //punish_type	处罚类型
-        adminPunish.setPunishType(map.get(""));
+        adminPunish.setPunishType(map.get("punishType"));
         //punish_reason	处罚事由
-        adminPunish.setPunishReason(map.get("污染物排放严重超标和处罚"));
+        adminPunish.setPunishReason(map.get("污染物排放严重超标"));
         //punish_according	处罚依据
         adminPunish.setPunishAccording("");
         //punish_result	处罚结果
         adminPunish.setPunishResult(map.get("punishGress"));
         //judge_no	执行文号
-        adminPunish.setJudgeNo("2017年第一季度国家重点监控企业主要污染物排放严重超标和处罚情况");
+        adminPunish.setJudgeNo("");
         //judge_date	执行时间
         adminPunish.setJudgeDate(map.get("dateString"));
         //judge_auth	判决机关
-        adminPunish.setJudgeAuth(map.get("生态环境部"));
+        adminPunish.setJudgeAuth("生态环境部");
         //publish_date	发布日期
         adminPunish.setPublishDate(map.get("dateString"));
 
-        adminPunishMapper.insert(adminPunish);
+        saveAdminPunishOne(adminPunish,false);
         return adminPunish;
     }
 

@@ -6,7 +6,10 @@ import com.mr.common.OCRUtil;
 import com.mr.common.util.CrawlerUtil;
 
 import com.mr.modules.api.mapper.AdminPunishMapper;
+import com.mr.modules.api.mapper.DiscreditBlacklistMapper;
 import com.mr.modules.api.mapper.ProxypoolMapper;
+import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.model.Proxypool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -25,6 +28,8 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     ProxypoolMapper proxypoolMapper;
     @Autowired
     AdminPunishMapper adminPunishMapper;
+    @Autowired
+    DiscreditBlacklistMapper discreditBlacklistMapper;
     @Override
     protected String execute() throws Throwable {
         return null;
@@ -198,100 +203,55 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     }
 
     /**
-     * 保存抓取结果
-     *
-     * @return ture 保存成功		false 保存失败（如系统中已存在该记录）
-     * 一主键为条件，筛选数据
-     */
-    /*@Override
-    protected Boolean saveOne(AdminPunish adminPunish, Boolean isForce) {
-        String primaryKey = buildFinanceMonitorPunishBizKey(adminPunish);
-        log.debug("primaryKey:" + primaryKey);
-        if (isForce || Objects.isNull(adminPunishMapper.selectByBizKey(adminPunish))) {
-            insertOrUpdate(adminPunish);
-            return true;
-        } else {
-            return false;
-        }
-    }
-    *//**
-     * 保存单条记录
-     *
+     *黑名单信息保存抓取结果
      * @param adminPunish
-     * @return
-     *//*
-    private AdminPunish insertOrUpdate(AdminPunish adminPunish) {
-        if (StringUtils.isEmpty(adminPunish.getPrimaryKey())) {
-            buildFinanceMonitorPunishBizKey(adminPunish);
-        }
-
-        adminPunishMapper.deleteByBizKey(adminPunish.getPrimaryKey());
-        //设置createTime
-        if (StringUtils.isEmpty(adminPunish.getCreateTime())) {
-            adminPunish.setCreatedAt(new Date());
-            adminPunish.setUpdatedAt(new Date());
-        }
-        try {
-            if (StrUtil.isEmpty(adminPunish.getCompanyFullName())) {
-                adminPunish.setCompanyFullName(adminPunish.getPartyInstitution());
+     * @param isForce true:强制保存插入;false:如果存在就不再保存（如系统中已存在该记录）
+     */
+    protected void saveAdminPunishOne(AdminPunish adminPunish, Boolean isForce) {
+        List<AdminPunish> adminPunishList = adminPunishMapper.selectByUrl(adminPunish.getUrl(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
+        String strAdminPunish = "url地址："+adminPunish.getUrl()+"\n企业名称："+adminPunish.getEnterpriseName()+"\n+负责人名称："+adminPunish.getPersonName()+"\n处罚文号："+adminPunish.getJudgeNo();
+        if (!isForce && adminPunishList.size()>0) {
+            log.info(strAdminPunish+"此记录已经存在···不需要入库");
+        }else if(!isForce && adminPunishList.size()<=0){
+            adminPunishMapper.insert(adminPunish);
+            log.info(strAdminPunish+"此记录不存在···需要入库");
+        } else if(isForce){
+            if(adminPunishList.size()>0){
+                adminPunishMapper.deleteByUrl(adminPunish.getUrl(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
+                adminPunishMapper.insert(adminPunish);
+            }else{
+                adminPunishMapper.insert(adminPunish);
             }
-            adminPunishMapper.insert(filterPlace(adminPunish));
-        } catch (Exception e) {
-            log.error(keyWords + ">>>" + e.getMessage());
+            log.info(strAdminPunish+"此记录入库完成···");
+        }else{
+            log.info(strAdminPunish+"此记录不满足入库条件···");
         }
-        return adminPunish;
     }
 
-    *//**
-     * 设置业务主键 格式：punish_no|punish_title|punish_institution|punish_date
-     *
-     * @return primaryKey
-     *//*
-    public static String buildAdminPunishBizKey(AdminPunish adminPunish) {
-        String punishNo = StringUtils.isEmpty(adminPunish.getPunishNo())
-                ? "NULL" : adminPunish.getPunishNo();
-        String punishTitle = StringUtils.isEmpty(adminPunish.getPunishTitle())
-                ? "NULL" : adminPunish.getPunishTitle();
-        String punishDate = StringUtils.isEmpty(adminPunish.getPunishDate())
-                ? "NULL" : adminPunish.getPunishDate();
-        String punishInstitution = StringUtils.isEmpty(adminPunish.getPunishInstitution())
-                ? "NULL" : adminPunish.getPunishInstitution();
-
-        adminPunish.setPrimaryKey(String.format("%s|%s|%s|%s",
-                punishNo, punishTitle, punishInstitution, punishDate));
-
-        return adminPunish.getPrimaryKey();
-    }
-
-    protected AdminPunish filterPlace(AdminPunish adminPunish) throws Exception {
-        if (Objects.isNull(adminPunish)) return adminPunish;
-        Field[] fields = FinanceMonitorPunish.class.getDeclaredFields();
-        for (Field field : fields) {
-            String fieldName = field.getName();
-            if (fieldName.toLowerCase().equals("details")) continue;
-            PropertyDescriptor prop = new PropertyDescriptor(fieldName, AdminPunish.class);
-
-            // 获取getter方法，反射获取field值
-            Object obj = prop.getReadMethod().invoke(adminPunish);
-
-            if (Objects.isNull(obj) || obj instanceof java.util.Date) {
-                continue;
+    /**
+     *处罚信息保存抓取结果
+     * @param discreditBlacklist
+     * @param isForce true:强制保存插入;false:如果存在就不再保存（如系统中已存在该记录）
+     */
+    protected void saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
+        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
+        String strDiscreditBlacklist = "url地址："+discreditBlacklist.getUrl()+"\n企业名称："+discreditBlacklist.getEnterpriseName()+"\n+负责人名称："+discreditBlacklist.getPersonName()+"\n处罚文号："+discreditBlacklist.getJudgeNo();
+        if (!isForce && adminDiscreditBlacklist.size()>0) {
+            log.info(strDiscreditBlacklist+"此记录已经存在···不需要入库");
+        }else if(!isForce && adminDiscreditBlacklist.size()<=0){
+            discreditBlacklistMapper.insert(discreditBlacklist);
+            log.info(strDiscreditBlacklist+"此记录不存在···需要入库");
+        } else if(isForce){
+            if(adminDiscreditBlacklist.size()>0){
+                discreditBlacklistMapper.deleteByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
+                discreditBlacklistMapper.insert(discreditBlacklist);
+            }else{
+                discreditBlacklistMapper.insert(discreditBlacklist);
             }
-            String str = String.valueOf(obj);
-            // 获取setter方法，反射赋值
-            prop.getWriteMethod().invoke(adminPunish,
-                    str.replaceAll("\\s*", "")
-                            .replace("　", "")
-                            .replace(" ", "")
-                            .replace("　　", "")
-                            .replace("\n", "").trim());
-
+            log.info(strDiscreditBlacklist+"此记录入库完成···");
+        }else{
+            log.info(strDiscreditBlacklist+"此记录不满足入库条件···");
         }
-        if (StrUtil.isNotEmpty(adminPunish.getDetails())) {
-            adminPunish.setDetails(adminPunish.getDetails()
-                    .replaceAll("\\s*", ""));
-        }
-        return adminPunish;
-    }*/
+    }
 
 }

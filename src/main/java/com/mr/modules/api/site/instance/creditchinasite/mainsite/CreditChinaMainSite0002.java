@@ -60,7 +60,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         // 奖惩部门、
         String executeOrg = "";
         // 惩罚类型、
-        String punishType = "行政处理";
+        String punishType = "";
         // 惩罚原因
         String punishReason = "";
         //行政处理方式
@@ -101,12 +101,21 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
                 personObjectMap.put("punishDate",punishDate);
                 // 奖惩部门、String executeOrg = "";
                 personObjectMap.put("executeOrg",executeOrg);
-                // 惩罚类型、String punishType = "环保部公布的环评机构不良行为记录";
-                personObjectMap.put("punishType",punishType);
-                // 惩罚原因 String punishReason = "";
-                personObjectMap.put("punishReason",punishReason);
                 //行政处理方式 String punishMethod = "";
                 personObjectMap.put("punishMethod",punishMethod);
+                // 惩罚类型、String punishType = "";
+                if(punishMethod.contains("通报")&&!punishMethod.contains("整改")){
+                    // 惩罚类型、String punishType = "";
+                    personObjectMap.put("punishType","通报");
+                }else if(punishMethod.contains("整改")){
+                    // 惩罚类型、String punishType = "";
+                    personObjectMap.put("punishType","整改");
+                }else{
+                    personObjectMap.put("punishType","其他");
+                }
+                // 惩罚原因 String punishReason = "";
+                personObjectMap.put("punishReason",punishReason);
+
                 //主题
                 personObjectMap.put("subject",subject);
                 listPersonObjectMap.add(personObjectMap);
@@ -145,7 +154,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         //object_type	主体类型: 01-企业 02-个人
         adminPunish.setObjectType("02");
         //enterprise_name	企业名称
-        adminPunish.setEnterpriseName(map.get(""));
+        adminPunish.setEnterpriseName("");
         //enterprise_code1	统一社会信用代码
         adminPunish.setEnterpriseCode1("");
         //enterprise_code2	营业执照注册号
@@ -165,7 +174,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         //punish_result	处罚结果
         adminPunish.setPunishResult("");
         //judge_no	执行文号
-        adminPunish.setJudgeNo("");
+        adminPunish.setJudgeNo(map.get("aptitudeNo"));
         //judge_date	执行时间
         adminPunish.setJudgeDate(map.get("punishDate"));
         //judge_auth	判决机关
@@ -173,7 +182,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         //publish_date	发布日期
         adminPunish.setPublishDate(map.get("punishDate"));
 
-        adminPunishMapper.insert(adminPunish);
+        saveAdminPunishOne(adminPunish,false);
         return adminPunish;
     }
 

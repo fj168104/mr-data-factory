@@ -27,4 +27,20 @@
     <result column="judge_auth" property="judgeAuth" jdbcType="VARCHAR" />
     <result column="publish_date" property="publishDate" jdbcType="VARCHAR" />
   </resultMap>
+
+  <!--通过链接地址删除全部-->
+  <delete id="deleteAllByUrl" parameterType="java.lang.String">
+    DELETE FROM ADMIN_PUNISH WHERE URL = #{url}
+  </delete>
+
+  <!--通过链接地址删除-->
+  <delete id="deleteByUrl" parameterType="java.lang.String">
+    DELETE FROM ADMIN_PUNISH WHERE URL = #{url} AND ENTERPRISE_NAME = #{enterpriseName} AND PERSON_NAME = #{personName} AND JUDGE_NO = #{judgeNo} AND JUDGE_AUTH = #{judgeAuth}
+  </delete>
+
+  <!--通过链接地址查找-->
+  <select id="selectByUrl" resultMap="BaseResultMap">
+    SELECT * FROM ADMIN_PUNISH c WHERE c.URL = #{url}  AND c.ENTERPRISE_NAME = #{enterpriseName} AND c.PERSON_NAME = #{personName} AND c.JUDGE_NO = #{judgeNo} AND JUDGE_AUTH = #{judgeAuth} LIMIT 0, 1
+  </select>
+
 </mapper>

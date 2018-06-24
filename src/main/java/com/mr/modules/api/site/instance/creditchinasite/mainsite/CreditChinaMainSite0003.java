@@ -230,7 +230,7 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
         discreditBlacklist.setPublishDate(map.get("dateString"));
         //status	当前状态
         discreditBlacklist.setStatus("黑名单");
-
+        saveDisneycreditBlackListOne(discreditBlacklist,false);
         discreditBlacklistMapper.insert(discreditBlacklist);
         return discreditBlacklist;
     }

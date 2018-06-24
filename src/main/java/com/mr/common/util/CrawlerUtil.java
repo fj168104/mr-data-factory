@@ -3,6 +3,8 @@ package com.mr.common.util;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import org.jsoup.Jsoup;
+
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.ImmediateRefreshHandler;
@@ -76,5 +78,17 @@ public class CrawlerUtil {
 		} finally {
 			wc.close();
 		}
+	}
+
+	/**
+	 * 替换HTML空格为文本空格
+	 * @param text
+	 * @return
+	 */
+	public static String replaceHtmlNbsp(String text) {
+		if (text == null) {
+			return null;
+		}
+		return text.replace(Jsoup.parse("&nbsp;").text(), " ").trim();
 	}
 }

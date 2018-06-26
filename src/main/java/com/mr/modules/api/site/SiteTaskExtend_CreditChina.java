@@ -32,8 +32,6 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     AdminPunishMapper adminPunishMapper;
     @Autowired
     DiscreditBlacklistMapper discreditBlacklistMapper;
-    @Autowired
-    MrAdminPunishMapper mrAdminPunishMapper;
     @Override
     protected String execute() throws Throwable {
         return null;

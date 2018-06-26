@@ -49,6 +49,29 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
 		}
 		return CrawlerUtil.getHtmlPage(url);
 	}
+    /**
+     * 创建一个htmlUnit webClient 客户端
+     * @param ip
+     * @param port
+     * @return
+     */
+    public  WebClient createWebClient(String ip, String port) {
+        WebClient client = null;
+        try {
+            if ("".equals(ip) || "".equals(port)) {
+                client = new WebClient(BrowserVersion.getDefault());
+            } else {
+                client = new WebClient(BrowserVersion.getDefault(), ip,
+                        Integer.valueOf(port));
+            }
+            client.getOptions().setUseInsecureSSL(true);
+            client.getOptions().setCssEnabled(false);
+            client.getOptions().setJavaScriptEnabled(false);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return client;
+    }
 
     /**
      * 通过本地IP去爬起

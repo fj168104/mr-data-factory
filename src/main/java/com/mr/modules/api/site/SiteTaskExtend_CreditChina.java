@@ -7,11 +7,9 @@ import com.mr.common.util.CrawlerUtil;
 
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.mapper.DiscreditBlacklistMapper;
-import com.mr.modules.api.mapper.MrAdminPunishMapper;
 import com.mr.modules.api.mapper.ProxypoolMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.model.DiscreditBlacklist;
-import com.mr.modules.api.model.MrAdminPunish;
 import com.mr.modules.api.model.Proxypool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;

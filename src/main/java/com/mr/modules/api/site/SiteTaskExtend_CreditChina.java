@@ -25,11 +25,11 @@ import java.util.*;
 @Slf4j
 public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     @Autowired
-    ProxypoolMapper proxypoolMapper;
+    protected ProxypoolMapper proxypoolMapper;
     @Autowired
-    AdminPunishMapper adminPunishMapper;
+    protected AdminPunishMapper adminPunishMapper;
     @Autowired
-    DiscreditBlacklistMapper discreditBlacklistMapper;
+    protected DiscreditBlacklistMapper discreditBlacklistMapper;
     @Override
     protected String execute() throws Throwable {
         return null;

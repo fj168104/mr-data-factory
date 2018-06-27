@@ -34,8 +34,6 @@ import java.util.*;
 public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
     protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
 
-    @Autowired
-    DiscreditBlacklistMapper discreditBlacklistMapper;
     String url ="https://www.creditchina.gov.cn/xinxigongshi/huanbaolingyu/201804/t20180425_114081.html";
     @Override
     protected String executeOne() throws Throwable {
@@ -229,9 +227,8 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
         //publish_date	发布日期
         discreditBlacklist.setPublishDate(map.get("dateString"));
         //status	当前状态
-        discreditBlacklist.setStatus("黑名单");
+        discreditBlacklist.setStatus("");
         saveDisneycreditBlackListOne(discreditBlacklist,false);
-        discreditBlacklistMapper.insert(discreditBlacklist);
         return discreditBlacklist;
     }
 

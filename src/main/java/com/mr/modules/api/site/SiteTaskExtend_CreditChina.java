@@ -55,23 +55,51 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param port
      * @return
      */
-    public  WebClient createWebClient(String ip, String port) {
-        WebClient client = null;
+    public WebClient createWebClient(String ip, String port) {
+        WebClient wc = null;
         try {
             if ("".equals(ip) || "".equals(port)) {
-                client = new WebClient(BrowserVersion.getDefault());
+                wc = new WebClient(BrowserVersion.getDefault());
             } else {
-                client = new WebClient(BrowserVersion.getDefault(), ip,
+                wc = new WebClient(BrowserVersion.getDefault(), ip,
                         Integer.valueOf(port));
             }
-            client.getOptions().setUseInsecureSSL(true);
-            client.getOptions().setCssEnabled(false);
-            client.getOptions().setJavaScriptEnabled(false);
+
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return client;
+        //设置浏览器版本
+        //是否使用不安全的SSL
+        wc.getOptions().setUseInsecureSSL(true);
+        //启用JS解释器，默认为true
+        wc.getOptions().setJavaScriptEnabled(true);
+        //禁用CSS
+        wc.getOptions().setCssEnabled(false);
+        //js运行错误时，是否抛出异常
+        wc.getOptions().setThrowExceptionOnScriptError(false);
+        //状态码错误时，是否抛出异常
+        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        //是否允许使用ActiveX
+        wc.getOptions().setActiveXNative(false);
+        //等待js时间
+        wc.waitForBackgroundJavaScript(10000);
+        //设置Ajax异步处理控制器即启用Ajax支持
+        wc.setAjaxController(new NicelyResynchronizingAjaxController());
+        //设置超时时间
+        wc.getOptions().setTimeout(10000);
+        //不跟踪抓取
+        wc.getOptions().setDoNotTrackEnabled(false);
+        //启动客户端重定向
+        wc.getOptions().setRedirectEnabled(true);
+        //
+        wc.getCache().clear();
+        //
+        wc.getCookieManager().clearCookies();
+        //
+        wc.setRefreshHandler(new ImmediateRefreshHandler());
+        return wc;
     }
+
 
     /**
      * 通过本地IP去爬起

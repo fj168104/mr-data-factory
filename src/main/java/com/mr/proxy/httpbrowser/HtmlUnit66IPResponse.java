@@ -19,9 +19,9 @@ import java.util.List;
 @Slf4j
 public class HtmlUnit66IPResponse {
 
-    public String getHtmlPage(){
+    public String getHtmlPage(String url){
         String ipStr ="";
-        String url = "http://www.66ip.cn/nmtq.php?getnum=100000&isp=0&anonymoustype=0&start=&ports=&export=&ipaddress=&area=0&proxytype=2&api=66ip";
+
         //设置浏览器版本
         WebClient wc = new WebClient(BrowserVersion.CHROME);
         //是否使用不安全的SSL
@@ -80,10 +80,25 @@ public class HtmlUnit66IPResponse {
      * @return
      */
     public List<IPMessage> AddIpMessage(){
+        //高级匿名IP
+        String urlHeight = "http://www.66ip.cn/nmtq.php?getnum=320&isp=0&anonymoustype=0&start=&ports=&export=&ipaddress=&area=0&proxytype=2&api=66ip";
+        String urlAll = "http://www.66ip.cn/mo.php?sxb=&tqsl=50000&port=&export=&ktip=&sxa=&submit=%CC%E1++%C8%A1&textarea=http%3A%2F%2Fwww.66ip.cn%2F%3Fsxb%3D%26tqsl%3D5000%26ports%255B%255D2%3D%26ktip%3D%26sxa%3D%26radio%3Dradio%26submit%3D%25CC%25E1%2B%2B%25C8%25A1";
         List<IPMessage> listIPMessage = new ArrayList<>();
         int i = 0;
-        String[] ipList = getHtmlPage().split(" ");
-        for(String ip : ipList){
+        String[] ipListHeight = getHtmlPage(urlHeight).split(" ");
+        String[] ipListAll = getHtmlPage(urlAll).split(" ");
+        for(String ip : ipListHeight){
+            IPMessage ipMessage = new IPMessage();
+            ip = ip.trim();
+            String[] ipProt = ip.split(":");
+            if(ipProt.length ==2){
+                ipMessage.setIPAddress(ipProt[0]);
+                ipMessage.setIPPort(ipProt[1]);
+                listIPMessage.add(ipMessage);
+            }
+
+        }
+        for(String ip : ipListAll){
             IPMessage ipMessage = new IPMessage();
             ip = ip.trim();
             String[] ipProt = ip.split(":");

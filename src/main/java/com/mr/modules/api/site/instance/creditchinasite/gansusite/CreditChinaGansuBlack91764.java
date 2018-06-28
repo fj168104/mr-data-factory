@@ -88,10 +88,9 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 			}
 			if (Pattern.compile("\\d+、.*").matcher(text).matches()) {// 每笔记录的开头
 				blackList = createDiscreditBlacklistObject();
-				blackList.setSubject("被白银市国税局列入诚信“黑榜”的企业及惩戒措施");// 主题
+				blackList.setSubject("市国税局诚信黑榜");// 主题
 				blackList.setJudgeAuth("甘肃省白银市国税局");// 判决机关
 				blackList.setEnterpriseName(text.substring(text.indexOf("、") + 1));// 企业名称
-				blackList.setDiscreditType("市国税局诚信黑榜");
 			} else {
 				String[] items = text.replace("上榜事由：", "@!@上榜事由：").replace("惩戒措施：", "@!@惩戒措施：").split("@!@");
 				for (String item : items) {
@@ -112,10 +111,9 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 			}
 			if (Pattern.compile("\\d+、.*").matcher(text).matches()) {
 				blackList = createDiscreditBlacklistObject();
-				blackList.setSubject("被白银市法院系统列入失信被执行人企业名单");// 主题
+				blackList.setSubject("市法院失信被执行人");// 主题
 				blackList.setJudgeAuth("甘肃省白银市法院");// 判决机关
 				blackList.setEnterpriseName(text.substring(text.indexOf("、") + 1));// 企业名称
-				blackList.setDiscreditType("市法院失信被执行人");
 				blackList.setDiscreditAction("不履行被执行义务");
 				blackList.setPunishResult("依法进行信用惩戒，重拳打击“老赖”，维护社会诚信体系");
 				discreditBlacklistMapper.insert(blackList);
@@ -129,10 +127,9 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 			}
 			if (Pattern.compile("\\d+、.*").matcher(text).matches()) {
 				blackList = createDiscreditBlacklistObject();
-				blackList.setSubject("被白银市食品药品监督管理局列入食品药品“黑榜”企业名单");// 主题
+				blackList.setSubject("市食药监局失信黑榜");// 主题
 				blackList.setJudgeAuth("甘肃省白银市食品药品监督管理局");// 判决机关
 				blackList.setEnterpriseName(text.substring(text.indexOf("、") + 1));// 企业名称
-				blackList.setDiscreditType("市食药监局失信黑榜");
 			} else {
 				String[] items = text.replace("上榜事由：", "@!@上榜事由：").replace("惩戒措施：", "@!@惩戒措施：").split("@!@");
 				for (String item : items) {
@@ -158,27 +155,24 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 		// 2、孙晓云、马如军
 		// 上榜事由：介绍他人参加传销违法行为 惩戒措施：分别处罚5000元和4900元。
 		blackList = createDiscreditBlacklistObject();
-		blackList.setSubject("白银市工商局企业诚信“黑榜”企业名单");// 主题
+		blackList.setSubject("市工商局企业失信黑榜");// 主题
 		blackList.setJudgeAuth("甘肃省白银市工商管理局");// 判决机关
-		blackList.setDiscreditType("市工商局企业失信黑榜");
 		blackList.setEnterpriseName("白银大福鑫矿业投资有限公司");// 企业名称
 		blackList.setPunishReason("超过6个月未营业");// 处罚原因
 		blackList.setPunishResult("吊销营业执照");// 处罚结果
 		discreditBlacklistMapper.insert(blackList);// 保存记录
 		
 		blackList = createDiscreditBlacklistObject();
-		blackList.setSubject("白银市工商局企业诚信“黑榜”企业名单");// 主题
+		blackList.setSubject("市工商局企业失信黑榜");// 主题
 		blackList.setJudgeAuth("甘肃省白银市工商管理局");// 判决机关
-		blackList.setDiscreditType("市工商局企业失信黑榜");
 		blackList.setPunishReason("超过6个月未营业");// 处罚原因
 		blackList.setPunishResult("吊销营业执照");// 处罚结果
 		blackList.setEnterpriseName("白银佰力信投资管理有限公司");// 企业名称
 		discreditBlacklistMapper.insert(blackList);// 保存记录
 		
 		blackList = createDiscreditBlacklistObject();
-		blackList.setSubject("白银市工商局企业诚信“黑榜”企业名单");// 主题
+		blackList.setSubject("市工商局企业失信黑榜");// 主题
 		blackList.setJudgeAuth("甘肃省白银市工商管理局");// 判决机关
-		blackList.setDiscreditType("市工商局企业失信黑榜");
 		blackList.setPunishReason("介绍他人参加传销违法行为");// 处罚原因
 		blackList.setPunishResult("处以罚款5000元");// 处罚结果
 		blackList.setObjectType("02");
@@ -186,9 +180,8 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 		discreditBlacklistMapper.insert(blackList);// 保存记录
 		
 		blackList = createDiscreditBlacklistObject();
-		blackList.setSubject("白银市工商局企业诚信“黑榜”企业名单");// 主题
+		blackList.setSubject("市工商局企业失信黑榜");// 主题
 		blackList.setJudgeAuth("甘肃省白银市工商管理局");// 判决机关
-		blackList.setDiscreditType("市工商局企业失信黑榜");
 		blackList.setPunishReason("介绍他人参加传销违法行为");// 处罚原因
 		blackList.setPunishResult("处以罚款4900元");// 处罚结果
 		blackList.setObjectType("02");
@@ -203,10 +196,9 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 			}
 			if (Pattern.compile("\\d+、.*").matcher(text).matches()) {
 				blackList = createDiscreditBlacklistObject();
-				blackList.setSubject("白银市地税局企业诚信“黑榜”企业名单");// 主题
+				blackList.setSubject("市地税局企业失信名单");// 主题
 				blackList.setJudgeAuth("甘肃省白银市地方税务局");// 判决机关
 				blackList.setEnterpriseName(text.substring(text.indexOf("、") + 1));// 企业名称
-				blackList.setDiscreditType("市地税局企业失信名单");
 				discreditBlacklistMapper.insert(blackList);
 			}
 		}

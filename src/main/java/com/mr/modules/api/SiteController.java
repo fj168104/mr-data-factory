@@ -51,24 +51,12 @@ public class SiteController extends BaseController {
 				String region = request.getParameter("region");
 				mapParams.put("region", region);
 			}
-			code = siteService.startByParams(indexId, callId, mapParams);
-			/*if (request.getQueryString().contains("region=")) {
-				String region = request.getParameter("region");
-				mapParams.put("region", region);
-				code = siteService.startByParams(indexId, callId, mapParams);
-			} else if (request.getQueryString().contains("publishDate=")) {
-				String publishDate = request.getParameter("publishDate");
-				mapParams.put("publishDate", publishDate);
-				code = siteService.startByParams(indexId, callId, mapParams);
-			} else if (request.getQueryString().contains("url=")) {
-				String url = request.getParameter("url");
-				log.info("---------url-----------" + url);
-				mapParams.put("url", url);
-				code = siteService.startByParams(indexId, callId, mapParams);
-			} else {
-				code = "params-error";
-			}*/
-
+			if(request.getQueryString().contains("keyWord=")){
+				String keyWord =request.getParameter("keyWord");
+				mapParams.put("keyWord", keyWord);
+			}
+			SiteParams.map = mapParams;
+			code = siteService.start(indexId, callId);
 		}
 		map.addAttribute("code", code);
 		return map;

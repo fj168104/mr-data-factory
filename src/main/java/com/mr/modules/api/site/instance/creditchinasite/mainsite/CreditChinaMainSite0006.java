@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.mr.modules.api.SiteParams;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
@@ -43,39 +44,18 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
 
     @Override
     protected String execute() throws Throwable {
-        extractContext("");
+        String keyWord = SiteParams.map.get("keyWord");
+        SiteParams.map.clear();
+        extractContext(keyWord);
         return null;
     }
     /**
      * 获取网页内容
      */
-    public void extractContext(String url) throws Throwable{
-        result(5,"");;
+    public void extractContext(String keyWord ) throws Throwable{
+        result(5,keyWord);;
     }
 
-    /**
-     * 创建一个htmlUnit webClient 客户端
-     * @param ip
-     * @param port
-     * @return
-     */
-    public  WebClient createWebClient(String ip, String port) {
-        WebClient client = null;
-        try {
-            if ("".equals(ip) || "".equals(port)) {
-                client = new WebClient(BrowserVersion.getDefault());
-            } else {
-                client = new WebClient(BrowserVersion.getDefault(), ip,
-                        Integer.valueOf(port));
-            }
-            client.getOptions().setUseInsecureSSL(true);
-            client.getOptions().setCssEnabled(false);
-            client.getOptions().setJavaScriptEnabled(false);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return client;
-    }
 
     /**
      * 获取api接口相应结果清单

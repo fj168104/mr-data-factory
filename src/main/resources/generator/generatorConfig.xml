@@ -23,7 +23,7 @@
 
         <!--数据库连接 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://47.100.7.81:3306/data_factory?useSSL=false"
+                        connectionURL="jdbc:mysql://47.100.7.81:3306/data_factory_xu?useSSL=false"
                         userId="root"
                         password="Root@1234">
         </jdbcConnection>
@@ -42,7 +42,61 @@
         <javaClientGenerator targetPackage="com.mr.modules.api.mapper" targetProject="./src/main/java"
                              type="XMLMAPPER"/>
 
-        <table tableName="FINANCE_MONITOR_PUNISH">
+        <!--<table tableName="FINANCE_MONITOR_PUNISH">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>-->
+        <!--<table tableName="CRAWLER_INDUSTRY_LIST">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>
+        <table tableName="CRAWLER_SITES_LIST">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>-->
+        <!--<table tableName="CRAWLER_COMPANY_LIST">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>
+        <table tableName="CRAWLER_COMPANY_GONGSHANG_LIST">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>-->
+        <!--<table tableName="PROXYPOOL">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>-->
+       <!-- <table tableName="CRAWLER_COMPANY_LIST_BEIJIN_ZSZX">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>-->
+         <!--<table tableName="ADMIN_PUNISH">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>
+        <table tableName="DISCREDIT_BLACKLIST">
+            &lt;!&ndash;mysql 配置&ndash;&gt;
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            &lt;!&ndash;oracle 配置&ndash;&gt;
+            &lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;
+        </table>-->
+        <table tableName="MR_ADMIN_PUNISH">
             <!--mysql 配置-->
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
             <!--oracle 配置-->

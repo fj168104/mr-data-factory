@@ -1,10 +1,13 @@
 package com.mr.modules.api.model;
 
 import com.mr.common.base.model.BaseEntity;
+import lombok.Data;
+
 import java.util.Date;
 import javax.persistence.*;
 
 @Table(name = "discredit_blacklist")
+@Data
 public class DiscreditBlacklist extends BaseEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

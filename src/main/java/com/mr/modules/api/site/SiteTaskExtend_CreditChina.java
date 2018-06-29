@@ -61,6 +61,11 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
             if ("".equals(ip) || "".equals(port)) {
                 wc = new WebClient(BrowserVersion.getDefault());
             } else {
+                //获取代理对象
+                ProxyConfig proxyConfig = new ProxyConfig(ip,Integer.getInteger(port));
+                //设置浏览器版本
+                //设置通过代理区爬起网页
+                wc.getOptions().setProxyConfig(proxyConfig);
                 wc = new WebClient(BrowserVersion.getDefault(), ip,
                         Integer.valueOf(port));
             }
@@ -68,13 +73,14 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+
         //设置浏览器版本
         //是否使用不安全的SSL
         wc.getOptions().setUseInsecureSSL(true);
         //启用JS解释器，默认为true
         wc.getOptions().setJavaScriptEnabled(true);
         //禁用CSS
-        wc.getOptions().setCssEnabled(false);
+        wc.getOptions().setCssEnabled(true);
         //js运行错误时，是否抛出异常
         wc.getOptions().setThrowExceptionOnScriptError(false);
         //状态码错误时，是否抛出异常
@@ -91,8 +97,6 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         wc.getOptions().setDoNotTrackEnabled(false);
         //启动客户端重定向
         wc.getOptions().setRedirectEnabled(true);
-        //
-        wc.getCache().clear();
         //
         wc.getCookieManager().clearCookies();
         //

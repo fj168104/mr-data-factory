@@ -36,7 +36,11 @@ public class Gansu_94105 extends SiteTaskExtend_CreditChina {
 
 	@Override
 	protected String execute() throws Throwable {
-		extractContext(url);
+		try {
+			extractContext(url);
+		}catch (Exception e){
+			writeBizErrorLog(url, e.getMessage());
+		}
 		return null;
 	}
 

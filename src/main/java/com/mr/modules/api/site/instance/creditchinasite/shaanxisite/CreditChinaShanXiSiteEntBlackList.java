@@ -31,7 +31,7 @@ import java.util.Map;
  **注：此界面有反扒机制，页面最多展示50条记录，建议精确查询
  */
 @Slf4j
-@Component("creditChinaShanXiSiteEntBlackList")
+@Component("creditchinashanxisiteentblacklist")
 @Scope("prototype")
 public class CreditChinaShanXiSiteEntBlackList extends SiteTaskExtend_CreditChina{
 

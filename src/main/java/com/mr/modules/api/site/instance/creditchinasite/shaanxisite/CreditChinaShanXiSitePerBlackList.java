@@ -27,7 +27,7 @@ import java.util.Map;
  *注：此界面有反扒机制，页面最多展示50条记录，建议精确查询
  */
 @Slf4j
-@Component("creditChinaShanXiSitePerBlackList")
+@Component("creditchinashanxisiteperblacklist")
 @Scope("prototype")
 public class CreditChinaShanXiSitePerBlackList extends SiteTaskExtend_CreditChina{
     //输入关键字

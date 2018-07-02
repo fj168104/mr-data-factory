@@ -76,7 +76,7 @@ public class CreditChinaAnHuiLocalTaxPunish extends SiteTaskExtend_CreditChina {
 	}
 
 	/**
-	 * @param document
+	 * @param indexHtml
 	 * @return
 	 */
 	private int getPageNum(String indexHtml) {

@@ -31,7 +31,7 @@ import java.util.Map;
  * 注：网页浏览有限制，最多浏览100页
  **/
 @Slf4j
-@Component("CreditChinaShanDong_XZCF")
+@Component("creditchinashandong_xzcf")
 @Scope("prototype")
 public class CreditChinaShanDong_XZCF extends SiteTaskExtend_CreditChina{
 

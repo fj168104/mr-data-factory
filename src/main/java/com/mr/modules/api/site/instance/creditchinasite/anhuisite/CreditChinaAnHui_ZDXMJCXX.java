@@ -24,7 +24,7 @@ import java.util.Map;
  * 提取属性：统一社会信用代码 企业名称 项目名称 稽察时间
  */
 @Slf4j
-@Component("CreditChinaAnHui_ZDXMJCXX")
+@Component("creditchinaanhui_zdxmjcxx")
 @Scope("prototype")
 public class CreditChinaAnHui_ZDXMJCXX extends SiteTaskExtend_CreditChina {
     @Override

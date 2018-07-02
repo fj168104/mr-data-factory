@@ -34,7 +34,7 @@ import java.util.Map;
  * keyWord:关键字查询
  **/
 @Slf4j
-@Component("ShangHaiSite_SXMDC")
+@Component("shanghaisite_sxmdc")
 @Scope("prototype")
 public class ShangHaiSite_SXMDC extends SiteTaskExtend_CreditChina{
     String keyWord =null;

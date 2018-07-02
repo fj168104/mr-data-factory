@@ -27,7 +27,7 @@ import java.util.Map;
  *提取属性：企业名称、统一社会信用代码、案件性质
  **/
 @Slf4j
-@Component("ShangHaiSite_ZDSSWFAJ")
+@Component("shanghaisite_zdsswfaj")
 @Scope("prototype")
 public class ShangHaiSite_ZDSSWFAJ   extends SiteTaskExtend_CreditChina {
     String keyWord =null;

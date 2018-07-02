@@ -27,7 +27,7 @@ import java.util.Map;
  * 提取出现：企业名称、统一社会信用代码、失信类型数量
  **/
 @Slf4j
-@Component("ShangHaiSite_ZDGZMD")
+@Component("shanghaisite_zdgzmd")
 @Scope("prototype")
 public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
     String keyWord =null;

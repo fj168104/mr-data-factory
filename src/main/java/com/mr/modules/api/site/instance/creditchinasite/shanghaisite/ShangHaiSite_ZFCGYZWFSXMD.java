@@ -27,7 +27,7 @@ import java.util.Map;
  *提取属性：企业名称、统一社会信用代码、纳入原因（TODO 严重违法失信行为的具体情形）
  **/
 @Slf4j
-@Component("ShangHaiSite_ZFCGYZWFSXMD")
+@Component("shanghaisite_zfcgyzwfsxmd")
 @Scope("prototype")
 public class ShangHaiSite_ZFCGYZWFSXMD extends SiteTaskExtend_CreditChina {
     String keyWord =null;

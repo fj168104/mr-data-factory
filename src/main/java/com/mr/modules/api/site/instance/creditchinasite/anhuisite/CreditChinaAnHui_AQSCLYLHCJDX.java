@@ -24,7 +24,7 @@ import java.util.Map;
  * 提取属性：企业名称 统一社会信用代码 主要负责人 注册地址
  */
 @Slf4j
-@Component("CreditChinaAnHui_AQSCLYLHCJDX")
+@Component("creditchinaanhui_aqsclylhcjdx")
 @Scope("prototype")
 public class CreditChinaAnHui_AQSCLYLHCJDX extends SiteTaskExtend_CreditChina {
     @Override

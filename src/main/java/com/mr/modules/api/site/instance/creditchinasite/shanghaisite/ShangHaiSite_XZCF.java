@@ -29,7 +29,7 @@ import java.util.*;
  * 提取行政许可列表详情：detailCFResult:  http://cxw.shcredit.gov.cn:8081/sh_xyxxzc/sgsinfo/getcfinfo.action?cfid=57632CEDE8FB7F95E0530100007F4755
  */
 @Slf4j
-@Component("ShangHaiSite_XZCF")
+@Component("shanghaisite_xzcf")
 @Scope("prototype")
 public class ShangHaiSite_XZCF extends SiteTaskExtend_CreditChina {
     @Autowired

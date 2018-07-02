@@ -32,7 +32,7 @@ import java.util.*;
  * 5.todo 主站只允许访问5页
  */
 @Slf4j
-@Component("creditChinaMainSite0006")
+@Component("creditchinamainsite0006")
 @Scope("prototype")
 public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
     @Autowired

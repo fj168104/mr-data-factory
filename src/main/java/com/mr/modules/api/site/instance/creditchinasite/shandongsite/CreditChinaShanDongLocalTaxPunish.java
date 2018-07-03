@@ -1,5 +1,7 @@
 package com.mr.modules.api.site.instance.creditchinasite.shandongsite;
 
+import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -10,8 +12,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.util.StringUtils;
 
-import com.mr.modules.api.model.T03TaxPunish;
+import com.mr.framework.core.util.StrUtil;
+import com.mr.modules.api.SiteParams;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import com.mr.modules.api.site.instance.creditchinasite.CreditChinaSite;
 
@@ -31,13 +36,29 @@ public class CreditChinaShanDongLocalTaxPunish extends SiteTaskExtend_CreditChin
 	@Override
 	protected String execute() throws Throwable {
 		log.info("抓取“信用中国（山东）-重大税收违法案件信息（省地税局）”信息开始...");
-		HashSet<String> urlSet = extractPageUrlList();
-		for (String url : urlSet) {
-			T03TaxPunish tax = extractContent(url);
-			try {// 数据入库
 
+		String keyWord = SiteParams.map.get("keyWord");// 支持传入关键字进行查询
+		if (StrUtil.isEmpty(keyWord)) {
+			keyWord = "";
+		} else {
+			keyWord = URLEncoder.encode(keyWord, "UTF-8");// 对关键字进行UTF-8编码
+		}
+		HashSet<String> urlSet = extractPageUrlList(keyWord);// 抓取列表页面，获取详情页面URL列表
+		for (String url : urlSet) {
+			if (StringUtils.isEmpty(url)) {
+				continue;
+			}
+			int dbCount = discreditBlacklistMapper.selectCountByUrl(url);
+			if (dbCount > 0) {// 若数据库中存在该记录，直接跳过
+				continue;
+			}
+			try {
+				extractContent(url);// 抽取内容并入库
 			} catch (Exception e) {
-				writeBizErrorLog(url, "请检查此条url：" + "\n" + e.getMessage());
+				log.error("请检查此条url：{}", url, e);
+				continue;
+			} catch (Throwable e) {
+				log.error("请检查此条url：{}", url, e);
 				continue;
 			}
 		}
@@ -50,12 +71,12 @@ public class CreditChinaShanDongLocalTaxPunish extends SiteTaskExtend_CreditChin
 	 * 
 	 * @return
 	 */
-	private HashSet<String> extractPageUrlList() {
+	private HashSet<String> extractPageUrlList(String keyWord) {
 		HashSet<String> urlSet = new LinkedHashSet<String>();
 
 		String baseUrl = CreditChinaSite.SHANDONG.getBaseUrl();
 		// 解析第一个页面，获取这个页面上下文
-		String indexHtml = getData(baseUrl + "/creditsearch.redlist.dhtml?source_id=37&type=black");// http://www.creditah.gov.cn/remote/1481/index.htm
+		String indexHtml = getData(baseUrl + "/creditsearch.redlist.dhtml?source_id=37&kw=" + keyWord + "&page=1");
 		// 获取总页数
 		int pageAll = getPageNum(indexHtml);
 		int j = 0;
@@ -65,7 +86,7 @@ public class CreditChinaShanDongLocalTaxPunish extends SiteTaskExtend_CreditChin
 			if (i == 1) {// 直接解析首页
 				doc = Jsoup.parse(indexHtml);
 			} else {// 翻页获取URL集合
-				String resultHtml = getData(baseUrl + "/creditsearch.redlist.dhtml?source_id=37&kw=&page=" + i);
+				String resultHtml = getData(baseUrl + "/creditsearch.redlist.dhtml?source_id=37&kw=" + keyWord + "&page=" + i);
 				doc = Jsoup.parse(resultHtml);
 			}
 			Elements elementsHerf = doc.select("div.right-content").select("table").select("tr:has(a)");
@@ -103,17 +124,37 @@ public class CreditChinaShanDongLocalTaxPunish extends SiteTaskExtend_CreditChin
 	/**
 	 * 获取网页内容,封装对象
 	 */
-	public T03TaxPunish extractContent(String url) throws Throwable {
+	public void extractContent(String url) throws Throwable {
 		String contentHtml = getData(url);
 		Document doc = Jsoup.parse(contentHtml);
-		
+
 		log.debug("==============================");
-		
-		T03TaxPunish tax = new T03TaxPunish();
-		tax.setPublishSource("山东省地方税务局");
-		tax.setUrl(url);
-		tax.setDataSource(CreditChinaSite.SHANDONG.getSiteName());
-		
+		log.debug("url={}", url);
+
+		Date nowDate = new Date();
+		DiscreditBlacklist blackList = new DiscreditBlacklist();
+		blackList.setCreatedAt(nowDate);// 本条记录创建时间
+		blackList.setUpdatedAt(nowDate);// 本条记录最后更新时间
+		blackList.setSource(CreditChinaSite.SHANDONG.getSiteName());// 数据来源
+		blackList.setSubject("重大税收违法案件信息(省地税局)");// 主题
+		blackList.setUrl(url);// url
+		blackList.setObjectType("01");// 主体类型: 01-企业 02-个人。默认为企业
+		blackList.setEnterpriseName("");// 企业名称
+		blackList.setEnterpriseCode1("");// 统一社会信用代码
+		blackList.setEnterpriseCode2("");// 营业执照注册号
+		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
+		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
+		blackList.setDiscreditType("");// 失信类型
+		blackList.setDiscreditAction("");// 失信行为
+		blackList.setPunishReason("");// 列入原因
+		blackList.setPunishResult("");// 处罚结果
+		blackList.setJudgeNo("");// 执行文号
+		blackList.setJudgeDate("");// 执行时间
+		blackList.setJudgeAuth("");// 判决机关
+		blackList.setPublishDate("");// 发布日期
+		blackList.setStatus("");// 当前状态
+
 		Elements trs = doc.getElementsByClass("_main_content").select("tr");
 		for (int i = 0; i < trs.size(); i++) {
 			Element th = trs.get(i).select("th").first();
@@ -122,38 +163,36 @@ public class CreditChinaShanDongLocalTaxPunish extends SiteTaskExtend_CreditChin
 			String value = td.ownText();
 			log.debug(name + "===" + value);
 			if (Objects.equals(name, "纳税人姓名")) {
-				tax.setTaxName(value);
+				blackList.setEnterpriseName(value);// 企业名称
 			} else if (Objects.equals(name, "注册地址")) {
-				tax.setRegAddress(value);
+
 			} else if (Objects.equals(name, "法定代表人或者负责人姓名")) {
-				tax.setFrName(value);
+				blackList.setPersonName(value);// 法定代表人/负责人姓名|负责人姓名
 			} else if (Objects.equals(name, "案件性质")) {
-				tax.setCaseNature(value);
+				blackList.setDiscreditAction(value);// 失信行为
 			} else if (Objects.equals(name, "主要违法事实")) {
-				tax.setIllegFact(value);
+				blackList.setPunishReason(value);// 列入原因
 			} else if (Objects.equals(name, "推送单位")) {
-				tax.setPublishSource(value);
+				blackList.setJudgeAuth(value);// 判决机关
 			} else if (Objects.equals(name, "相关法律依据及税务处理处罚情况")) {
-				tax.setPenResult(value);
+				blackList.setPunishResult(value);// 处罚结果
 			} else if (Objects.equals(name, "发布级别")) {
-				tax.setPublishLevel(value);
+				
 			} else if (Objects.equals(name, "案件的公布时间")) {
-				tax.setPublishDate(value);
+				blackList.setPublishDate(value);// 发布日期
 			} else if (Objects.equals(name, "是否缴清税款")) {
-				tax.setIfPayTax(value);
+				
 			} else if (Objects.equals(name, "是否缴清滞纳金")) {
-				tax.setIfPayLatefee(value);
+				
 			} else if (Objects.equals(name, "是否缴清罚款")) {
-				tax.setIfPayFine(value);
+				
 			} else if (Objects.equals(name, "企业经营情况")) {
-				tax.setBusinessState(value);
+				
 			} else if (Objects.equals(name, "数据更新时间")) {
-				tax.setDataTime(value);
+				
 			}
 		}
-		log.debug(url);
-		log.debug(tax.toString());
+		discreditBlacklistMapper.insert(blackList);
 		log.debug("==============================");
-		return tax;
 	}
 }

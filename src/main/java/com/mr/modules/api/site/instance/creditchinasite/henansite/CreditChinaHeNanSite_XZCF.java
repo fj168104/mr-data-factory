@@ -59,7 +59,7 @@ public class CreditChinaHeNanSite_XZCF extends SiteTaskExtend_CreditChina {
      * @param ip
      * @param port
      */
-    public void webContext(String keyWord, String ip, String port) {
+    public void webContext(String keyWord, String ip, String port) throws Throwable{
         //pagesize=200&page=1
         String baseAllUrl = "http://www.xyhn.gov.cn/CMSInterface/cms/xzcflist?pagesize=200&page=1";
         //pagesize=20&content=keyWord

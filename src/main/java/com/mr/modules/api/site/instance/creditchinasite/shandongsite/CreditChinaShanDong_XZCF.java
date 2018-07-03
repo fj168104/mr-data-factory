@@ -59,7 +59,7 @@ public class CreditChinaShanDong_XZCF extends SiteTaskExtend_CreditChina{
      * @param ip
      * @param port
      */
-    public void webContext(String keyWord, String ip, String port){
+    public void webContext(String keyWord, String ip, String port)throws Throwable{
         List<Proxypool> listIps = getProxyPool();
         //页码
         int page = 1;
@@ -85,8 +85,8 @@ public class CreditChinaShanDong_XZCF extends SiteTaskExtend_CreditChina{
                 HtmlPage htmlPage1 = htmlButton.click();*/
                 //获取页数 pagination
                 List<HtmlElement> htmlLi = htmlPage.getByXPath("//body//div//div[@class='mainbody_page']//ul[@class='pagination']//li");
-                if(0<htmlLi.size()&&htmlLi.size()<2){
-                    page = Integer.valueOf(htmlLi.get(htmlLi.size()-1).asText());
+                if(1<htmlLi.size()){
+                    page = Integer.valueOf(htmlLi.get(htmlLi.size()-2).asText());
                 }
                 //获取只有一页的情况
                 if(page == 1){

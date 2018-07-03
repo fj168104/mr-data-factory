@@ -57,7 +57,7 @@ public class ShangHaiSite_SXMDC extends SiteTaskExtend_CreditChina{
     protected String executeOne() throws Throwable {
         return super.executeOne();
     }
-    public void webContext(String keyWord,String ip, String port){
+    public void webContext(String keyWord,String ip, String port)throws Throwable{
         List<Proxypool> listIps = getProxyPool();
         String urlResult = "http://www.shcredit.gov.cn/credit/f/credit/query/?model=sxmdc";
         WebClient webClient = createWebClient(ip,port);

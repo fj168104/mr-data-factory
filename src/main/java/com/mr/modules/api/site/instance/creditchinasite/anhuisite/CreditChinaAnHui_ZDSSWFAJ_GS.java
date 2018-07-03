@@ -40,7 +40,7 @@ public class CreditChinaAnHui_ZDSSWFAJ_GS extends SiteTaskExtend_CreditChina{
 
     String url = "http://www.creditah.gov.cn/remote/1487/";
 
-    public void WebContext(){
+    public void WebContext()throws Throwable{
         String ip="",  port="";
         WebClient webClient = createWebClient(ip,port);
         try {

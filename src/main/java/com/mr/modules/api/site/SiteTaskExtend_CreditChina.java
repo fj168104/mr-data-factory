@@ -55,23 +55,18 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param port
      * @return
      */
-    public WebClient createWebClient(String ip, String port) {
+    public WebClient createWebClient(String ip, String port) throws Throwable{
         WebClient wc = null;
-        try {
-            if ("".equals(ip) || "".equals(port)) {
-                wc = new WebClient(BrowserVersion.getDefault());
-            } else {
-                //获取代理对象
-                ProxyConfig proxyConfig = new ProxyConfig(ip,Integer.getInteger(port));
-                //设置浏览器版本
-                //设置通过代理区爬起网页
-                wc.getOptions().setProxyConfig(proxyConfig);
-                wc = new WebClient(BrowserVersion.getDefault(), ip,
-                        Integer.valueOf(port));
-            }
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        if ("".equals(ip) || "".equals(port)) {
+            wc = new WebClient(BrowserVersion.getDefault());
+        } else {
+            //获取代理对象
+            ProxyConfig proxyConfig = new ProxyConfig(ip,Integer.getInteger(port));
+            //设置浏览器版本
+            //设置通过代理区爬起网页
+            wc.getOptions().setProxyConfig(proxyConfig);
+            wc = new WebClient(BrowserVersion.getDefault(), ip,
+                    Integer.valueOf(port));
         }
 
         //设置浏览器版本

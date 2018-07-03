@@ -51,7 +51,7 @@ import java.util.Map;
      * @param ip
      * @param port
      */
-     public void webContext(String keyWord,String ip, String port){
+     public void webContext(String keyWord,String ip, String port)throws Throwable{
          String baseUrl = "http://www.xyhn.gov.cn/CMSInterface/cms/getMdList?id=BBC3EE15E95B4887B1BCAC69A4E4C75F&pagesize=20&start=1&type=2&content=";
          try {
              String urlMain = baseUrl+ URLEncoder.encode(keyWord,"UTF-8");

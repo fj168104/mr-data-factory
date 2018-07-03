@@ -68,7 +68,7 @@ public class CreditChinaShanXiSitePerBlackList extends SiteTaskExtend_CreditChin
      * 获取正文
      * @param url 需要处理的url
      */
-    public String webContent(String url ){
+    public String webContent(String url ) throws Throwable{
         String jsonResult = "";
         WebClient wc = createWebClient("","");
         try {

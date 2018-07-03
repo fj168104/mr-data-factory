@@ -52,7 +52,7 @@ public class CreditChinaHeNanSite0005 extends SiteTaskExtend_CreditChina {
      * @param ip
      * @param port
      */
-    public void webContext(String keyWord, String ip, String port) {
+    public void webContext(String keyWord, String ip, String port) throws Throwable{
         String baseUrl = "http://www.xyhn.gov.cn/CMSInterface/cms/getMdList?id=a6be338bcd9411e78ce51c3947289257&pagesize=20&start=1&type=2&content=";
         try {
             String urlMain = baseUrl + URLEncoder.encode(keyWord, "UTF-8");

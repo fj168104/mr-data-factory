@@ -34,6 +34,11 @@
     DELETE FROM DISCREDIT_BLACKLIST WHERE URL = #{url}
   </delete>
   
+  <!-- 通过URL查询记录数 -->
+  <select id="selectCountByUrl" parameterType="java.lang.String" resultType="Integer">  
+        SELECT COUNT(1)  from DISCREDIT_BLACKLIST WHERE URL= #{url} 
+  </select>
+  
   <!--通过链接地址删除-->
   <delete id="deleteByUrl" parameterType="java.lang.String">
     DELETE FROM DISCREDIT_BLACKLIST WHERE URL = #{url} AND ENTERPRISE_NAME = #{enterpriseName} AND PERSON_NAME = #{personName} AND JUDGE_NO = #{judgeNo}  AND JUDGE_AUTH = #{judgeAuth}

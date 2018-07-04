@@ -55,32 +55,24 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param port
      * @return
      */
-    public WebClient createWebClient(String ip, String port) {
-        WebClient wc = null;
-        try {
-            if ("".equals(ip) || "".equals(port)) {
-                wc = new WebClient(BrowserVersion.getDefault());
-            } else {
-                //获取代理对象
-                ProxyConfig proxyConfig = new ProxyConfig(ip,Integer.getInteger(port));
-                //设置浏览器版本
-                //设置通过代理区爬起网页
-                wc.getOptions().setProxyConfig(proxyConfig);
-                wc = new WebClient(BrowserVersion.getDefault(), ip,
-                        Integer.valueOf(port));
-            }
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
+    public WebClient createWebClient(String ip, String port) throws Throwable{
+        WebClient wc =  null;
+        if ("".equals(ip) || "".equals(port)||ip==null||port==null) {
+            wc = new WebClient(BrowserVersion.getDefault());
+            log.info("通过本地ip进行处理···");
+        } else {
+            //获取代理对象
+           wc = new WebClient(BrowserVersion.getDefault(), ip,Integer.valueOf(port));
+           log.info("通过代理进行处理···");
         }
 
         //设置浏览器版本
         //是否使用不安全的SSL
-        wc.getOptions().setUseInsecureSSL(true);
+        wc.getOptions().setUseInsecureSSL(false);
         //启用JS解释器，默认为true
         wc.getOptions().setJavaScriptEnabled(true);
         //禁用CSS
-        wc.getOptions().setCssEnabled(true);
+        wc.getOptions().setCssEnabled(false);
         //js运行错误时，是否抛出异常
         wc.getOptions().setThrowExceptionOnScriptError(false);
         //状态码错误时，是否抛出异常
@@ -92,7 +84,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         //设置Ajax异步处理控制器即启用Ajax支持
         wc.setAjaxController(new NicelyResynchronizingAjaxController());
         //设置超时时间
-        wc.getOptions().setTimeout(10000);
+        wc.getOptions().setTimeout(20000);
         //不跟踪抓取
         wc.getOptions().setDoNotTrackEnabled(false);
         //启动客户端重定向

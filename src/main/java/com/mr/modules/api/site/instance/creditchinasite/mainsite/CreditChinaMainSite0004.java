@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
  * 4.提取内容：企业名称、行政区划、处罚情况、整改情况、日期
  */
 @Slf4j
-@Component("creditChinaMainSite0004")
+@Component("creditchinamainsite0004")
 @Scope("prototype")
 public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
     protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);

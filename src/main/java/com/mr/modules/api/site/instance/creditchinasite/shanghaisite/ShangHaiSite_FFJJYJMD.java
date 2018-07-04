@@ -23,13 +23,13 @@ import java.util.Map;
 
 /**
  * @Auther zjxu to 201806
- * 提取主题：重点关注名单查询
- * 提取出现：企业名称、统一社会信用代码、失信类型数量
+ *提取主题：非法集资预警名单
+ *提取属性：企业名称、统一社会信用代码、省份（没这个属性，有法定代表人）
  **/
 @Slf4j
-@Component("shanghaisite_zdgzmd")
+@Component("shanghaisite_ffjjyjmd")
 @Scope("prototype")
-public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
+public class ShangHaiSite_FFJJYJMD   extends SiteTaskExtend_CreditChina {
     String keyWord =null;
     int pageSize = 1;
     @Autowired
@@ -50,9 +50,9 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
     protected String executeOne() throws Throwable {
         return super.executeOne();
     }
-    public void webContext(String keyWord,String ip, String port) throws Throwable{
+    public void webContext(String keyWord,String ip, String port)throws Throwable{
         List<Proxypool> listIps = getProxyPool();
-        String urlResult = "http://www.shcredit.gov.cn/credit/f/credit/query/?model=zdgzmd";
+        String urlResult = "http://www.shcredit.gov.cn/credit/f/credit/query/?model=ffjjyjmd";
         WebClient webClient = createWebClient(ip,port);
         //网络拒绝连接，调用IP池
         Boolean connectFlag = true;
@@ -127,7 +127,7 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
                 map.put("sourceUrl",url+"&keywords="+elementsTd.get(0).text());//资源地址
                 map.put("commpanyName",elementsTd.get(0).text());//企业名称
                 map.put("nnifiedSocialCreditCode",elementsTd.get(1).text());//企业社会统一代码
-                map.put("judgeNo",elementsTd.get(2).text());//失信类型数量 TODO 目前先放在文号属性中
+                map.put("personName",elementsTd.get(2).text());//法定代表人
                 discreditBlacklistInsert(map);
 
             }
@@ -142,7 +142,7 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
         //source	数据来源
         discreditBlacklist.setSource("信用中国（上海）");
         //subject	主题
-        discreditBlacklist.setSubject("重点关注名单查询");
+        discreditBlacklist.setSubject("非法集资预警名单");
         //url	url
         discreditBlacklist.setUrl(map.get("sourceUrl"));
         //object_type	主体类型: 01-企业 02-个人
@@ -156,7 +156,7 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
         //enterprise_code3	组织机构代码
         discreditBlacklist.setEnterpriseCode3("");
         //person_name	法定代表人/负责人姓名|负责人姓名
-        discreditBlacklist.setPersonName("");
+        discreditBlacklist.setPersonName(map.get("personName"));
         //person_id	法定代表人身份证号|负责人身份证号
         discreditBlacklist.setPersonId("");
         //discredit_type	失信类型
@@ -168,7 +168,7 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
         //punish_result	处罚结果
         discreditBlacklist.setPunishReason("");
         //judge_no	执行文号
-        discreditBlacklist.setJudgeNo(map.get("judgeNo"));
+        discreditBlacklist.setJudgeNo("");
         //judge_date	执行时间
         discreditBlacklist.setJudgeDate("");
         //judge_auth	判决机关

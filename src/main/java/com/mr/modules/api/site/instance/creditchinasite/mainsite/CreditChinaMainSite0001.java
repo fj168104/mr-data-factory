@@ -31,7 +31,7 @@ import java.util.*;
  */
 
 @Slf4j
-@Component("creditChinaMainSite0001")
+@Component("creditchinamainsite0001")
 @Scope( "prototype")
 public class CreditChinaMainSite0001 extends SiteTaskExtend_CreditChina{
     @Autowired

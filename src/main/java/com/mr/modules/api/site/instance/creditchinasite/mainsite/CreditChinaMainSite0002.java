@@ -21,7 +21,7 @@ import java.util.*;
  * 4.提取内容：姓名、职业资格证书号、惩罚时间 、奖惩部门、惩罚类型、处理文号、惩罚原因
  */
 @Slf4j
-@Component("creditChinaMainSite0002")
+@Component("creditchinamainsite0002")
 public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
     String url ="https://www.creditchina.gov.cn/xinxigongshi/huanbaolingyu/201804/t20180419_113582.html";
 

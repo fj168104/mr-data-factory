@@ -34,7 +34,7 @@ import java.util.Map;
  * keyWord:关键字查询
  **/
 @Slf4j
-@Component("ShangHaiSite_SXMDC")
+@Component("shanghaisite_sxmdc")
 @Scope("prototype")
 public class ShangHaiSite_SXMDC extends SiteTaskExtend_CreditChina{
     String keyWord =null;
@@ -57,7 +57,7 @@ public class ShangHaiSite_SXMDC extends SiteTaskExtend_CreditChina{
     protected String executeOne() throws Throwable {
         return super.executeOne();
     }
-    public void webContext(String keyWord,String ip, String port){
+    public void webContext(String keyWord,String ip, String port)throws Throwable{
         List<Proxypool> listIps = getProxyPool();
         String urlResult = "http://www.shcredit.gov.cn/credit/f/credit/query/?model=sxmdc";
         WebClient webClient = createWebClient(ip,port);

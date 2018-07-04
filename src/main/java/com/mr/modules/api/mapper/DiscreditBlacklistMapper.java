@@ -16,6 +16,13 @@ public interface DiscreditBlacklistMapper extends BaseMapper<DiscreditBlacklist>
 	 */
 	int deleteAllByUrl(String url);
 	
+	/**
+	 * 通过URL查询记录数
+	 * @param url
+	 * @return
+	 */
+	int selectCountByUrl(String url);
+	
     /**
      * 判断记录此url地址是否已经存在
      * @param url

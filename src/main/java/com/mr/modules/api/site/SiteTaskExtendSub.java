@@ -123,6 +123,18 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 	 */
 	public String delFinallyString(String strOld,String delString){
 		String strNew = strOld;
+		//此必须要放在第一个位置
+		if(strNew.contains("披露（")&&!strNew.contains("）")){
+			strNew = strNew.replaceAll(".*披露（","");
+		}
+		//str ="人保财险潜山支公司（dsfdsfsdfsdd";
+		if(strNew.contains("（")&&!strNew.contains("）")){
+			strNew = strNew.replaceAll("（.*","");
+		}
+		//str ="人保财险潜山支公（司（dsfdsfsdfsdd）水）电费水电费的";
+		if(strNew.contains("（")&&strNew.contains("）")){
+			strNew = strNew.replaceAll("（.*）","");
+		}
 		if(strOld.length()>0&&strOld.trim().endsWith(delString)){
 			strNew = strOld.substring(0,strOld.length()-1);
 		}

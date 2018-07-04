@@ -23,13 +23,13 @@ import java.util.Map;
 
 /**
  * @Auther zjxu to 201806
- * 提取主题：重点关注名单查询
- * 提取出现：企业名称、统一社会信用代码、失信类型数量
+ *提取主题：政府采购严重违法失信名单查询
+ *提取属性：企业名称、统一社会信用代码、纳入原因（TODO 严重违法失信行为的具体情形）
  **/
 @Slf4j
-@Component("shanghaisite_zdgzmd")
+@Component("shanghaisite_zfcgyzwfsxmd")
 @Scope("prototype")
-public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
+public class ShangHaiSite_ZFCGYZWFSXMD extends SiteTaskExtend_CreditChina {
     String keyWord =null;
     int pageSize = 1;
     @Autowired
@@ -50,9 +50,9 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
     protected String executeOne() throws Throwable {
         return super.executeOne();
     }
-    public void webContext(String keyWord,String ip, String port) throws Throwable{
+    public void webContext(String keyWord,String ip, String port)throws Throwable{
         List<Proxypool> listIps = getProxyPool();
-        String urlResult = "http://www.shcredit.gov.cn/credit/f/credit/query/?model=zdgzmd";
+        String urlResult = "http://www.shcredit.gov.cn/credit/f/credit/query/?model=zfcgyzwfsxmd";
         WebClient webClient = createWebClient(ip,port);
         //网络拒绝连接，调用IP池
         Boolean connectFlag = true;
@@ -127,7 +127,7 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
                 map.put("sourceUrl",url+"&keywords="+elementsTd.get(0).text());//资源地址
                 map.put("commpanyName",elementsTd.get(0).text());//企业名称
                 map.put("nnifiedSocialCreditCode",elementsTd.get(1).text());//企业社会统一代码
-                map.put("judgeNo",elementsTd.get(2).text());//失信类型数量 TODO 目前先放在文号属性中
+                map.put("punishReason",elementsTd.get(2).text());//严重违法失信行为的具体情形 TODO 目前先放在列入原因属性中
                 discreditBlacklistInsert(map);
 
             }
@@ -142,7 +142,7 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
         //source	数据来源
         discreditBlacklist.setSource("信用中国（上海）");
         //subject	主题
-        discreditBlacklist.setSubject("重点关注名单查询");
+        discreditBlacklist.setSubject("政府采购严重违法失信名单查询");
         //url	url
         discreditBlacklist.setUrl(map.get("sourceUrl"));
         //object_type	主体类型: 01-企业 02-个人
@@ -164,11 +164,11 @@ public class ShangHaiSite_ZDGZMD  extends SiteTaskExtend_CreditChina{
         //discredit_action	失信行为
         discreditBlacklist.setDiscreditAction("");
         //punish_reason	列入原因
-        discreditBlacklist.setPunishReason("");
+        discreditBlacklist.setPunishReason(map.get("punishReason"));
         //punish_result	处罚结果
-        discreditBlacklist.setPunishReason("");
+        discreditBlacklist.setPunishResult("");
         //judge_no	执行文号
-        discreditBlacklist.setJudgeNo(map.get("judgeNo"));
+        discreditBlacklist.setJudgeNo("");
         //judge_date	执行时间
         discreditBlacklist.setJudgeDate("");
         //judge_auth	判决机关

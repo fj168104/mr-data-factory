@@ -85,28 +85,7 @@ mapper:
   not-empty: false
   identity: MYSQL
 
-myProps: #自定义的属性和值
-  simpleProp: simplePropValue
-  arrayProps: 1,2,3,4,5
-  listProp1:
-    - name: abc
-      value: abcValue
-    - name: efg
-      value: efgValue
-  listProp2:
-    - config2Value1
-    - config2Vavlue2
-  mapProps:
-    key1: value1
-    key2: value2
-
 ---
-#配置ipproxy pool数据源参数参数
-proxydatabase:
-  dbdriver: com.mysql.jdbc.Driver
-  dburl: jdbc:mysql://47.100.7.81:3306/data_factory_xu?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
-  dbuser: root
-  dbpassword: root@1234
 #开发环境配置
 server:
   #端口
@@ -115,7 +94,7 @@ spring:
   profiles: dev
   #数据源
   datasource:
-    url: jdbc:mysql://47.100.7.81:3306/data_factory_xu?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
+    url: jdbc:mysql://47.100.7.81:3306/data_factory_feng?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
     username: root
     password: ${password}
   mail:
@@ -137,15 +116,25 @@ spring:
 #日志
 logging:
   config: classpath:logback-mr.xml
-  path: F:/home/fengjiang/Documents/export
+  path: /home/fengjiang/Documents/export
 
 
 #数据库密码加密
 #java -cp druid-1.1.0.jar com.alibaba.druid.filter.config.ConfigTools 你的密码
 publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKTusxtIrx4B0a5Pi5oUImdtQrkV9spQaUYv6xpCIoAtM50Yo9d9miMTWF145+wwScNaV5QF+r+jQ0DCZL0/+j8CAwEAAQ==
 password: Root@1234
-download-dir: F:/home/fengjiang/Documents
+download-dir: /home/fengjiang/Documents
 ic-url: http://112.65.144.19:10003/edh/api
+
+#代理设置
+proxy:
+  enabled: false
+  host: 61.145.194.26
+  port: 8080
+#REST超时配置
+rest:
+  readTimeout: 35000
+  connectTimeout: 5000
 
 
 

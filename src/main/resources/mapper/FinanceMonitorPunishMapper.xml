@@ -77,4 +77,8 @@
         SELECT * FROM FINANCE_MONITOR_PUNISH c WHERE c.CREATE_TIME BETWEEN #{begin} and #{end}
     </select>
 
+    <!--通过startNo size 查找一段数据-->
+    <select id="selectSegmentData" resultMap="BaseResultMap">
+        SELECT * FROM FINANCE_MONITOR_PUNISH c LIMIT #{startNo} , #{size}
+    </select>
 </mapper>

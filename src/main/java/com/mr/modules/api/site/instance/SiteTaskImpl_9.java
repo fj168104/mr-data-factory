@@ -86,7 +86,7 @@ public class SiteTaskImpl_9 extends SiteTaskExtend {
 		List<FinanceMonitorPunish> lists = Lists.newLinkedList();
 
 		String url = "http://www.szse.cn/szseWeb/FrontController.szse?randnum=0.8706381259752185";
-		java.util.Map<String, String> requestParams = Maps.newHashMap();
+		Map<String, String> requestParams = Maps.newHashMap();
 		requestParams.put("ACTIONID", "7");
 		requestParams.put("AJAX", "AJAX-TRUE");
 		requestParams.put("CATALOGID", "ZQ_JLCF");

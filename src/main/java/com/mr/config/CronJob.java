@@ -45,9 +45,9 @@ public class CronJob {
 
 	@Bean
 	public Void startJob() {
-		System.out.println("----===="+pattern);
 		//每天4:45 run task
 		CronUtil.schedule(pattern, new Task() {
+
 			@Override
 			public void execute() {
 				log.info("Task excuted.");

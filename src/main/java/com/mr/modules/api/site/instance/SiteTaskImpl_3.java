@@ -17,7 +17,7 @@ public class SiteTaskImpl_3 extends SiteTaskExtend {
 	protected String execute() throws Throwable {
 		for (String groupIndex : groupIndexs) {
 			ResourceGroup task = (ResourceGroup) SpringUtils.getBean(groupIndex);
-
+			task.setSaveErrKeyWords(String.format("%s occur Data_Saving_Error", groupIndex));
 			log.info(groupIndex + " calling result：" + TaskStatus.getName(task.start()));
 			while (!task.isFinish()) {
 				Thread.sleep(3000);

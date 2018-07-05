@@ -469,25 +469,9 @@ public class ParseShaanXi {
                     log.info(currentPersonStr[0]+"-----------"+currentPersonStr[1]);
                     // 当事人：郭秀珍（又名郭佳颖） 此长度大于5 但是为自然人
                     if(currentPersonStr[1].length()>5&&currentPersonStr[0].trim().equals("当事人") && !currentPersonStr[1].contains("又名")){
-                        if(currentPersonStr[1].contains("，")){
-                            String[] strPerson = currentPersonStr[1].split("，");
-                            if(strPerson[0].length()<6){
-                                priPerson = priPerson.append(strPerson[0]);
-                                priJob = priPerson.append(strPerson[1]);
-                            }else {
-                                busiPersonFlag = true;
-                                m=i;
-                                punishToOrg = currentPersonStr[1];
-                            }
-                        }else{
-                            m = i;
-                            busiPersonFlag =true;
-                            if(!punishToOrg.equalsIgnoreCase("")){
-                                punishToOrg = punishToOrg+"，"+currentPersonStr[1];
-                            }else{
-                                punishToOrg = currentPersonStr[1];
-                            }
-                        }
+                        m = i;
+                        busiPersonFlag =true;
+                        punishToOrg = currentPersonStr[1];
                     }
                     if(currentPersonStr[0].trim().equals("负责人")){//存在负责人在pre标签里，其他又在p标签里
                         m = i;
@@ -602,22 +586,9 @@ public class ParseShaanXi {
                 log.info("-------strArray2[1]--------"+strArray2[1]);
                 // TODO 法人
                 if(strArray2[1].length()>5 && strArray2[0].trim().equalsIgnoreCase("当事人")){
-                    if(strArray2[1].contains("，")){
-                        String[] strPerson = strArray2[1].split("，");
-                        if(strPerson[0].length()<6){
-                            priPerson = priPerson.append(strPerson[0]);
-                            priJob = priPerson.append(strPerson[1]);
-                        }else {
-                            busiPersonFlag = true;
-                            k=i;
-                            punishToOrg = strArray2[1];
-                        }
-                    }else{
-                        busiPersonFlag = true;
-                        k=i;
-                        punishToOrg = strArray2[1];
-                    }
-
+                    busiPersonFlag = true;
+                    k=i;
+                    punishToOrg = strArray2[1];
                     log.info("punishToOrg---"+punishToOrg);
                 }
                 if(busiPersonFlag == true  && strArray2[0].trim().equalsIgnoreCase("地址")){

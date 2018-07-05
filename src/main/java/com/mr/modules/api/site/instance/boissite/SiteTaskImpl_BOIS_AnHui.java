@@ -29,7 +29,7 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtendSub{
      */
     @Override
     protected String execute() throws Throwable {
-//        String url = " Q";
+//        String url = "http://anhui.circ.gov.cn/web/site11/tab3388/module8940/page1.htm";
         List<String> urlList = extractPageUrlList();
         for(String urlResult : urlList){
             log.info("urlResult:"+urlResult);
@@ -399,8 +399,8 @@ public  class SiteTaskImpl_BOIS_AnHui extends SiteTaskExtendSub{
         financeMonitorPunish.setPublishDate(mapInfo.get("publishDate"));//发布时间
         financeMonitorPunish.setPunishInstitution(mapInfo.get("punishOrg"));//处罚机关
         financeMonitorPunish.setPunishDate(mapInfo.get("punishDate"));//处罚时间
-        financeMonitorPunish.setPartyInstitution(delFinallyString(mapInfo.get("punishToOrg"),"，").replace("（"," ").replace("）"," "));//当事人（公司）=处罚对象
-        financeMonitorPunish.setCompanyFullName(delFinallyString(mapInfo.get("punishToOrg"),"，").replace("（"," ").replace("）"," "));//公司全称
+        financeMonitorPunish.setPartyInstitution(delFinallyString(mapInfo.get("punishToOrg"),"，"));//当事人（公司）=处罚对象
+        financeMonitorPunish.setCompanyFullName(delFinallyString(mapInfo.get("punishToOrg"),"，"));//公司全称
         financeMonitorPunish.setDomicile(delFinallyString(mapInfo.get("punishToOrgAddress"),"，"));//机构住址
         financeMonitorPunish.setLegalRepresentative(delFinallyString(mapInfo.get("punishToOrgHolder"),"，"));//机构负责人
         financeMonitorPunish.setPartyPerson(delFinallyString(mapInfo.get("priPerson"),"，"));//受处罚人

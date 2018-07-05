@@ -24,13 +24,16 @@ import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.lang.reflect.Field;
@@ -53,6 +56,22 @@ public abstract class SiteTaskExtend extends SiteTask {
 	private static String XLS_EXPORT_PATH = OCRUtil.DOWNLOAD_DIR + File.separator + "export";
 
 	protected RestTemplate restTemplate = SpringUtils.getBean(RestTemplate.class);
+
+	private RestTemplate noProxyRestTemplate;
+
+	@Autowired
+	private RestTemplateBuilder restTemplateBuilder;
+
+	@PostConstruct
+	public void initNoProxyRestTemplate() {
+		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+		noProxyRestTemplate = restTemplateBuilder
+				.setReadTimeout(30000) //ms
+				.setConnectTimeout(15000) //ms
+				.requestFactory(factory)
+				.build();
+
+	}
 
 	@Value("${ic-url}")
 	private String icQueryUrl;
@@ -386,13 +405,13 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * 设置单条抓取的更新日期
 	 */
 	protected void initDate() {
-		/*try {
+		try {
 			//通过source查找
 			FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 					.selectByUrl(oneFinanceMonitorPunish.getUrl());
 			if (Objects.isNull(originFinanceMonitorPunish)) {
-				//oneFinanceMonitorPunish.setCreateTime(new Date());
-				//oneFinanceMonitorPunish.setUpdateTime(new Date());
+				oneFinanceMonitorPunish.setCreateTime(new Date());
+				oneFinanceMonitorPunish.setUpdateTime(new Date());
 			} else {
 				oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
 				oneFinanceMonitorPunish.setUpdateTime(new Date());
@@ -402,7 +421,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			financeMonitorPunishMapper.deleteByUrl(oneFinanceMonitorPunish.getUrl());
 		} catch (Exception e) {
 			log.error(keyWords + ">>>" + e.getMessage());
-		}*/
+		}
 
 	}
 
@@ -434,46 +453,64 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 */
 	protected void setICName(FinanceMonitorPunish financeMonitorPunish) {
 		if (StrUtil.isBlank(financeMonitorPunish.getPartyInstitution())) {
+			financeMonitorPunish.setCompanyFullName("NULL");
 			return;
 		}
+		//将partyInstitution 名字中的英文括号改为中文括号
+		financeMonitorPunish.setPartyInstitution(
+				financeMonitorPunish.getPartyInstitution()
+						.replace("(", "（")
+						.replace(")", "）")
+		);
 
 		JSONObject jsonObject = fetchDataByICUrl(financeMonitorPunish.getPartyInstitution());
 		String code = jsonObject.get("code", String.class);
 		if (code.equals("0000")) {
 			JSONArray array = jsonObject.getJSONArray("data");
-			if(array.size() == 1){
+			if (array.size() == 1) {
 				financeMonitorPunish.setCompanyFullName(array.getJSONObject(0).get("orgName", String.class));
-			}else{
+			} else {
 				financeMonitorPunish.setCompanyFullName("NULL");
-				writeIcFailLog(financeMonitorPunish.getUrl(), array.toString());
+				for (int i = 0; i < array.size(); i++) {
+					String orgName = array.getJSONObject(0).get("orgName", String.class);
+					if (orgName.equals(financeMonitorPunish.getPartyInstitution())) {
+						financeMonitorPunish.setCompanyFullName(orgName);
+						break;
+					}
+				}
+				if (financeMonitorPunish.getCompanyFullName().equals("NULL")) {
+					writeIcFailLog(financeMonitorPunish.getUrl(), financeMonitorPunish.getPartyInstitution(), array.toString());
+				}
+
 			}
 
 		} else {
 			financeMonitorPunish.setCompanyFullName("NULL");
-			writeIcFailLog(financeMonitorPunish.getUrl(), jsonObject.get("msg", String.class));
+			writeIcFailLog(financeMonitorPunish.getUrl(), financeMonitorPunish.getPartyInstitution(), jsonObject.get("msg", String.class));
 		}
 
 	}
 
 	/**
 	 * 通过工商URL获取数据
+	 *
 	 * @return
 	 */
-	private JSONObject fetchDataByICUrl(String partyInstitution){
+	private JSONObject fetchDataByICUrl(String partyInstitution) {
 		Map<String, String> map = Maps.newHashMap();
 
-		String json = "{"+String.format("\"key\":\"%s\"", partyInstitution)+"}";
+		String json = "{" + String.format("\"key\":\"%s\"", partyInstitution) + "}";
 		map.put("uid", "sd0001");
 		map.put("msgid", getMsgId());
 		map.put("api", "N001_QY00100_V001");
-		map.put("args","{json}");
+		map.put("args", "{json}");
 		map.put("querymode", "0");
-		String jsonStr  = restTemplate.getForObject(icQueryUrl + showParams(map), String.class, json);
+		String jsonStr = noProxyRestTemplate.getForObject(icQueryUrl + showParams(map), String.class, json);
 
 		JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
 		String code = jsonObject.get("code", String.class);
 		//msgId重复
-		if(code.equals("0112")){
+		if (code.equals("0112")) {
 			incrementer.set(incrementer.intValue() + 100);
 			jsonObject = fetchDataByICUrl(partyInstitution);
 		}
@@ -481,12 +518,13 @@ public abstract class SiteTaskExtend extends SiteTask {
 
 	}
 
+
 	/**
 	 * 写工商转化错误日志
 	 *
 	 * @param icMsg
 	 */
-	private void writeIcFailLog(String url, String icMsg) {
+	private void writeIcFailLog(String url, String partyInstitution, String icMsg) {
 		String icPath = OCRUtil.DOWNLOAD_DIR + "/ic_fail.txt";
 		if (FileUtil.exist(icPath)) {
 			String icContent = FileUtil.readString(icPath, "utf-8");
@@ -497,7 +535,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 
 		BufferedWriter bw = FileUtil.getWriter(icPath, "utf-8", true);
 		try {
-			bw.write(url + "\t" + icMsg + "\n");
+			bw.write(url + "\t" + partyInstitution + "\t" + icMsg + "\n");
 			bw.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -515,11 +553,12 @@ public abstract class SiteTaskExtend extends SiteTask {
 
 
 	private String getMsgId() {
-		String ss = "101010";
+		String ss = "014014";
+		String yy = "21";
 		String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
 
-		String creNo = String.format("%012d", incrementer.incrementAndGet());
-		ss += date + creNo;
+		String creNo = String.format("%010d", incrementer.incrementAndGet());
+		ss += date + yy + creNo;
 		if (!date.equals(currentDate)) {
 			synchronized (this) {
 				currentDate = date;
@@ -538,7 +577,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	 * @return
 	 */
 	private FinanceMonitorPunish insertOrUpdate(FinanceMonitorPunish financeMonitorPunish) {
-		/*if (StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())) {
+		if (StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())) {
 			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		}
 
@@ -556,7 +595,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			financeMonitorPunishMapper.insert(filterPlace(financeMonitorPunish));
 		} catch (Exception e) {
 			log.error(keyWords + ">>>" + e.getMessage());
-		}*/
+		}
 		return financeMonitorPunish;
 	}
 
@@ -571,7 +610,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			// 获取getter方法，反射获取field值
 			Object obj = prop.getReadMethod().invoke(financeMonitorPunish);
 
-			if (Objects.isNull(obj) || obj instanceof java.util.Date) {
+			if (Objects.isNull(obj) || obj instanceof Date) {
 				continue;
 			}
 			String str = String.valueOf(obj);

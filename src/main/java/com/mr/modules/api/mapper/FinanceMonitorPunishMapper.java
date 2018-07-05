@@ -43,4 +43,7 @@ public interface FinanceMonitorPunishMapper extends BaseMapper<FinanceMonitorPun
 
 
 	List<FinanceMonitorPunish> selectYesterday(@Param("begin") Date begin, @Param("end") Date end);
+
+	List<FinanceMonitorPunish> selectSegmentData(@Param("startNo") int startNo, @Param("size") int size);
+
 }

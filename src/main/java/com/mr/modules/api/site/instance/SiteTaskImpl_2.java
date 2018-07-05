@@ -80,8 +80,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		FinanceMonitorPunish originFinanceMonitorPunish = financeMonitorPunishMapper
 				.selectByUrl(oneFinanceMonitorPunish.getUrl());
 		if (!Objects.isNull(oneFinanceMonitorPunish)) {
-			/*oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
-			oneFinanceMonitorPunish.setUpdateTime(new Date());*/
+			oneFinanceMonitorPunish.setCreateTime(originFinanceMonitorPunish.getCreateTime());
+			oneFinanceMonitorPunish.setUpdateTime(new Date());
 		}
 
 		initDate();
@@ -108,7 +108,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 					log.info("targetUri>>>" + targetUri);
 					String fullTxt = "";
 					try {
-						fullTxt = getData(targetUri, 3);
+						fullTxt = getData(targetUri, 1);
 					} catch (RuntimeException ex) {
 						if (ex instanceof HttpClientErrorException && ex.getMessage().trim().equals("404 Not Found"))
 							break;

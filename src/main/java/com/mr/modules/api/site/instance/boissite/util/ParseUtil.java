@@ -17,7 +17,7 @@ import java.util.Map;
  * @Date: Created in 2018/4/3 16:04
  */
 @Slf4j
-public class ParseSiChuan {
+public class ParseUtil {
 
     /**
      * 解析法人信息
@@ -98,10 +98,9 @@ public class ParseSiChuan {
         String resString = fullTxt.replace((char) 12288, ' ').trim();
         resString = resString.replaceAll("(\\w) +(\\w)","$1@$2");
         resString = resString.replaceAll(" ","").replaceAll("@"," ");
-        resString.replaceAll("<br>","&&")
-                .replaceAll("<br/>","&&");
-        resString.replaceAll("&&&&","&&");
-        return resString;
+        return resString.replaceAll("<br>","&&")
+                .replaceAll("<br/>","&&")
+                .replaceAll("</br>","&&");
     }
 
     /**
@@ -182,7 +181,6 @@ public class ParseSiChuan {
                 .replaceAll("法定代表人：","负责人：")
                 .replaceAll("身份证号码","身份证号")
                 .replaceAll("身份证号码：","身份证号：")
-                .replaceAll("当事人：","，当事人：")
 
                 //      .replace((char) 12288, ' ') //去掉全角空格
                 ;
@@ -382,26 +380,13 @@ public class ParseSiChuan {
 
                     if(currentPersonStr[1].length()>5&&currentPersonStr[0].trim().equals("当事人") && !currentPersonStr[1].contains("男") &&
                             !currentPersonStr[1].contains("女") && !currentPersonStr[1].contains("出生")){
-                        if(currentPersonStr[1].contains("，")){
-                            String[] strPerson = currentPersonStr[1].split("，");
-                            if(strPerson[0].length()<6){
-                                priPerson = priPerson.append(strPerson[0]);
-                                priJob = priPerson.append(strPerson[1]);
-                            }else {
-                                busiPersonFlag = true;
-                                m=i;
-                                punishToOrg = currentPersonStr[1];
-                            }
+                        m = i;
+                        busiPersonFlag =true;
+                        if(!punishToOrg.equalsIgnoreCase("")){
+                            punishToOrg = punishToOrg+"，"+currentPersonStr[1];
                         }else{
-                            m = i;
-                            busiPersonFlag =true;
-                            if(!punishToOrg.equalsIgnoreCase("")){
-                                punishToOrg = punishToOrg+"，"+currentPersonStr[1];
-                            }else{
-                                punishToOrg = currentPersonStr[1];
-                            }
+                            punishToOrg = currentPersonStr[1];
                         }
-
 
                     }
                     // TODO 法人
@@ -551,21 +536,9 @@ public class ParseSiChuan {
                 log.info(strArray2[0]+"---------------"+strArray2[1]);
                 // TODO 法人
                 if(strArray2[1].length()>5 && strArray2[0].trim().equalsIgnoreCase("当事人") && !strArray2[1].contains("，")){
-                    if(strArray2[1].contains("，")){
-                        String[] strPerson = strArray2[1].split("，");
-                        if(strPerson[0].length()<6){
-                            priPerson = priPerson.append(strPerson[0]);
-                            priJob = priPerson.append(strPerson[1]);
-                        }else {
-                            busiPersonFlag = true;
-                            k=i;
-                            punishToOrg = strArray2[1];
-                        }
-                    }else{
-                        busiPersonFlag = true;
-                        k=i;
-                        punishToOrg = strArray2[1];
-                    }
+                    busiPersonFlag = true;
+                    k=i;
+                    punishToOrg = strArray2[1];
                     log.info("punishToOrg---"+punishToOrg);
                 }
                 if(busiPersonFlag == true  && strArray2[0].trim().equalsIgnoreCase("地址")){

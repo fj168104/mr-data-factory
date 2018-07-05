@@ -1,6 +1,7 @@
 package com.mr.modules.api;
 
 import com.mr.modules.api.model.FinanceMonitorPunish;
+import com.mr.modules.api.service.DataPatcher;
 import com.mr.modules.api.service.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -23,6 +24,9 @@ public class SiteController extends BaseController {
 
 	@Resource
 	private SiteService siteService;
+
+	@Resource
+	private DataPatcher dataPatcher;
 
 	@Autowired
 	private HttpServletRequest request;
@@ -51,12 +55,24 @@ public class SiteController extends BaseController {
 				String region = request.getParameter("region");
 				mapParams.put("region", region);
 			}
-			if(request.getQueryString().contains("keyWord=")){
-				String keyWord =request.getParameter("keyWord");
-				mapParams.put("keyWord", keyWord);
-			}
-			SiteParams.map = mapParams;
-			code = siteService.start(indexId, callId);
+			code = siteService.startByParams(indexId, callId, mapParams);
+			/*if (request.getQueryString().contains("region=")) {
+				String region = request.getParameter("region");
+				mapParams.put("region", region);
+				code = siteService.startByParams(indexId, callId, mapParams);
+			} else if (request.getQueryString().contains("publishDate=")) {
+				String publishDate = request.getParameter("publishDate");
+				mapParams.put("publishDate", publishDate);
+				code = siteService.startByParams(indexId, callId, mapParams);
+			} else if (request.getQueryString().contains("url=")) {
+				String url = request.getParameter("url");
+				log.info("---------url-----------" + url);
+				mapParams.put("url", url);
+				code = siteService.startByParams(indexId, callId, mapParams);
+			} else {
+				code = "params-error";
+			}*/
+
 		}
 		map.addAttribute("code", code);
 		return map;
@@ -166,5 +182,19 @@ public class SiteController extends BaseController {
 		map.addAttribute("imort_result", result);
 		return map;
 	}
+
+	/**
+	 * 全量更新工商库
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/ic_name/all")
+	public ModelMap updateAllIcNames() throws Exception {
+		ModelMap map = new ModelMap();
+		dataPatcher.updateALlIcNames();
+		map.addAttribute("del_result", "executing");
+		return map;
+	}
+
 
 }

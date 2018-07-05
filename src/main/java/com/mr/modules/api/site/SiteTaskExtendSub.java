@@ -131,33 +131,9 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 		if(strNew.contains("（")&&!strNew.contains("）")){
 			strNew = strNew.replaceAll("（.*","");
 		}
-		//str ="人保财险潜山支公（以下简称）电费水电费的";
-		if(strNew.contains("（以下简称")&&strNew.contains("）")){
-			strNew = strNew.replaceAll("（以下简称.*）","");
-		}
-		//str ="人保财险潜山支公[原名XXXX]费水电费的";
-		if(strNew.contains("[原名")&&strNew.contains("]")){
-			strNew = strNew.replaceAll("\\[原名.*\\]","");
-		}
-		//str ="人保财险潜山支公（下简称XXXX）费水电费的";
-		if(strNew.contains("（下简称")&&strNew.contains("）")){
-			strNew = strNew.replaceAll("（下简称.*）","");
-		}
-		//str ="人保财险潜山支公（原名XXXX）费水电费的";
-		if(strNew.contains("（原")&&strNew.contains("）")){
-			strNew = strNew.replaceAll("（原.*）","");
-		}
-		//str ="人保财险潜山支公（已更名XXXX）费水电费的";
-		if(strNew.contains("（已更名")&&strNew.contains("）")){
-			strNew = strNew.replaceAll("（已更名.*）","");
-		}
-		//str ="人保财险潜山支公（简称XXXX）费水电费的";
-		if(strNew.contains("（简称")&&strNew.contains("）")){
-			strNew = strNew.replaceAll("（简称.*）","");
-		}
-		//str ="人保财险潜山支公（该公司2011年5月公司登记名称为XXXX）费水电费的";
-		if(strNew.contains("（该公司2011年5月公司登记名称为")&&strNew.contains("）")){
-			strNew = strNew.replaceAll("（该公司2011年5月公司登记名称为.*）","");
+		//str ="人保财险潜山支公（司（dsfdsfsdfsdd）水）电费水电费的";
+		if(strNew.contains("（")&&strNew.contains("）")){
+			strNew = strNew.replaceAll("（.*）","");
 		}
 		if(strOld.length()>0&&strOld.trim().endsWith(delString)){
 			strNew = strOld.substring(0,strOld.length()-1);

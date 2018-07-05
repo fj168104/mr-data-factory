@@ -3,7 +3,6 @@ package com.mr.modules.api.site.instance.creditchinasite.shanxisite;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
-import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,14 +18,14 @@ import java.util.Map;
 
 /**
  * @auther 1.信用中国（山西）
- * 1、法人行政处罚信息
- * 2.http://www.creditsx.gov.cn/xzcfList.jspx
+ * 1、法人黑名单信息
+ * 2.http://www.creditsx.gov.cn/legalblackList.jspx?redBlackType=redBlack
  */
 @Slf4j
-@Component("shanxi_xzcf")
+@Component("shanxi_legalblack")
 @Scope("prototype")
-public class Shanxi_xzcf extends SiteTaskExtend {
-	String url = "http://www.creditsx.gov.cn/xzcfList.jspx";
+public class Shanxi_legalblack extends SiteTaskExtend {
+	String url = "http://www.creditsx.gov.cn/legalblackList.jspx?redBlackType=redBlack";
 
 	@Autowired
 	AdminPunishMapper adminPunishMapper;
@@ -48,8 +47,9 @@ public class Shanxi_xzcf extends SiteTaskExtend {
 
 	/**
 	 * 获取网页内容
-	 * 行政处罚决定书文号、案件名称、处罚类别、处罚事由、处罚依据、行政相对人名称、组织机构代码、工商登记码、税务登记号、
-	 * 法定代表人居民身份证号、法定代表人姓名、处罚结果、处罚生效期、处罚机关、当前状态、地方编码、备注、信息提供部门、数据报送时间
+	 * 主体名称、统一社会信用代码、工商登记号、失信领域、列入原因、决定机关、移出时间、
+	 * 移出原因、待办推送日期、信息报送人、信息提供部门、信息报送日期、最后修改日期、
+	 * 原始数据
 	 */
 	public void extractContext(String url) {
 		String dUrlPrefix = "http://www.creditsx.gov.cn";
@@ -62,6 +62,7 @@ public class Shanxi_xzcf extends SiteTaskExtend {
 			Map<String, String> map = new HashMap<>();
 			map.put("pageNo", String.valueOf(page));
 			map.put("area_id", "140000");
+			map.put("redBlackType", "redBlack");
 			Document listDoc = Jsoup.parse(postData(url, map, 3));
 			Element div = listDoc.getElementsByClass("body-view-bottom").first();
 			Elements aElements = div.getElementsByTag("a");
@@ -71,79 +72,80 @@ public class Shanxi_xzcf extends SiteTaskExtend {
 				Elements trElements = infoDoc.getElementsByTag("tr");
 				AdminPunish adminPunish = createDefaultAdminPunish();
 				for (Element trElement : trElements) {
+
 					String thString = trElement.getElementsByTag("th").first().text();
-					String tdString = trElement.getElementsByTag("td").first().text().trim();
-					if (thString.contains("行政处罚决定书文号")) {
-						adminPunish.setJudgeNo(tdString);
+					String tdString = trElement.getElementsByTag("td").first().text();
+
+					if (thString.contains("主体名称")) {
+						adminPunish.setEnterpriseName(tdString.trim());
 						continue;
 					}
-
-					if (thString.contains("处罚类别")) {
-						adminPunish.setPunishType(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚事由")) {
-						adminPunish.setPunishReason(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚依据")) {
-						adminPunish.setPunishAccording(tdString);
-						continue;
-					}
-
-					if (thString.contains("行政相对人名称")) {
-						adminPunish.setEnterpriseName(tdString);
-						continue;
-					}
-
 					if (thString.contains("统一社会信用代码")) {
-						adminPunish.setEnterpriseCode1(tdString);
+						adminPunish.setEnterpriseCode1(tdString.trim());
+						continue;
+					}
+					if (thString.contains("列入原因")) {
+						adminPunish.setPunishReason(tdString.trim());
+						continue;
+					}
+					if (thString.contains("决定机关")) {
+						adminPunish.setJudgeAuth(tdString.trim());
+						continue;
+					}
+					if (thString.contains("最后修改日期")) {
+						adminPunish.setPublishDate(tdString.trim());
 						continue;
 					}
 
-					if (thString.contains("组织机构代码")) {
-						adminPunish.setEnterpriseCode3(tdString);
-						continue;
-					}
+					if (!adminPunish.getEnterpriseCode1().trim().equals("空") && thString.contains("原始数据")) {
+						String pString = trElement.getElementsByTag("p").first().text().trim();
+						String[] details = pString.split(";");
+						for (String detail : details) {
+							String[] infos = detail.split(":");
+							if (infos.length < 2) {
+								continue;
+							}
+							if (infos[0].contains("纳税人名称")) {
+								adminPunish.setEnterpriseName(infos[1].trim());
+								continue;
+							}
+							if (infos[0].contains("组织机构代码")) {
+								adminPunish.setEnterpriseCode3(infos[1].trim());
+								continue;
+							}
 
-					if (thString.contains("工商登记码")) {
-						adminPunish.setEnterpriseCode2(tdString);
-						continue;
-					}
-
-					if (thString.contains("法定代表人居民身份证号")) {
-						adminPunish.setPersonId(tdString);
-						continue;
-					}
-
-					if (thString.contains("法定代表人姓名")) {
-						adminPunish.setPersonName(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚结果")) {
-						adminPunish.setPunishResult(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚生效期")) {
-						adminPunish.setPublishDate(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚机关")) {
-						adminPunish.setJudgeAuth(tdString);
-						continue;
+							if (infos[0].contains("公示日期")) {
+								adminPunish.setPublishDate(infos[1].trim().substring(0, 10));
+								continue;
+							}
+							if (infos[0].contains("法定代表人或者负责人姓名")) {
+								adminPunish.setPersonName(infos[1].trim());
+								continue;
+							}
+							if (infos[0].contains("法定代表人或者负责人证件号码")) {
+								adminPunish.setPersonName(infos[1].trim());
+								continue;
+							}
+							if (infos[0].contains("案件性质")) {
+								adminPunish.setPunishType(infos[1].trim());
+								continue;
+							}
+							if (infos[0].contains("主要违法事实")) {
+								adminPunish.setPunishReason(infos[1].trim());
+								continue;
+							}
+							if (infos[0].contains("相关法律依据及税务处理处罚情况")) {
+								adminPunish.setPunishResult(infos[1].trim());
+								continue;
+							}
+						}
 					}
 				}
-				try{
+				try {
 					adminPunishMapper.insert(adminPunish);
-				}catch (Exception e){
+				} catch (Exception e) {
 					writeBizErrorLog(infoUrl, e.getMessage());
 				}
-
 			}
 		}
 	}
@@ -156,7 +158,7 @@ public class Shanxi_xzcf extends SiteTaskExtend {
 		adminPunish.setSource("信用山西");
 		adminPunish.setSubject("");
 		adminPunish.setUrl(url);
-		adminPunish.setObjectType("01");
+		adminPunish.setObjectType("02");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");

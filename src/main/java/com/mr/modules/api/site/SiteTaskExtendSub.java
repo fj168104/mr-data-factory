@@ -67,7 +67,7 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 		} catch (Exception e) {
 			log.warn("saveOne warn >>>" + e.getMessage() + "\n financeMonitorPunish>>>" + financeMonitorPunish);
 		}
-		return false;
+		return true;
 
 	}
 

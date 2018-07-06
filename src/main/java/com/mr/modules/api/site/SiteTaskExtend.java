@@ -443,7 +443,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 				return false;
 			}
 		} catch (Exception e) {
-			log.error(keyWords + ">>>" + e.getMessage());
+			log.warn("saveOne warn >>>" + e.getMessage() + "\n financeMonitorPunish>>>" + financeMonitorPunish);
 		}
 		return false;
 	}

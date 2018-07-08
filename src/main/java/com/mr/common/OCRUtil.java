@@ -171,8 +171,8 @@ public class OCRUtil {
 
 //			log.info(ocrUtil.recognizeTexts(ocrUtil.image2Dir("P020171222593212170499.pdf")));
 //
-			log.info("" + ocrUtil.getTextFromImg("P020170516403317946872.pdf"));
-//			log.info("" + ocrUtil.getTextFromPdf("20170613184522_2wa8r5l63v.pdf"));
+//			log.info("" + ocrUtil.getTextFromImg("P020170516403317946872.pdf"));
+			log.info("" + ocrUtil.getTextFromPdf("1480314150019004187.pdf"));
 
 		} catch (Exception e) {
 			e.printStackTrace();

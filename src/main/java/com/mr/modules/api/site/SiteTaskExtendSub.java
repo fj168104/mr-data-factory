@@ -82,6 +82,9 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		}
 
+		//punishDate 过滤
+		handlePunishDate(financeMonitorPunish);
+
 		financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
 		//设置createTime
 		if (StringUtils.isEmpty(financeMonitorPunish.getCreateTime())) {

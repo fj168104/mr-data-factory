@@ -580,7 +580,8 @@ public abstract class SiteTaskExtend extends SiteTask {
 		if (StringUtils.isEmpty(financeMonitorPunish.getPrimaryKey())) {
 			buildFinanceMonitorPunishBizKey(financeMonitorPunish);
 		}
-
+		//punishDate 过滤
+		handlePunishDate(financeMonitorPunish);
 
 		try {
 			financeMonitorPunishMapper.deleteByBizKey(financeMonitorPunish.getPrimaryKey());
@@ -597,6 +598,80 @@ public abstract class SiteTaskExtend extends SiteTask {
 			log.error(keyWords + ">>>" + e.getMessage());
 		}
 		return financeMonitorPunish;
+	}
+
+	protected void handlePunishDate(FinanceMonitorPunish financeMonitorPunish){
+		if (StrUtil.isNotEmpty(financeMonitorPunish.getPunishDate())) {
+			String pDate = financeMonitorPunish.getPunishDate().replaceAll("\\s*", "");
+			if (extracterZH(pDate).equals("年月日")) {
+				pDate = pDate.replace("年", "-").replace("月", "-").replace("日", "");
+				Date date = DateUtil.parse(pDate, "yyyy-MM-dd");
+				String format = DateUtil.format(date, "yyyy-MM-dd");
+				financeMonitorPunish.setPunishDate(format);
+			} else if (pDate.contains("〇")) {
+				String sYear = pDate.substring(0, pDate.indexOf("年"));
+				String tyear = sYear.replace("一", "1")
+						.replace("二", "2")
+						.replace("三", "3")
+						.replace("四", "4")
+						.replace("五", "5")
+						.replace("六", "6")
+						.replace("七", "7")
+						.replace("八", "8")
+						.replace("九", "9")
+						.replace("〇", "0");
+
+				String sMonth = pDate.substring(pDate.indexOf("年") + 1, pDate.indexOf("月"));
+				String tMonth = sMonth.replace("十一", "11")
+						.replace("十二", "12")
+						.replace("一", "1")
+						.replace("二", "2")
+						.replace("三", "3")
+						.replace("四", "4")
+						.replace("五", "5")
+						.replace("六", "6")
+						.replace("七", "7")
+						.replace("八", "8")
+						.replace("九", "9")
+						.replace("十", "10");
+
+				String sDay = pDate.substring(pDate.indexOf("月") + 1, pDate.indexOf("日"));
+				String tDay = sDay.replace("三十一", "31")
+						.replace("三十", "30")
+						.replace("二十九", "29")
+						.replace("二十八", "28")
+						.replace("二十七", "27")
+						.replace("二十六", "26")
+						.replace("二十五", "25")
+						.replace("二十四", "24")
+						.replace("二十三", "23")
+						.replace("二十二", "22")
+						.replace("二十一", "21")
+						.replace("二十", "20")
+						.replace("十九", "19")
+						.replace("十八", "18")
+						.replace("十七", "17")
+						.replace("十六", "16")
+						.replace("十五", "15")
+						.replace("十四", "14")
+						.replace("十三", "13")
+						.replace("十二", "12")
+						.replace("十一", "11")
+						.replace("十", "10")
+						.replace("九", "9")
+						.replace("八", "8")
+						.replace("七", "7")
+						.replace("六", "6")
+						.replace("五", "5")
+						.replace("四", "4")
+						.replace("三", "3")
+						.replace("二", "2")
+						.replace("一", "1");
+				pDate = tyear + "-" + tMonth + "-" + tDay;
+				financeMonitorPunish.setPunishDate(pDate);
+			}
+
+		}
 	}
 
 	protected FinanceMonitorPunish filterPlace(FinanceMonitorPunish financeMonitorPunish) throws Exception {

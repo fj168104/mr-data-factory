@@ -7,6 +7,7 @@ import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
 import com.mr.framework.core.date.DateUtil;
 import com.mr.framework.core.io.FileUtil;
+import com.mr.framework.core.util.RandomUtil;
 import com.mr.framework.core.util.StrUtil;
 import com.mr.framework.json.JSONArray;
 import com.mr.framework.json.JSONObject;
@@ -77,7 +78,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 	private String icQueryUrl;
 
 	//自增ID
-	private AtomicInteger incrementer = new AtomicInteger();
+	private AtomicInteger incrementer = new AtomicInteger(RandomUtil.randomInt(100000));
 
 	private volatile String currentDate = DateUtil.format(DateUtil.date(), "yyyyMMdd");
 

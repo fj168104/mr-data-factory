@@ -49,7 +49,6 @@ public class CreditChinaGuangDong_XZCF extends SiteTaskExtend_CreditChina{
 
     @Test
     public void webContext(String keyWord){
-        String keyWOrd = "";
         String url = "http://www.gdcredit.gov.cn/infoTypeAction!xzTwoPublicListIframe.do?type=7";
         try {
             WebClient webClient = createWebClient("","");
@@ -60,8 +59,13 @@ public class CreditChinaGuangDong_XZCF extends SiteTaskExtend_CreditChina{
             HtmlElement htmlImage = htmlElementQureyEvent.getElementsByTagName("img").get(0);
             //关键字输入框
             HtmlElement htmlInput = htmlElementQureyEvent.getElementsByTagName("input").get(0);
-            //给输入框赋值
-            htmlInput.setAttribute("value",keyWOrd);
+            if(!"".equals(keyWord)){
+                //给输入框赋值
+                htmlInput.setAttribute("value",keyWord);
+                htmlPage = htmlImage.click();
+            }
+
+
             //TODO 获取默认5页记录 注：获取iframe 中嵌套的界面
             HtmlElement htmlElementIframe = (HtmlElement)htmlPage.getElementsByTagName("iframe").get(0);
             String src=htmlElementIframe.getAttribute("src");
@@ -147,7 +151,6 @@ public class CreditChinaGuangDong_XZCF extends SiteTaskExtend_CreditChina{
             //TODO 获取翻页事件
             while(htmlElementNextPage != null && nextFlag){
                 nextFlag = false;
-                htmlPage = htmlElementNextPage.click();
                 //TODO 获取页面上关键字查询要素
                 htmlElementQureyEvent = (HtmlElement)htmlPage.getByXPath("//body//div[@class='page-outside']//div[@class='page-inside']//div[@class='pageFragment_bg_mid']//div[@class='credit-public']//div[@class='content-div']//div[@class='right_div']//div[@class='select-twopublic']//div[@class='tabs-depart tabs']//div[@class='tabs-container']//div[@class='checkbox-container']//div[@class='search-container']").get(0);
                 //查询事件
@@ -155,11 +158,12 @@ public class CreditChinaGuangDong_XZCF extends SiteTaskExtend_CreditChina{
                 //关键字输入框
                 htmlInput = htmlElementQureyEvent.getElementsByTagName("input").get(0);
                 //给输入框赋值
-                htmlInput.setAttribute("value",keyWOrd);
+                htmlInput.setAttribute("value",keyWord);
                 //TODO 获取默认5页记录 注：获取iframe 中嵌套的界面
                 htmlElementIframe = (HtmlElement)htmlPage.getElementsByTagName("iframe").get(0);
                 src=htmlElementIframe.getAttribute("src");
-                ifrpage=webClient.getPage("http://www.gdcredit.gov.cn"+src);//读取iframe网页
+                //ifrpage=webClient.getPage("http://www.gdcredit.gov.cn"+src);//读取iframe网页
+                ifrpage=htmlElementNextPage.click();
                 //读取列表清单
                 htmlElementIframe_Tr_List = ifrpage.getByXPath("//body//form//table//tbody//tr");
                 for(HtmlElement htmlElement_Tr : htmlElementIframe_Tr_List){
@@ -242,46 +246,6 @@ public class CreditChinaGuangDong_XZCF extends SiteTaskExtend_CreditChina{
         }
     }
 
-    public WebClient createWebClient(String ip, String port) throws Throwable{
-        WebClient wc =  null;
-        if ("".equals(ip) || "".equals(port)||ip==null||port==null) {
-            wc = new WebClient(BrowserVersion.getDefault());
-            log.info("通过本地ip进行处理···");
-        } else {
-            //获取代理对象
-            wc = new WebClient(BrowserVersion.getDefault(), ip,Integer.valueOf(port));
-            log.info("通过代理进行处理···");
-        }
-
-        //设置浏览器版本
-        //是否使用不安全的SSL
-        wc.getOptions().setUseInsecureSSL(false);
-        //启用JS解释器，默认为true
-        wc.getOptions().setJavaScriptEnabled(true);
-        //禁用CSS
-        wc.getOptions().setCssEnabled(false);
-        //js运行错误时，是否抛出异常
-        wc.getOptions().setThrowExceptionOnScriptError(false);
-        //状态码错误时，是否抛出异常
-        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-        //是否允许使用ActiveX
-        wc.getOptions().setActiveXNative(false);
-        //等待js时间
-        //wc.waitForBackgroundJavaScript(10000);
-        //设置Ajax异步处理控制器即启用Ajax支持
-        wc.setAjaxController(new NicelyResynchronizingAjaxController());
-        //设置超时时间
-        wc.getOptions().setTimeout(20000);
-        //不跟踪抓取
-        wc.getOptions().setDoNotTrackEnabled(false);
-        //启动客户端重定向
-        wc.getOptions().setRedirectEnabled(true);
-        //
-        wc.getCookieManager().clearCookies();
-        //
-        wc.setRefreshHandler(new ImmediateRefreshHandler());
-        return wc;
-    }
     public AdminPunish adminPunishInsert(Map<String,String> map){
         AdminPunish adminPunish = new AdminPunish();
         //created_at	本条记录创建时间

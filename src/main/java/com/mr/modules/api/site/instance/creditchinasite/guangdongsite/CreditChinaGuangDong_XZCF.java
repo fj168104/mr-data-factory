@@ -1,8 +1,5 @@
 package com.mr.modules.api.site.instance.creditchinasite.guangdongsite;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.ImmediateRefreshHandler;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -10,7 +7,6 @@ import com.mr.modules.api.SiteParams;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -47,7 +43,6 @@ public class CreditChinaGuangDong_XZCF extends SiteTaskExtend_CreditChina{
         return super.executeOne();
     }
 
-    @Test
     public void webContext(String keyWord){
         String url = "http://www.gdcredit.gov.cn/infoTypeAction!xzTwoPublicListIframe.do?type=7";
         try {

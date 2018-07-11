@@ -68,19 +68,19 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
 
         //设置浏览器版本
         //是否使用不安全的SSL
-        wc.getOptions().setUseInsecureSSL(false);
+        wc.getOptions().setUseInsecureSSL(true);
         //启用JS解释器，默认为true
         wc.getOptions().setJavaScriptEnabled(true);
         //禁用CSS
         wc.getOptions().setCssEnabled(false);
         //js运行错误时，是否抛出异常
-        wc.getOptions().setThrowExceptionOnScriptError(false);
+        wc.getOptions().setThrowExceptionOnScriptError(true);
         //状态码错误时，是否抛出异常
         wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
         //是否允许使用ActiveX
         wc.getOptions().setActiveXNative(false);
         //等待js时间
-        wc.waitForBackgroundJavaScript(10000);
+        //wc.waitForBackgroundJavaScript(10000);
         //设置Ajax异步处理控制器即启用Ajax支持
         wc.setAjaxController(new NicelyResynchronizingAjaxController());
         //设置超时时间
@@ -254,11 +254,14 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param adminPunish
      * @param isForce true:强制保存插入;false:如果存在就不再保存（如系统中已存在该记录）
      */
-    protected void saveAdminPunishOne(AdminPunish adminPunish, Boolean isForce) {
+    protected boolean saveAdminPunishOne(AdminPunish adminPunish, Boolean isForce) {
+        //是否存在标识 true:存在 false：不存在
+        boolean isFlag = false;
         List<AdminPunish> adminPunishList = adminPunishMapper.selectByUrl(adminPunish.getUrl(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
         String strAdminPunish = "url地址："+adminPunish.getUrl()+"\n企业名称："+adminPunish.getEnterpriseName()+"\n+负责人名称："+adminPunish.getPersonName()+"\n处罚文号："+adminPunish.getJudgeNo();
         if (!isForce && adminPunishList.size()>0) {
             log.info(strAdminPunish+"此记录已经存在···不需要入库");
+            isFlag = true;
         }else if(!isForce && adminPunishList.size()<=0){
             adminPunishMapper.insert(adminPunish);
             log.info(strAdminPunish+"此记录不存在···需要入库");
@@ -273,6 +276,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         }else{
             log.info(strAdminPunish+"此记录不满足入库条件···");
         }
+        return isFlag;
     }
 
     /**

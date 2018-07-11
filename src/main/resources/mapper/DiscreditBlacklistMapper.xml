@@ -16,6 +16,7 @@
     <result column="enterprise_code1" property="enterpriseCode1" jdbcType="VARCHAR" />
     <result column="enterprise_code2" property="enterpriseCode2" jdbcType="VARCHAR" />
     <result column="enterprise_code3" property="enterpriseCode3" jdbcType="VARCHAR" />
+    <result column="enterprise_code4" property="enterpriseCode4" jdbcType="VARCHAR" />
     <result column="person_name" property="personName" jdbcType="VARCHAR" />
     <result column="person_id" property="personId" jdbcType="VARCHAR" />
     <result column="discredit_type" property="discreditType" jdbcType="VARCHAR" />

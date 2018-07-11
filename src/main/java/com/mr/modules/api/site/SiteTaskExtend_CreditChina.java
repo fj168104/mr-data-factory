@@ -49,6 +49,22 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
 		}
 		return CrawlerUtil.getHtmlPage(url);
 	}
+    
+	/**
+	 * 获取页面数据
+	 * @param wc
+	 * @param url
+	 * @return
+	 */
+	protected String getData(WebClient wc, String url) {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return CrawlerUtil.getHtmlPage(wc, url);
+	}
+    
     /**
      * 创建一个htmlUnit webClient 客户端
      * @param ip
@@ -155,6 +171,8 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+        	wc.close();
         }
         return null;
     }
@@ -224,6 +242,8 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+        	wc.close();
         }
         return null;
     }

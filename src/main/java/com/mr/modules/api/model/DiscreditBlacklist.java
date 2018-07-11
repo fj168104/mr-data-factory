@@ -1,13 +1,12 @@
 package com.mr.modules.api.model;
 
-import com.mr.common.base.model.BaseEntity;
-import lombok.Data;
-
 import java.util.Date;
-import javax.persistence.*;
+
+import javax.persistence.Table;
+
+import com.mr.common.base.model.BaseEntity;
 
 @Table(name = "discredit_blacklist")
-@Data
 public class DiscreditBlacklist extends BaseEntity {
     /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,6 +68,11 @@ public class DiscreditBlacklist extends BaseEntity {
      */
     //@Column(name = "enterprise_code3")
     private String enterpriseCode3;
+    
+    /**
+     * 税务登记号
+     */
+    private String enterpriseCode4;
 
     /**
      * 法定代表人/负责人姓名|负责人姓名
@@ -328,8 +332,16 @@ public class DiscreditBlacklist extends BaseEntity {
     public void setEnterpriseCode3(String enterpriseCode3) {
         this.enterpriseCode3 = enterpriseCode3;
     }
+    
+    public String getEnterpriseCode4() {
+		return enterpriseCode4;
+	}
 
-    /**
+	public void setEnterpriseCode4(String enterpriseCode4) {
+		this.enterpriseCode4 = enterpriseCode4;
+	}
+
+	/**
      * 获取法定代表人/负责人姓名|负责人姓名
      *
      * @return person_name - 法定代表人/负责人姓名|负责人姓名
@@ -526,4 +538,6 @@ public class DiscreditBlacklist extends BaseEntity {
     public void setStatus(String status) {
         this.status = status;
     }
+    
+    
 }

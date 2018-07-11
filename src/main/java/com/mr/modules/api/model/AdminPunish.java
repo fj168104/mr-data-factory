@@ -66,6 +66,11 @@ public class AdminPunish extends BaseEntity {
      */
     //@Column(name = "enterprise_code3")
     private String enterpriseCode3;
+    
+    /**
+     * 税务登记号
+     */
+    private String enterpriseCode4;
 
     /**
      * 法定代表人/负责人姓名|负责人姓名
@@ -500,4 +505,12 @@ public class AdminPunish extends BaseEntity {
     public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
+
+	public String getEnterpriseCode4() {
+		return enterpriseCode4;
+	}
+
+	public void setEnterpriseCode4(String enterpriseCode4) {
+		this.enterpriseCode4 = enterpriseCode4;
+	}
 }

@@ -130,7 +130,6 @@ public class CreditChinaGansuXzcfGR extends SiteTaskExtend_CreditChina {
 		}
 		log.debug("==============================");
 		log.debug("总页数为：" + pageNum);
-		System.out.println(pageNum);
 		log.debug("==============================");
 		return pageNum;
 	}

@@ -23,6 +23,15 @@ public interface DiscreditBlacklistMapper extends BaseMapper<DiscreditBlacklist>
 	 */
 	int selectCountByUrl(String url);
 	
+	/**
+	 * 通过主题+对象类型+判决书文号查询记录条数
+	 * @param subject
+	 * @param objectType
+	 * @param judgeNo
+	 * @return
+	 */
+	int selectCountBySubjectAndJudegNo(@Param("subject") String subject, @Param("objectType") String objectType, @Param("judgeNo") String judgeNo);
+
     /**
      * 判断记录此url地址是否已经存在
      * @param url

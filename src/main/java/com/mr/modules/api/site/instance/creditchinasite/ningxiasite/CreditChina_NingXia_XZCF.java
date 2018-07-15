@@ -70,12 +70,12 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
                 String href = baseUrl + htmlElement1A.getElementsByTagName("a").get(0).getAttribute("href");
 
                 HtmlPage htmlPageDetail = htmlElement1A.getElementsByTagName("a").get(0).click();
-                webClient.waitForBackgroundJavaScript(20000);
+                webClient.waitForBackgroundJavaScript(10000);
                 log.info("context" + htmlPageDetail.asXml());
                 //获取信息头
                 String companyName = "";
                 String creditCode = "";
-                List<HtmlElement> htmlElementHeader = htmlPageDetail.getByXPath("//body//div[@id='content']//div[@class='content clearfix']//div[@class='company-messages-box']//div[class='messages-show-hide ']//div[@class='ajaxmessagebox']");
+                List<HtmlElement> htmlElementHeader = htmlPageDetail.getByXPath("//body//div[@id='content']//div[@class='content clearfix']//div[@class='company-messages-box']//div[@class='messages-show-hide ']//div[@class='ajaxmessagebox']");
                 if (htmlElementHeader.size() > 0) {
                     companyName = htmlElementHeader.get(0).getElementsByTagName("div").get(0).getElementsByTagName("h3").get(0).asText();
                     creditCode = htmlElementHeader.get(0).getElementsByTagName("ul").get(0).getElementsByTagName("li").get(0).asText().replaceAll(".*：", "");
@@ -98,7 +98,7 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
                     Map map = new HashMap();
                     List<HtmlElement> htmlElementsTrs = htmlElementTbody.getElementsByTagName("tr");
                     if (htmlElementsTrs.size() == 11) {
-                        map.put("source", href);
+                        map.put("sourceUrl", href);
                         map.put("enterpriseName", companyName);
                         map.put("enterpriseCode1", creditCode);
                         //决定书文号：

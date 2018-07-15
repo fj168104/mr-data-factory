@@ -58,6 +58,7 @@ public class CreditChinaGuangDong_XZCF extends SiteTaskExtend_CreditChina{
                 //给输入框赋值
                 htmlInput.setAttribute("value",keyWord);
                 htmlPage = htmlImage.click();
+                webClient.waitForBackgroundJavaScript(10000);
             }
 
 

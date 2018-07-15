@@ -94,7 +94,7 @@ public class CreditChina_NingXia_BlackList extends SiteTaskExtend_CreditChina{
                     if(htmlElementsTrs.size()==8){
 
                         //列入原因：案件号：(2018)宁0181执594号。 案由：其他案由。  失信被执行人具体情况：其他有履行能力而拒不履行生效法律文书确定义务的。
-                        String[] insertReason = htmlElementsTrs.get(0).asText().split("。");
+                        String[] insertReason = htmlElementsTrs.get(0).getElementsByTagName("td").get(1).asText().split("。");
                         if(insertReason.length==3){
                             if(insertReason[0].contains("案件号：")){
                                 map.put("judgeNo",insertReason[0].replaceAll("案件号：",""));
@@ -103,23 +103,23 @@ public class CreditChina_NingXia_BlackList extends SiteTaskExtend_CreditChina{
                             }else if(insertReason[2].contains("失信被执行人具体情况：")){
                                 map.put("punishResult",insertReason[2].replaceAll("失信被执行人具体情况：",""));
                             }else {
-                                map.put("punishReason",htmlElementsTrs.get(0).asText());
+                                map.put("punishReason",htmlElementsTrs.get(0).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                             }
                         }
                         //决定机关：
-                        map.put("judgeAuth",htmlElementsTrs.get(1).asText());
+                        map.put("judgeAuth",htmlElementsTrs.get(1).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                         //移出日期：
-                        map.put("ycrq",htmlElementsTrs.get(2).asText());
+                        map.put("ycrq",htmlElementsTrs.get(2).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                         //移出原因：
-                        map.put("ycyy",htmlElementsTrs.get(3).asText());
+                        map.put("ycyy",htmlElementsTrs.get(3).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                         //信息提供部门：
-                        map.put("xxtgbm",htmlElementsTrs.get(4).asText());
+                        map.put("xxtgbm",htmlElementsTrs.get(4).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                         //信息报送人：
-                        map.put("xxbsr",htmlElementsTrs.get(5).asText());
+                        map.put("xxbsr",htmlElementsTrs.get(5).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                         //信息报送日期：
-                        map.put("publishDate",htmlElementsTrs.get(6).asText());
+                        map.put("publishDate",htmlElementsTrs.get(6).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                         //最后修改日期：
-                        map.put("zhxgrq",htmlElementsTrs.get(7).asText());
+                        map.put("zhxgrq",htmlElementsTrs.get(7).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
 
                         //入库操作
                         discreditBlacklistInsert(map);

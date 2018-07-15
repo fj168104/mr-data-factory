@@ -78,8 +78,8 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
             log.info("通过本地ip进行处理···");
         } else {
             //获取代理对象
-           wc = new WebClient(BrowserVersion.getDefault(), ip,Integer.valueOf(port));
-           log.info("通过代理进行处理···");
+            wc = new WebClient(BrowserVersion.getDefault(), ip,Integer.valueOf(port));
+            log.info("通过代理进行处理···");
         }
 
         //设置浏览器版本
@@ -87,10 +87,10 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         wc.getOptions().setUseInsecureSSL(true);
         //启用JS解释器，默认为true
         wc.getOptions().setJavaScriptEnabled(true);
-        //禁用CSS
+        //禁用CSS TODO HTMLUNIT 本来就没有界面所以静止 false为不启用
         wc.getOptions().setCssEnabled(false);
-        //js运行错误时，是否抛出异常
-        wc.getOptions().setThrowExceptionOnScriptError(true);
+        //js运行错误时，是否抛出异常 false:为不启用
+        wc.getOptions().setThrowExceptionOnScriptError(false);
         //状态码错误时，是否抛出异常
         wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
         //是否允许使用ActiveX

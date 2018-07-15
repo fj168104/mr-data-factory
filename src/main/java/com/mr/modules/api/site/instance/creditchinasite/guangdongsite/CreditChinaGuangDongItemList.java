@@ -306,7 +306,7 @@ public class CreditChinaGuangDongItemList extends SiteTaskExtend_CreditChina{
                             Map map = detailZDSSWFAJXX(webClientDetail,href,publishDate);
                             //纳税人名称 纳税人识别号 违法事实 处罚情况
                             mapResult.put("enterpriseName",map.get("nsrmc"));
-                            mapResult.put("enterpriseCode1",map.get("nsrsbh"));
+                            mapResult.put("enterpriseCode4",map.get("nsrsbh"));
                             mapResult.put("discreditAction",map.get("zywfss"));
                             mapResult.put("punishResult",map.get("xgflyjjswclcfqk"));
                         }else if(item.contains("食品药品违法违规企业黑名单")){
@@ -455,7 +455,7 @@ public class CreditChinaGuangDongItemList extends SiteTaskExtend_CreditChina{
                                 Map map = detailZDSSWFAJXX(webClientDetail,href,publishDate);
                                 //纳税人名称 纳税人识别号 违法事实 处罚情况
                                 mapResult.put("enterpriseName",map.get("nsrmc"));
-                                mapResult.put("enterpriseCode1",map.get("nsrsbh"));
+                                mapResult.put("enterpriseCode4",map.get("nsrsbh"));
                                 mapResult.put("discreditAction",map.get("zywfss"));
                                 mapResult.put("punishResult",map.get("xgflyjjswclcfqk"));
                             }else if(item.contains("食品药品违法违规企业黑名单")){
@@ -1284,6 +1284,8 @@ public class CreditChinaGuangDongItemList extends SiteTaskExtend_CreditChina{
         discreditBlacklist.setEnterpriseCode2(map.get("enterpriseCode2")==null?"":map.get("enterpriseName2"));
         //enterprise_code3	组织机构代码
         discreditBlacklist.setEnterpriseCode3(map.get("enterpriseCode3")==null?"":map.get("enterpriseName3"));
+        //enterprise_code3	组织机构代码
+        discreditBlacklist.setEnterpriseCode4(map.get("enterpriseCode4")==null?"":map.get("enterpriseName4"));
         //person_name	法定代表人/负责人姓名|负责人姓名
         discreditBlacklist.setPersonName(map.get("personName")==null?"":map.get("personName"));
         //person_id	法定代表人身份证号|负责人身份证号
@@ -1309,6 +1311,5 @@ public class CreditChinaGuangDongItemList extends SiteTaskExtend_CreditChina{
         saveDisneycreditBlackListOne(discreditBlacklist,false);
         return discreditBlacklist;
     }
-
 
 }

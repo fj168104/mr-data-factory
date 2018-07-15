@@ -111,11 +111,11 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina{
                 //翻页操作
                 htmlElementNextPage = htmlPageIframe.getByXPath("//body//div[@class='publicitywrap']//div[@class='pagination']//div[@class='col-sm-6 padding-right0']//ul[@class='no-mar pull-right']//li[@class='paginate_button next']");
                 //翻页标识
-                if(htmlElementNextPage.size()>0){
+                if(htmlElementNextPage.size()>0&&htmlElementNextPage.get(0).asXml().contains("下一页")){
                     htmlElementNext = htmlElementNextPage.get(0);
                     nextFlag = true;
                 }else {
-                    nextFlag = false;
+                    break;
                 }
             }
 
@@ -151,7 +151,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina{
                     String punishOrg = htmlElementTR.get(6).getElementsByTagName("td").get(1).asText();
                     String cfrq = htmlElementTR.get(7).getElementsByTagName("td").get(1).asText();
                     String cfyxq = htmlElementTR.get(8).getElementsByTagName("td").get(1).asText();
-                    String gssj = htmlElementTR.get(8).getElementsByTagName("td").get(1).asText();
+                    String gssj = htmlElementTR.get(9).getElementsByTagName("td").get(1).asText();
                     map.put("enterpriseName",qymc);
                     map.put("enterpriseCode1",tyshxydm);
                     map.put("address",zydz);
@@ -172,7 +172,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina{
             }
 
         } catch (Throwable throwable) {
-            log.error("");
+            log.error("网络连接异常···清查看···"+throwable.getMessage());
         }
         return map;
     }

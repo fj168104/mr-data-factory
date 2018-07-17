@@ -42,7 +42,23 @@
 
   <!--通过链接地址查找-->
   <select id="selectByUrl" resultMap="BaseResultMap">
-    SELECT * FROM ADMIN_PUNISH c WHERE c.URL = #{url}  AND c.ENTERPRISE_NAME = #{enterpriseName} AND c.PERSON_NAME = #{personName} AND c.JUDGE_NO = #{judgeNo} AND JUDGE_AUTH = #{judgeAuth} LIMIT 0, 1
+    SELECT * FROM ADMIN_PUNISH c WHERE 1 =1
+    <if test="url != null">
+      AND c.URL = #{url}
+    </if>
+    <if test="enterpriseName != null">
+      AND c.ENTERPRISE_NAME = #{enterpriseName}
+    </if>
+    <if test="personName != null">
+      AND c.PERSON_NAME = #{personName}
+    </if>
+    <if test="judgeNo != null">
+      AND c.JUDGE_NO = #{judgeNo}
+    </if>
+    <if test="judgeAuth != null">
+      AND JUDGE_AUTH = #{judgeAuth}
+    </if>
+     LIMIT 0, 1
   </select>
   
   <!-- 通过判决书编号+企业名称(或个人名称)获得记录数 -->

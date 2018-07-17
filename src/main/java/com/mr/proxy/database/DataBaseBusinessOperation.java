@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,20 +23,29 @@ import java.util.Map;
  * Created by zjxu on 18-4-12.
  */
 @Slf4j
+@Component
 public class DataBaseBusinessOperation {
-   /* @Autowired
-    ProxyIPDatabaseConnectionParam proxyIPDatabaseConnectionParam ;
+    @Autowired
+    ProxyIPDatabaseConnectionParam proxyIPDatabaseConnectionParam;
 
-    private  String dbdriver =  proxyIPDatabaseConnectionParam.getDbdriver();    //数据库驱动
-    private  String dburl  = proxyIPDatabaseConnectionParam.getDbuser();    //操作的数据库地址，端口及库名
-    private  String dbuser  = proxyIPDatabaseConnectionParam.getDbpassword();                      //数据库用户名
-    private  String dbpassword  = proxyIPDatabaseConnectionParam.getDbpassword();           //数据库密码*/
-   String dbdriver="com.mysql.jdbc.Driver";    //数据库驱动
+    @Value("${proxydatabase.dbdriver}")
+    private  String dbdriver;    //数据库驱动
+    @Value("${proxydatabase.dburl}")
+    private  String dburl;    //操作的数据库地址，端口及库名
+    @Value("${proxydatabase.dbuser}")
+    private  String dbuser;                       //数据库用户名
+    @Value("${proxydatabase.dbpassword}")
+    private  String dbpassword;
+  /* String dbdriver="com.mysql.jdbc.Driver";    //数据库驱动
    String dburl="jdbc:mysql://47.100.7.81:3306/data_factory_xu?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true";    //操作的数据库地址，端口及库名
     String dbuser="root";                      //数据库用户名
-    String dbpassword="Root@1234";           //数据库密码*D03F98CADA08CB3823AFFF3EED680782213A28FE
+    String dbpassword="Root@1234";   */        //数据库密码*D03F98CADA08CB3823AFFF3EED680782213A28FE
     //数据库添加功能
     public  void add(List<IPMessage> list) throws ClassNotFoundException {
+          /*String dbdriver =  proxyIPDatabaseConnectionParam.getDbdriver();    //数据库驱动
+          String dburl  = proxyIPDatabaseConnectionParam.getDbuser();    //操作的数据库地址，端口及库名
+          String dbuser  = proxyIPDatabaseConnectionParam.getDbpassword();                      //数据库用户名
+          String dbpassword  = proxyIPDatabaseConnectionParam.getDbpassword();           //数据库密码*/
         Class.forName(dbdriver);                         //加载数据库驱动
 
         try(Connection conn = DriverManager.getConnection(dburl, dbuser, dbpassword);
@@ -61,6 +71,7 @@ public class DataBaseBusinessOperation {
     }
     //数据库添加功能
     public  void addOne(IPMessage ipMessage) throws ClassNotFoundException {
+
         Class.forName(dbdriver);                         //加载数据库驱动
 
         try(Connection conn = DriverManager.getConnection(dburl, dbuser, dbpassword);
@@ -85,6 +96,7 @@ public class DataBaseBusinessOperation {
     }
     //删除数据库指定IP
     public  void deleteIP(int IPid) {
+
         String sql = "DELETE FROM ProxyPool WHERE id = " + IPid;
         try(Connection conn = DriverManager.getConnection(dburl, dbuser, dbpassword);
             Statement statement = conn.createStatement()) {
@@ -99,6 +111,7 @@ public class DataBaseBusinessOperation {
 
     //数据库表清除功能(id也一并清除)
     public  void delete() {
+
         try(Connection conn = DriverManager.getConnection(dburl, dbuser, dbpassword);
             Statement statement = conn.createStatement()) {
             statement.executeUpdate("TRUNCATE TABLE ProxyPool");
@@ -113,6 +126,7 @@ public class DataBaseBusinessOperation {
 
     //数据库查找功能
     public  List<DatabaseMessage> query() throws ClassNotFoundException {
+
         Class.forName(dbdriver);                         //加载数据库驱动
         List<DatabaseMessage> list = new ArrayList<>();
 
@@ -144,6 +158,7 @@ public class DataBaseBusinessOperation {
     }
     //数据库查找功能
     public  int queryIP(String ipAddress) throws ClassNotFoundException {
+
         Class.forName(dbdriver);                         //加载数据库驱动
         int count =0;
         try(Connection conn = DriverManager.getConnection(dburl, dbuser, dbpassword);

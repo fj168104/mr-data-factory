@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @Auther zjxu
+ * @DateTime 2018-07
  * 主题：信用中国（宁夏）
  * 属性：企业名称、统一社会信用代码、企业地址、列入原因、决定机关、移出日期、移出原因、信息提供部门、信息报送人、信息报送日期、最后修改日期
  * url：http://www.nxcredit.gov.cn/entBlackList.jspx?searchContent=  TODO searchContent为名称或者统一社会信用代码
@@ -82,7 +84,7 @@ public class CreditChina_NingXia_BlackList extends SiteTaskExtend_CreditChina{
                                 "//li[@class='administrative-licensing position-re']" +
                                 "//table[@class='licensing-table']//tbody");
                 for(HtmlElement htmlElementTbody : htmlElementList){
-                    Map map = new HashMap();
+                    Map<String,String> map = new HashMap();
                     map.put("source","信用中国（宁夏）");
                     map.put("subject","失信黑名单");
                     map.put("sourceUrl",href);
@@ -122,7 +124,7 @@ public class CreditChina_NingXia_BlackList extends SiteTaskExtend_CreditChina{
                         map.put("zhxgrq",htmlElementsTrs.get(7).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
 
                         //入库操作
-                        discreditBlacklistInsert(map);
+                        insertDiscreditBlacklist(map);
                     }
                 }
             }
@@ -130,60 +132,5 @@ public class CreditChina_NingXia_BlackList extends SiteTaskExtend_CreditChina{
         } catch (Throwable throwable) {
             log.error("网络连接异常···清查看···"+throwable.getMessage());
         }
-    }
-
-    /**
-     * 数据入口保存
-     * @param map
-     * @return
-     */
-    public DiscreditBlacklist discreditBlacklistInsert(Map<String,String> map){
-        DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
-        //created_at	本条记录创建时间
-        discreditBlacklist.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        discreditBlacklist.setUpdatedAt(new Date());
-        //source	数据来源
-        discreditBlacklist.setSource(map.get("source")==null?"":map.get("source"));
-        //subject	主题
-        discreditBlacklist.setSubject(map.get("subject")==null?"":map.get("subject"));
-        //url	url
-        discreditBlacklist.setUrl(map.get("sourceUrl")==null?"":map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        discreditBlacklist.setObjectType(map.get("objectType")==null?"":map.get("objectType"));
-        //enterprise_name	企业名称
-        discreditBlacklist.setEnterpriseName(map.get("enterpriseName")==null?"":map.get("enterpriseName"));
-        //enterprise_code1	统一社会信用代码
-        discreditBlacklist.setEnterpriseCode1(map.get("enterpriseCode1")==null?"":map.get("enterpriseName1"));
-        //enterprise_code2	营业执照注册号
-        discreditBlacklist.setEnterpriseCode2(map.get("enterpriseCode2")==null?"":map.get("enterpriseName2"));
-        //enterprise_code3	组织机构代码
-        discreditBlacklist.setEnterpriseCode3(map.get("enterpriseCode3")==null?"":map.get("enterpriseName3"));
-        //enterprise_code3	组织机构代码
-        discreditBlacklist.setEnterpriseCode4(map.get("enterpriseCode4")==null?"":map.get("enterpriseName4"));
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        discreditBlacklist.setPersonName(map.get("personName")==null?"":map.get("personName"));
-        //person_id	法定代表人身份证号|负责人身份证号
-        discreditBlacklist.setPersonId(map.get("personId")==null?"":map.get("personId"));
-        //discredit_type	失信类型
-        discreditBlacklist.setDiscreditType(map.get("discreditType")==null?"":map.get("discreditType"));
-        //discredit_action	失信行为
-        discreditBlacklist.setDiscreditAction(map.get("discreditAction")==null?"":map.get("discreditAction"));
-        //punish_reason	列入原因
-        discreditBlacklist.setPunishReason(map.get("punishReason")==null?"":map.get("punishReason"));
-        //punish_result	处罚结果
-        discreditBlacklist.setPunishResult(map.get("punishResult")==null?"":map.get("punishResult"));
-        //judge_no	执行文号
-        discreditBlacklist.setJudgeNo(map.get("judgeNo")==null?"":map.get("judgeNo"));
-        //judge_date	执行时间
-        discreditBlacklist.setJudgeDate(map.get("judgeDate")==null?"":map.get("judgeDate"));
-        //judge_auth	判决机关
-        discreditBlacklist.setJudgeAuth(map.get("judgeAuth")==null?"":map.get("judgeAuth"));
-        //publish_date	发布日期
-        discreditBlacklist.setPublishDate(map.get("publishDate")==null?"":map.get("publishDate"));
-        //status	当前状态
-        discreditBlacklist.setStatus(map.get("status")==null?"":map.get("status"));
-        saveDisneycreditBlackListOne(discreditBlacklist,false);
-        return discreditBlacklist;
     }
 }

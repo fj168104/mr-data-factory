@@ -123,116 +123,23 @@ public class CreditChinaShanXiSitePerBlackList extends SiteTaskExtend_CreditChin
                 Map result = om.readValue(jsonResult,Map.class);
                 Map detailMap = (Map)result.get("dataList");
                 detailMap.put("sourceUrl",urlResult);
-                log.info("========================detailMap========================"+detailMap);
-                discreditBlacklistInsert(detailMap);
-                /*{
-                    "zh_name": "法人或其他组织名称",
-                        "en_name": "xy010101"
-                },
-                {
-                    "zh_name": "统一社会信用代码",
-                        "en_name": "xy010133"
-                },
-                {
-                    "zh_name": "法定代表人姓名",
-                        "en_name": "xy010105"
-                },
-                {
-                    "zh_name": "法定代表人身份证号码",
-                        "en_name": "fddbrsfzh"
-                },
-                {
-                    "zh_name": "失信领域",
-                        "en_name": "sxly_label"
-                },
-                {
-                    "zh_name": "列入文号",
-                        "en_name": "lrwh"
-                },
-                {
-                    "zh_name": "列入事由",
-                        "en_name": "lryy"
-                },
-                {
-                    "zh_name": "列入日期",
-                        "en_name": "lrdate"
-                },
-                {
-                    "zh_name": "认定机关",
-                        "en_name": "jdjg"
-                },
-                {
-                    "zh_name": "公布期限",
-                        "en_name": "lrqx"
-                },
-                {
-                    "zh_name": "移出日期",
-                        "en_name": "ycdate"
-                },
-                {
-                    "zh_name": "信息提供部门 ",
-                        "en_name": "dep_name"
-                },
-                {
-                    "zh_name": "信息报送日期",
-                        "en_name": "create_date"
-                },
-                {
-                    "zh_name": "最后一次修改日期",
-                        "en_name": "mondify_date"
-                }*/
+                detailMap.put("source","信用中国(陕西)");
+                detailMap.put("subject","黑名单-自然人");
+                detailMap.put("objectType","02");
+                detailMap.put("personName",detailMap.remove("xy010101"));
+                detailMap.put("personId",detailMap.remove("xy010133"));
+                detailMap.put("punishReason",detailMap.remove("lryy"));
+                detailMap.put("punishResult",detailMap.remove("sxly_label"));
+                detailMap.put("judgeNo",detailMap.remove("lrwh"));
+                detailMap.put("judgeDate",detailMap.remove("lrdate"));
+                detailMap.put("judgeAuth",detailMap.remove("jdjg"));
+                detailMap.put("publishDate",detailMap.remove("create_date"));
+                insertDiscreditBlacklist(detailMap);
             }
 
         }catch (IOException e){
             log.error("IO处理异常，请注意查看···"+e.getMessage());
         }
-    }
-    public DiscreditBlacklist discreditBlacklistInsert(Map<String,String> map){
-        DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
-        //created_at	本条记录创建时间
-        discreditBlacklist.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        discreditBlacklist.setUpdatedAt(new Date());
-        //source	数据来源
-        discreditBlacklist.setSource("信用中国(陕西)");
-        //subject	主题
-        discreditBlacklist.setSubject("黑名单-自然人");
-        //url	url
-        discreditBlacklist.setUrl(map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        discreditBlacklist.setObjectType("02");
-        //enterprise_name	企业名称
-        discreditBlacklist.setEnterpriseName("");
-        //enterprise_code1	统一社会信用代码
-        discreditBlacklist.setEnterpriseCode1("");
-        //enterprise_code2	营业执照注册号
-        discreditBlacklist.setEnterpriseCode2("");
-        //enterprise_code3	组织机构代码
-        discreditBlacklist.setEnterpriseCode3("");
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        discreditBlacklist.setPersonName(map.get("xy010101"));
-        //person_id	法定代表人身份证号|负责人身份证号
-        discreditBlacklist.setPersonId(map.get("xy010133"));
-        //discredit_type	失信类型
-        discreditBlacklist.setDiscreditType("");
-        //discredit_action	失信行为
-        discreditBlacklist.setDiscreditAction(map.get("lryy"));
-        //punish_reason	列入原因
-        discreditBlacklist.setPunishReason(map.get("lryy"));
-        //punish_result	处罚结果
-        discreditBlacklist.setPunishResult(map.get("sxly_label"));
-        //judge_no	执行文号
-        discreditBlacklist.setJudgeNo(map.get("lrwh"));
-        //judge_date	执行时间
-        discreditBlacklist.setJudgeDate(map.get("lrdate"));
-        //judge_auth	判决机关
-        discreditBlacklist.setJudgeAuth(map.get("jdjg"));
-        //publish_date	发布日期
-        discreditBlacklist.setPublishDate(map.get("create_date"));
-        //status	当前状态
-        discreditBlacklist.setStatus("");
-        saveDisneycreditBlackListOne(discreditBlacklist,false);
-        return discreditBlacklist;
     }
 
 }

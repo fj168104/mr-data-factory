@@ -96,6 +96,8 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
                                 "//table[@class='licensing-table']//tbody");
                 for (HtmlElement htmlElementTbody : htmlElementList) {
                     Map map = new HashMap();
+                    map.put("source","信用中国（宁夏）");
+                    map.put("subject","行政处罚");
                     List<HtmlElement> htmlElementsTrs = htmlElementTbody.getElementsByTagName("tr");
                     if (htmlElementsTrs.size() == 11) {
                         map.put("sourceUrl", href);
@@ -132,54 +134,5 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
         } catch (Throwable throwable) {
             log.error("网络连接异常···清查看···" + throwable.getMessage());
         }
-    }
-
-    public AdminPunish adminPunishInsert(Map<String, String> map) {
-        AdminPunish adminPunish = new AdminPunish();
-        //created_at	本条记录创建时间
-        adminPunish.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        adminPunish.setUpdatedAt(new Date());
-        //source	数据来源
-        adminPunish.setSource("信用中国（宁夏）");
-        //subject	主题
-        adminPunish.setSubject("行政处罚");
-        //url	url
-        adminPunish.setUrl(map.get("sourceUrl") == null ? "" : map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        adminPunish.setObjectType("01");
-        //enterprise_name	企业名称
-        adminPunish.setEnterpriseName(map.get("enterpriseName") == null ? "" : map.get("enterpriseName"));
-        //enterprise_code1	统一社会信用代码--cfXdrShxym
-        adminPunish.setEnterpriseCode1(map.get("enterpriseCode1") == null ? "" : map.get("enterpriseCode1"));
-        //enterprise_code2	营业执照注册号
-        adminPunish.setEnterpriseCode2(map.get("enterpriseCode2") == null ? "" : map.get("enterpriseCode2"));
-        //enterprise_code3	组织机构代码
-        adminPunish.setEnterpriseCode3(map.get("enterpriseCode3") == null ? "" : map.get("enterpriseCode3"));
-        //enterprise_code4	纳税人识别号
-        adminPunish.setEnterpriseCode3(map.get("enterpriseCode4") == null ? "" : map.get("enterpriseCode4"));
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        adminPunish.setPersonName(map.get("personName") == null ? "" : map.get("personName"));
-        //person_id	法定代表人身份证号|负责人身份证号
-        adminPunish.setPersonId(map.get("personId") == null ? "" : map.get("personId"));
-        //punish_type	处罚类型
-        adminPunish.setPunishType(map.get("punishType") == null ? "" : map.get("punishType"));
-        //punish_reason	处罚事由
-        adminPunish.setPunishReason(map.get("punishReason") == null ? "" : map.get("punishReason"));
-        //punish_according	处罚依据
-        adminPunish.setPunishAccording(map.get("punishAccording") == null ? "" : map.get("punishAccording"));
-        //punish_result	处罚结果
-        adminPunish.setPunishResult(map.get("punishResult") == null ? "" : map.get("punishResult"));
-        //judge_no	执行文号
-        adminPunish.setJudgeNo(map.get("judgeNo") == null ? "" : map.get("judgeNo"));
-        //judge_date	执行时间
-        adminPunish.setJudgeDate(map.get("judgeDate") == null ? "" : map.get("judgeDate"));
-        //judge_auth	判决机关
-        adminPunish.setJudgeAuth(map.get("judgeAuth") == null ? "" : map.get("judgeAuth"));
-        //publish_date	发布日期
-        adminPunish.setPublishDate(map.get("publishDate") == null ? "" : map.get("publishDate"));
-
-        saveAdminPunishOne(adminPunish, false);
-        return adminPunish;
     }
 }

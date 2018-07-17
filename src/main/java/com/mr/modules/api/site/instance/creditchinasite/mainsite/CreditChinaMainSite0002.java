@@ -52,7 +52,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         //处理文号
         String punishNo = "";
         //姓名、
-        String environDiscussPerson = "";
+        String personName = "";
         // 资质证号、
         String aptitudeNo = "";
         // 惩罚时间、
@@ -75,7 +75,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
                 if(elementsTdList.size() ==7){
                     punishNo = elementsTdList.get(2).text();
                     aptitudeNo = elementsTdList.get(2).text();
-                    environDiscussPerson = elementsTdList.get(1).text();
+                    personName = elementsTdList.get(1).text();
                     // 奖惩部门、String executeOrg = "";
                     executeOrg = elementsTdList.get(3).text();
                     punishReason = elementsTdList.get(4).text();
@@ -92,17 +92,16 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
                 //来源地址 String sourceUrl = url;
                 personObjectMap.put("sourceUrl",sourceUrl);
                 //处理文号 String punishNo = "";
-                personObjectMap.put("punishNo",punishNo);
+                personObjectMap.put("judgeNo",punishNo);
                 //姓名、String environDiscussPerson = "";
-                personObjectMap.put("environDiscussPerson",environDiscussPerson);
+                personObjectMap.put("personName",personName);
                 // 资质证号、String aptitudeNo = "";
                 personObjectMap.put("aptitudeNo",aptitudeNo);
                 // 惩罚时间、String punishDate = "";
-                personObjectMap.put("punishDate",punishDate);
+                personObjectMap.put("judgeDate",punishDate);
                 // 奖惩部门、String executeOrg = "";
-                personObjectMap.put("executeOrg",executeOrg);
+                personObjectMap.put("judgeAuth",executeOrg);
                 //行政处理方式 String punishMethod = "";
-                personObjectMap.put("punishMethod",punishMethod);
                 // 惩罚类型、String punishType = "";
                 if(punishMethod.contains("通报")&&!punishMethod.contains("整改")){
                     // 惩罚类型、String punishType = "";
@@ -122,68 +121,9 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
             }
         }
         for(Map<String,String> map : listPersonObjectMap){
-            log.info(
-                    "来源："+map.get("source")+"\n"
-                            +"来源地址："+map.get("sourceUrl")+"\n"
-                            +"处罚证书："+ map.get("punishNo")+"\n"
-                            +"姓名："+ map.get("environDiscussPerson")+"\n"
-                            +"资质证号："+  map.get("aptitudeNo")+"\n"
-                            +"惩罚时间："+  map.get("punishDate")+"\n"
-                            +"奖惩部门："+  map.get("executeOrg")+"\n"
-                            +"惩罚类型："+  map.get("punishType")+"\n"
-                            +"惩罚原因："+  map.get("punishReason")+"\n"
-                            +"行政处理方式："+  map.get("punishMethod")+"\n" );
             adminPunishInsert(map);
-            log.info("-----------------------------------------------------------------------------------");
         }
         log.info(document.text());
-    }
-
-    public AdminPunish adminPunishInsert(Map<String,String> map){
-        AdminPunish adminPunish = new AdminPunish();
-        //created_at	本条记录创建时间
-        adminPunish.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        adminPunish.setUpdatedAt(new Date());
-        //source	数据来源
-        adminPunish.setSource(map.get("source"));
-        //subject	主题
-        adminPunish.setSubject(map.get("subject"));
-        //url	url
-        adminPunish.setUrl(map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        adminPunish.setObjectType("02");
-        //enterprise_name	企业名称
-        adminPunish.setEnterpriseName("");
-        //enterprise_code1	统一社会信用代码
-        adminPunish.setEnterpriseCode1("");
-        //enterprise_code2	营业执照注册号
-        adminPunish.setEnterpriseCode2("");
-        //enterprise_code3	组织机构代码
-        adminPunish.setEnterpriseCode3("");
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        adminPunish.setPersonName(map.get("environDiscussPerson"));
-        //person_id	法定代表人身份证号|负责人身份证号
-        adminPunish.setPersonId("");
-        //punish_type	处罚类型
-        adminPunish.setPunishType(map.get("punishType"));
-        //punish_reason	处罚事由
-        adminPunish.setPunishReason(map.get("punishReason"));
-        //punish_according	处罚依据
-        adminPunish.setPunishAccording("");
-        //punish_result	处罚结果
-        adminPunish.setPunishResult("");
-        //judge_no	执行文号
-        adminPunish.setJudgeNo(map.get("aptitudeNo"));
-        //judge_date	执行时间
-        adminPunish.setJudgeDate(map.get("punishDate"));
-        //judge_auth	判决机关
-        adminPunish.setJudgeAuth(map.get("executeOrg"));
-        //publish_date	发布日期
-        adminPunish.setPublishDate(map.get("punishDate"));
-
-        saveAdminPunishOne(adminPunish,false);
-        return adminPunish;
     }
 
 }

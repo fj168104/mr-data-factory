@@ -144,92 +144,24 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
             //来源地址String sourceUrl = url;
             personObjectMap.put("sourceUrl",sourceUrl);
             // 日期String dateString = "";
-            personObjectMap.put("dateString",dateString);
-            personObjectMap.put("commpanyName",commpanyName);
-            personObjectMap.put("nnifiedSocialCreditCode",nnifiedSocialCreditCode);
-            personObjectMap.put("legalRepresentative",legalRepresentative);
+            personObjectMap.put("judgeDate",dateString);
+            personObjectMap.put("publishDate",dateString);
+            personObjectMap.put("enterpriseName",commpanyName);
+            personObjectMap.put("enterpriseCode1",nnifiedSocialCreditCode);
+            personObjectMap.put("personName",legalRepresentative);
             personObjectMap.put("detailAddress",detailAddress);
-            personObjectMap.put("transgress",transgress);
+            personObjectMap.put("discreditAction",transgress);
             personObjectMap.put("subject",subject);
+            personObjectMap.put("discreditType","环境违法");
+            personObjectMap.put("judgeAuth","");
+            personObjectMap.put("judgeNo","广东省环境保护厅文件粤环〔2018〕3号");
             listPersonObjectMap.add(personObjectMap);
-            /*log.info(
-                    "\n来源："+personObjectMap.get("source") +
-                            "\n来源地址："+personObjectMap.get("sourceUrl") +
-                            "\n日期："+personObjectMap.get("dateString")+
-                            "\n企业名称："+personObjectMap.get("commpanyName")+
-                            "\n统一社会信用代码："+personObjectMap.get("nnifiedSocialCreditCode")+
-                            "\n法定代表人："+personObjectMap.get("legalRepresentative")+
-                            "\n详细地址："+personObjectMap.get("detailAddress")+
-                            "\n违法情形："+personObjectMap.get("transgress")
-            );*/
 
         }
-
-
         for(Map<String,String> map : listPersonObjectMap){
-            log.info(
-                    "\n来源："+map.get("source") +
-                    "\n来源地址："+map.get("sourceUrl") +
-                    "\n日期："+map.get("dateString")+
-                    "\n企业名称："+map.get("commpanyName")+
-                    "\n统一社会信用代码："+map.get("nnifiedSocialCreditCode")+
-                    "\n法定代表人："+map.get("legalRepresentative")+
-                    "\n详细地址："+map.get("detailAddress")+
-                    "\n违法情形："+map.get("transgress")
-            );
-            discreditBlacklistInsert(map);
-
+            insertDiscreditBlacklist(map);
         }
 
-
-
-    }
-    public DiscreditBlacklist discreditBlacklistInsert(Map<String,String> map){
-        DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
-        //created_at	本条记录创建时间
-        discreditBlacklist.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        discreditBlacklist.setUpdatedAt(new Date());
-        //source	数据来源
-        discreditBlacklist.setSource(map.get("source"));
-        //subject	主题
-        discreditBlacklist.setSubject(map.get("subject"));
-        //url	url
-        discreditBlacklist.setUrl(map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        discreditBlacklist.setObjectType("01");
-        //enterprise_name	企业名称
-        discreditBlacklist.setEnterpriseName(map.get("commpanyName"));
-        //enterprise_code1	统一社会信用代码
-        discreditBlacklist.setEnterpriseCode1(map.get("nnifiedSocialCreditCode"));
-        //enterprise_code2	营业执照注册号
-        discreditBlacklist.setEnterpriseCode2("");
-        //enterprise_code3	组织机构代码
-        discreditBlacklist.setEnterpriseCode3("");
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        discreditBlacklist.setPersonName(map.get("legalRepresentative"));
-        //person_id	法定代表人身份证号|负责人身份证号
-        discreditBlacklist.setPersonId("");
-        //discredit_type	失信类型
-        discreditBlacklist.setDiscreditType("环境违法");
-        //discredit_action	失信行为
-        discreditBlacklist.setDiscreditAction(map.get("transgress"));
-        //punish_reason	列入原因
-        discreditBlacklist.setPunishReason(map.get("transgress"));
-        //punish_result	处罚结果
-        discreditBlacklist.setPunishReason("");
-        //judge_no	执行文号
-        discreditBlacklist.setJudgeNo("广东省环境保护厅文件粤环〔2018〕3号");
-        //judge_date	执行时间
-        discreditBlacklist.setJudgeDate(map.get("dateString"));
-        //judge_auth	判决机关
-        discreditBlacklist.setJudgeAuth("广东省环境保护厅");
-        //publish_date	发布日期
-        discreditBlacklist.setPublishDate(map.get("dateString"));
-        //status	当前状态
-        discreditBlacklist.setStatus("");
-        saveDisneycreditBlackListOne(discreditBlacklist,false);
-        return discreditBlacklist;
     }
 
 }

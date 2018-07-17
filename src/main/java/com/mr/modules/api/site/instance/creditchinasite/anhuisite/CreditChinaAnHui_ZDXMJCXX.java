@@ -38,7 +38,8 @@ public class CreditChinaAnHui_ZDXMJCXX extends SiteTaskExtend_CreditChina {
         return super.executeOne();
     }
 
-    String url = "http://www.creditah.gov.cn/remote/2000";
+    String url = "http://www.creditah.gov.cn/remote/2000/";
+    String baseUrl = "http://www.creditah.gov.cn";
 
     public void WebContext()throws Throwable{
         String ip="",  port="";
@@ -61,14 +62,17 @@ public class CreditChinaAnHui_ZDXMJCXX extends SiteTaskExtend_CreditChina {
 
                         if(elementsTd.size()==4){
                             Map map = new HashMap<>();
-                            map.put("nnifiedSocialCreditCode",elementsTd.get(0).text());
+                            String detailUrl = baseUrl+elementsTd.get(0).getElementsByTag("div").get(0).getElementsByTag("a").get(0).attr("href");
+                            map.put("enterpriseCode1",elementsTd.get(0).text());
                             map.put("objectType","01");
                             map.put("personName","");
-                            map.put("commpanyName",elementsTd.get(1).text());
+                            map.put("enterpriseName",elementsTd.get(1).text());
                             map.put("projectName",elementsTd.get(2).text());
-                            map.put("selectDate",elementsTd.get(3).text());
-                            map.put("sourceUrl",urlResult);
-                            discreditBlacklistInsert(map);
+                            map.put("judgeDate",elementsTd.get(3).text());
+                            map.put("sourceUrl",detailUrl);
+                            map.put("source","信用中国（安徽）");
+                            map.put("subject","重大项目稽察信息");
+                            insertDiscreditBlacklist(map);
                         }
                     }
                 }
@@ -76,52 +80,5 @@ public class CreditChinaAnHui_ZDXMJCXX extends SiteTaskExtend_CreditChina {
         }catch (IOException e){
             log.error("访问网络有问题，请检查···异常信息如下"+e.getMessage());
         }
-    }
-    public DiscreditBlacklist discreditBlacklistInsert(Map<String,String> map){
-        DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
-        //created_at	本条记录创建时间
-        discreditBlacklist.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        discreditBlacklist.setUpdatedAt(new Date());
-        //source	数据来源
-        discreditBlacklist.setSource("信用中国（安徽）");
-        //subject	主题
-        discreditBlacklist.setSubject("省国控及涉铅企业环境信用评价评价");
-        //url	url
-        discreditBlacklist.setUrl(map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        discreditBlacklist.setObjectType(map.get("objectType"));
-        //enterprise_name	企业名称
-        discreditBlacklist.setEnterpriseName(map.get("commpanyName"));
-        //enterprise_code1	统一社会信用代码
-        discreditBlacklist.setEnterpriseCode1(map.get("nnifiedSocialCreditCode"));
-        //enterprise_code2	营业执照注册号
-        discreditBlacklist.setEnterpriseCode2("");
-        //enterprise_code3	组织机构代码
-        discreditBlacklist.setEnterpriseCode3("");
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        discreditBlacklist.setPersonName(map.get("personName"));
-        //person_id	法定代表人身份证号|负责人身份证号
-        discreditBlacklist.setPersonId("");
-        //discredit_type	失信类型
-        discreditBlacklist.setDiscreditType("");
-        //discredit_action	失信行为
-        discreditBlacklist.setDiscreditAction("");
-        //punish_reason	列入原因
-        discreditBlacklist.setPunishReason("");
-        //punish_result	处罚结果
-        discreditBlacklist.setPunishReason("");
-        //judge_no	执行文号
-        discreditBlacklist.setJudgeNo("");
-        //judge_date	执行时间
-        discreditBlacklist.setJudgeDate("");
-        //judge_auth	判决机关
-        discreditBlacklist.setJudgeAuth("");
-        //publish_date	发布日期
-        discreditBlacklist.setPublishDate("");
-        //status	当前状态
-        discreditBlacklist.setStatus("");
-        saveDisneycreditBlackListOne(discreditBlacklist,false);
-        return discreditBlacklist;
     }
 }

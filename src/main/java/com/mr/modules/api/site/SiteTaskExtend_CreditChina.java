@@ -304,11 +304,13 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param discreditBlacklist
      * @param isForce true:强制保存插入;false:如果存在就不再保存（如系统中已存在该记录）
      */
-    protected void saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
+    protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
+        boolean isFlag = false;
         List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
         String strDiscreditBlacklist = "url地址："+discreditBlacklist.getUrl()+"\n企业名称："+discreditBlacklist.getEnterpriseName()+"\n+负责人名称："+discreditBlacklist.getPersonName()+"\n处罚文号："+discreditBlacklist.getJudgeNo();
         if (!isForce && adminDiscreditBlacklist.size()>0) {
             log.info(strDiscreditBlacklist+"此记录已经存在···不需要入库");
+            isFlag = true;
         }else if(!isForce && adminDiscreditBlacklist.size()<=0){
             discreditBlacklistMapper.insert(discreditBlacklist);
             log.info(strDiscreditBlacklist+"此记录不存在···需要入库");
@@ -323,6 +325,187 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         }else{
             log.info(strDiscreditBlacklist+"此记录不满足入库条件···");
         }
+        return isFlag;
+    }
+
+    /**
+     * 入库黑名单
+     * @param map
+     * @return
+     */
+    public boolean insertDiscreditBlacklist(Map map){
+        boolean isFlag = true;
+        DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
+        /**
+         * 本条记录创建时间
+         */
+        //@Column(name = "created_at")
+        discreditBlacklist.setCreatedAt(new Date());
+
+        /**
+         * 本条记录最后更新时间
+         */
+        //@Column(name = "updated_at")
+        discreditBlacklist.setUpdatedAt(new Date());
+
+        /**
+         * 数据来源
+         */
+        discreditBlacklist.setSource(map.get("source").toString());
+        /**
+         * 主题
+         */
+        discreditBlacklist.setSubject(map.get("subject").toString());
+        /**
+         * url
+         */
+        discreditBlacklist.setUrl(map.get("sourceUrl")==null?"":map.get("sourceUrl").toString());
+        /**
+         * 主体类型: 01-企业 02-个人
+         */
+        //@Column(name = "object_type")
+        discreditBlacklist.setObjectType(map.get("objectType")==null?"":map.get("objectType").toString());
+
+        /**
+         * 企业名称
+         */
+        //@Column(name = "enterprise_name")
+        discreditBlacklist.setEnterpriseName(map.get("enterpriseName")==null?"":map.get("enterpriseName").toString());
+
+        /**
+         * 统一社会信用代码
+         */
+        //@Column(name = "enterprise_code1")
+        discreditBlacklist.setEnterpriseCode1(map.get("enterpriseCode1")==null?"":map.get("enterpriseCode1").toString());
+        /**
+         * 营业执照注册号
+         */
+        //@Column(name = "enterprise_code2")
+        discreditBlacklist.setEnterpriseCode2(map.get("enterpriseCode2")==null?"":map.get("enterpriseCode2").toString());
+
+        /**
+         * 组织机构代码
+         */
+        //@Column(name = "enterprise_code3")
+        discreditBlacklist.setEnterpriseCode3(map.get("enterpriseCode3")==null?"":map.get("enterpriseCode3").toString());
+        /**
+         * 法定代表人/负责人姓名|负责人姓名
+         */
+        //@Column(name = "person_name")
+        discreditBlacklist.setPersonName(map.get("personName")==null?"":map.get("personName").toString());
+        /**
+         * 法定代表人身份证号|负责人身份证号
+         */
+        //@Column(name = "person_id")
+        discreditBlacklist.setPersonId(map.get("personId")==null?"":map.get("personId").toString());
+        /**
+         * 失信类型
+         */
+        //@Column(name = "discredit_type")
+        discreditBlacklist.setDiscreditType(map.get("discreditType")==null?"":map.get("discreditType").toString());
+        /**
+         * 失信行为
+         */
+        //@Column(name = "discredit_action")
+        discreditBlacklist.setDiscreditAction(map.get("discreditAction")==null?"":map.get("discreditAction").toString());
+        /**
+         * 列入原因
+         */
+        //@Column(name = "punish_reason")
+        discreditBlacklist.setPunishReason(map.get("punishReason")==null?"":map.get("punishReason").toString());
+        /**
+         * 处罚结果
+         */
+        //@Column(name = "punish_result")
+        discreditBlacklist.setPunishResult(map.get("punishResult")==null?"":map.get("punishResult").toString());
+        /**
+         * 执行文号
+         */
+        //@Column(name = "judge_no")
+        discreditBlacklist.setJudgeNo(map.get("judgeNo")==null?"":map.get("judgeNo").toString());
+        /**
+         * 执行时间
+         */
+        //@Column(name = "judge_date")
+        discreditBlacklist.setJudgeDate(map.get("judgeDate")==null?"":map.get("judgeDate").toString());
+        /**
+         * 判决机关
+         */
+        //@Column(name = "judge_auth")
+        discreditBlacklist.setJudgeAuth(map.get("judgeAuth")==null?"":map.get("judgeAuth").toString());
+        /**
+         * 发布日期
+         */
+        //@Column(name = "publish_date")
+        discreditBlacklist.setPublishDate(map.get("publishDate")==null?"":map.get("publishDate").toString());
+        /**
+         * 当前状态
+         */
+        discreditBlacklist.setStatus(map.get("status")==null?"":map.get("status").toString());
+        /**
+         * 唯一性标识(同一数据来源的同一主题内唯一)
+         */
+        discreditBlacklist.setUniqueKey(
+                discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()
+        );
+        isFlag = saveDisneycreditBlackListOne(discreditBlacklist,false);
+
+        return isFlag;
+    }
+
+    /**
+     * 入库行政处罚
+     * @param map
+     * @return
+     */
+    public boolean adminPunishInsert(Map<String,String> map){
+        boolean isFlag = true;
+        AdminPunish adminPunish = new AdminPunish();
+        //created_at	本条记录创建时间
+        adminPunish.setCreatedAt(new Date());
+        //updated_at	本条记录最后更新时间
+        adminPunish.setUpdatedAt(new Date());
+        //source	数据来源
+        adminPunish.setSource(map.get("source"));
+        //subject	主题
+        adminPunish.setSubject(map.get("subject"));
+        //url	url
+        adminPunish.setUrl(map.get("sourceUrl")==null?"":map.get("sourceUrl"));
+        //object_type	主体类型: 01-企业 02-个人
+        adminPunish.setObjectType("01");
+        //enterprise_name	企业名称
+        adminPunish.setEnterpriseName(map.get("enterpriseName")==null?"": map.get("enterpriseName"));
+        //enterprise_code1	统一社会信用代码--cfXdrShxym
+        adminPunish.setEnterpriseCode1(map.get("enterpriseCode1")==null?"":map.get("enterpriseCode1"));
+        //enterprise_code2	营业执照注册号
+        adminPunish.setEnterpriseCode2(map.get("enterpriseCode2")==null?"":map.get("enterpriseCode2"));
+        //enterprise_code3	组织机构代码
+        adminPunish.setEnterpriseCode3(map.get("enterpriseCode3")==null?"":map.get("enterpriseCode3"));
+        //enterprise_code4	纳税人识别号
+        adminPunish.setEnterpriseCode3(map.get("enterpriseCode4")==null?"":map.get("enterpriseCode4"));
+        //person_name	法定代表人/负责人姓名|负责人姓名
+        adminPunish.setPersonName(map.get("personName")==null?"":map.get("personName"));
+        //person_id	法定代表人身份证号|负责人身份证号
+        adminPunish.setPersonId(map.get("personId")==null?"":map.get("personId"));
+        //punish_type	处罚类型
+        adminPunish.setPunishType(map.get("punishType")==null?"":map.get("punishType"));
+        //punish_reason	处罚事由
+        adminPunish.setPunishReason(map.get("punishReason")==null?"":map.get("punishReason"));
+        //punish_according	处罚依据
+        adminPunish.setPunishAccording(map.get("punishAccording")==null?"":map.get("punishAccording"));
+        //punish_result	处罚结果
+        adminPunish.setPunishResult(map.get("punishResult")==null?"":map.get("punishResult"));
+        //judge_no	执行文号
+        adminPunish.setJudgeNo(map.get("judgeNo")==null?"":map.get("judgeNo"));
+        //judge_date	执行时间
+        adminPunish.setJudgeDate(map.get("judgeDate")==null?"":map.get("judgeDate"));
+        //judge_auth	判决机关
+        adminPunish.setJudgeAuth(map.get("judgeAuth")==null?"":map.get("judgeAuth"));
+        //publish_date	发布日期
+        adminPunish.setPublishDate(map.get("publishDate")==null?"":map.get("publishDate"));
+
+        isFlag = saveAdminPunishOne(adminPunish,false);
+        return isFlag;
     }
 
 }

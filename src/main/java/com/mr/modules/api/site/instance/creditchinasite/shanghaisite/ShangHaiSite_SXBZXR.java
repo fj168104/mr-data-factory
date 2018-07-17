@@ -123,61 +123,16 @@ public class ShangHaiSite_SXBZXR   extends SiteTaskExtend_CreditChina {
             Map map = new HashMap();
             Elements elementsTd = elementTr.getElementsByTag("td");
             if(elementsTd.size()==3){
-
                 map.put("sourceUrl",url+"&keywords="+elementsTd.get(0).text());//资源地址
-                map.put("commpanyName",elementsTd.get(0).text());//企业名称
-                map.put("nnifiedSocialCreditCode",elementsTd.get(1).text());//企业社会统一代码
+                map.put("source","信用中国（上海）");
+                map.put("subject","失信被执行人查询");
+                map.put("objectType","01");
+                map.put("enterpriseName",elementsTd.get(0).text());//企业名称
+                map.put("enterpriseCode1",elementsTd.get(1).text());//企业社会统一代码
                 map.put("judgeNo",elementsTd.get(2).text());//案号
-                discreditBlacklistInsert(map);
+                insertDiscreditBlacklist(map);
 
             }
         }
-    }
-    public DiscreditBlacklist discreditBlacklistInsert(Map<String,String> map){
-        DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
-        //created_at	本条记录创建时间
-        discreditBlacklist.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        discreditBlacklist.setUpdatedAt(new Date());
-        //source	数据来源
-        discreditBlacklist.setSource("信用中国（上海）");
-        //subject	主题
-        discreditBlacklist.setSubject("失信被执行人查询");
-        //url	url
-        discreditBlacklist.setUrl(map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        discreditBlacklist.setObjectType("01");
-        //enterprise_name	企业名称
-        discreditBlacklist.setEnterpriseName(map.get("commpanyName"));
-        //enterprise_code1	统一社会信用代码
-        discreditBlacklist.setEnterpriseCode1(map.get("nnifiedSocialCreditCode"));
-        //enterprise_code2	营业执照注册号
-        discreditBlacklist.setEnterpriseCode2("");
-        //enterprise_code3	组织机构代码
-        discreditBlacklist.setEnterpriseCode3("");
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        discreditBlacklist.setPersonName("");
-        //person_id	法定代表人身份证号|负责人身份证号
-        discreditBlacklist.setPersonId("");
-        //discredit_type	失信类型
-        discreditBlacklist.setDiscreditType("");
-        //discredit_action	失信行为
-        discreditBlacklist.setDiscreditAction("");
-        //punish_reason	列入原因
-        discreditBlacklist.setPunishReason("");
-        //punish_result	处罚结果
-        discreditBlacklist.setPunishResult("");
-        //judge_no	执行文号
-        discreditBlacklist.setJudgeNo(map.get("judgeNo"));
-        //judge_date	执行时间
-        discreditBlacklist.setJudgeDate("");
-        //judge_auth	判决机关
-        discreditBlacklist.setJudgeAuth("");
-        //publish_date	发布日期
-        discreditBlacklist.setPublishDate("");
-        //status	当前状态
-        discreditBlacklist.setStatus("");
-        saveDisneycreditBlackListOne(discreditBlacklist,false);
-        return discreditBlacklist;
     }
 }

@@ -51,7 +51,7 @@ public class CreditChinaAnHui_ZDSSWFAJ_GS extends SiteTaskExtend_CreditChina{
             int pageSize = Integer.valueOf(allPage.ownText());
             if(pageSize>=1){
                 for(int i = 1;i<pageSize;i++){
-                    String urlResult = url+"index"+i+".htm";
+                    String urlResult = url+"index_"+i+".htm";
                     HtmlPage htmlPage1 = webClient.getPage(urlResult);
                     Document document = Jsoup.parse(htmlPage1.asXml());
                     Element element = document.getElementsByClass("bordered").get(0);

@@ -31,7 +31,7 @@ import java.util.Map;
 public class CreditChinaAnHui_SGKJSQQYHJXYPJPJHBJS extends SiteTaskExtend_CreditChina{
     @Override
     protected String execute() throws Throwable {
-        WebContext();
+        webContext();
         return null;
     }
 
@@ -43,7 +43,7 @@ public class CreditChinaAnHui_SGKJSQQYHJXYPJPJHBJS extends SiteTaskExtend_Credit
     String url = "http://www.creditah.gov.cn/remote/1525/";
     String baseUrl = "http://www.creditah.gov.cn";
 
-    public void WebContext() throws Throwable{
+    public void webContext() throws Throwable{
         String ip="",  port="";
         WebClient webClient = createWebClient(ip,port);
         try {
@@ -56,31 +56,35 @@ public class CreditChinaAnHui_SGKJSQQYHJXYPJPJHBJS extends SiteTaskExtend_Credit
                     String urlResult = url+"index_"+i+".htm";
                     HtmlPage htmlPage1 = webClient.getPage(urlResult);
                     Document document = Jsoup.parse(htmlPage1.asXml());
-                    Element element = document.getElementsByClass("bordered").get(0);
-                    Element elementTbody = element.getElementsByTag("tbody").get(0);
-                    Elements elementsTr = elementTbody.getElementsByTag("tr");
-                    for(Element elementTR:elementsTr){
-                        Elements elementsTd = elementTR.getElementsByTag("td");
-                        if(elementsTd.size()==3){
-                            String detailUrl = baseUrl+elementsTd.get(0).getElementsByTag("div").get(0).getElementsByTag("a").get(0).attr("href");
-                            Map map = new HashMap<>();
-                            map.put("enterpriseCode1",elementsTd.get(0).text());
-                            if(elementsTd.get(1).text().trim().length()<6){
-                                map.put("objectType","02");
-                                map.put("personName",elementsTd.get(1).text());
-                                map.put("enterpriseName","");
-                            }else{
-                                map.put("objectType","01");
-                                map.put("personName","");
-                                map.put("enterpriseName",elementsTd.get(1).text());
+                    Elements elements = document.getElementsByClass("bordered");
+                    if(elements.size()>0){
+                        Element element = elements.get(0);
+                        Element elementTbody = element.getElementsByTag("tbody").get(0);
+                        Elements elementsTr = elementTbody.getElementsByTag("tr");
+                        for(Element elementTR:elementsTr){
+                            Elements elementsTd = elementTR.getElementsByTag("td");
+                            if(elementsTd.size()==3){
+                                String detailUrl = baseUrl+elementsTd.get(0).getElementsByTag("div").get(0).getElementsByTag("a").get(0).attr("href");
+                                Map map = new HashMap<>();
+                                map.put("enterpriseCode1",elementsTd.get(0).text());
+                                if(elementsTd.get(1).text().trim().length()<6){
+                                    map.put("objectType","02");
+                                    map.put("personName",elementsTd.get(1).text());
+                                    map.put("enterpriseName","");
+                                }else{
+                                    map.put("objectType","01");
+                                    map.put("personName","");
+                                    map.put("enterpriseName",elementsTd.get(1).text());
+                                }
+                                map.put("enterpriseCode3",elementsTd.get(2).text());
+                                map.put("sourceUrl",detailUrl);
+                                map.put("source","信用中国（安徽）");
+                                map.put("subject","省国控及涉铅企业环境信用评价评价");
+                                insertDiscreditBlacklist(map);
                             }
-                            map.put("enterpriseCode3",elementsTd.get(2).text());
-                            map.put("sourceUrl",urlResult);
-                            map.put("source","信用中国（安徽）");
-                            map.put("subject","省国控及涉铅企业环境信用评价评价");
-                            insertDiscreditBlacklist(map);
                         }
                     }
+
                 }
             }
         }catch (IOException e){

@@ -45,6 +45,9 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
     @Override
     protected String execute() throws Throwable {
         String keyWord = SiteParams.map.get("keyWord");
+        if(keyWord==null){
+            keyWord="";
+        }
         SiteParams.map.clear();
         extractContext(keyWord);
         return null;

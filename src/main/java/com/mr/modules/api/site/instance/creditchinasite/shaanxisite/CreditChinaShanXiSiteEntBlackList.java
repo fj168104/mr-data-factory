@@ -57,6 +57,9 @@ public class CreditChinaShanXiSiteEntBlackList extends SiteTaskExtend_CreditChin
     @Override
     protected String execute() throws Throwable {
         keyWord = SiteParams.map.get("keyWord");
+        if(keyWord==null){
+            keyWord = "";
+        }
         SiteParams.map.clear();
         log.info("************************keyWord*********************"+keyWord);
         rusult(keyWord);

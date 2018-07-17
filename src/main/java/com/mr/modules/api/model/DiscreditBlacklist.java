@@ -35,6 +35,12 @@ public class DiscreditBlacklist extends BaseEntity {
     private String subject;
 
     /**
+     * 唯一性标识(同一数据来源的同一主题内唯一)
+     */
+    private String uniqueKey="";
+
+
+    /**
      * url
      */
     private String url;
@@ -223,6 +229,14 @@ public class DiscreditBlacklist extends BaseEntity {
      */
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getUniqueKey() {
+        return uniqueKey;
+    }
+
+    public void setUniqueKey(String uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 
     /**

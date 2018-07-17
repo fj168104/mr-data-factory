@@ -19,13 +19,16 @@ public interface AdminPunishMapper extends BaseMapper<AdminPunish> {
 	/**
 	 * 判断记录此url地址是否已经存在
 	 * 
-	 * @param url
+	 * @param url 网站
 	 * @param enterpriseName
 	 *            企业名称
 	 * @param personName
 	 *            代表人名称
 	 * @param judgeNo
 	 *            文号
+	 * @param judgeAuth
+	 *            处罚机构
+	 *
 	 * @return
 	 */
 	List<AdminPunish> selectByUrl(@Param("url") String url, @Param("enterpriseName") String enterpriseName, @Param("personName") String personName, @Param("judgeNo") String judgeNo, @Param("judgeAuth") String judgeAuth);

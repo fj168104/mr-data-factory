@@ -10,6 +10,7 @@
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
     <result column="source" property="source" jdbcType="VARCHAR" />
     <result column="subject" property="subject" jdbcType="VARCHAR" />
+    <result column="unique_key" property="uniqueKey" jdbcType="VARCHAR" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="object_type" property="objectType" jdbcType="VARCHAR" />
     <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR" />

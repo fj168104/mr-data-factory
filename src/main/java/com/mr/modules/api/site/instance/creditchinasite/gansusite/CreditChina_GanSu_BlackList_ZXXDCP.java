@@ -174,6 +174,12 @@ public class CreditChina_GanSu_BlackList_ZXXDCP extends SiteTaskExtend_CreditChi
          * 当前状态
          */
         discreditBlacklist.setStatus(map.get("status")==null?"":map.get("status").toString());
+        /**
+         * 唯一性标识(同一数据来源的同一主题内唯一)
+         */
+        discreditBlacklist.setUniqueKey(
+                discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()
+        );
         saveDisneycreditBlackListOne(discreditBlacklist,false);
 
         return null;

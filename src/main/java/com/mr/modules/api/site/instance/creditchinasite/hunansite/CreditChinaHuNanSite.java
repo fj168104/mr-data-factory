@@ -168,16 +168,17 @@ public class CreditChinaHuNanSite extends SiteTaskExtend_CreditChina{
             Map map = new HashMap();
             List<HtmlElement> htmlElementTds = htmlElementTrs.get(i).getElementsByTagName("td");
             if(htmlElementTds.size()==2){
+                map.put("source","信用中国（湖南）");
                 log.info(" 0企业名称:"+htmlElementTds.get(0).asText()+"------0数据最后更新时间:"+htmlElementTds.get(1).asText());
                 map.put("subject",subject);
                 map.put("sourceUrl",urlResult);
                 if(htmlElementTds.get(0).asText().trim().length()<6) {
                     map.put("objectType", "02");
-                    map.put("commpanyName", "");
+                    map.put("enterpriseName", "");
                     map.put("personName", htmlElementTds.get(0).asText());
                 }else{
                     map.put("objectType", "01");
-                    map.put("commpanyName", htmlElementTds.get(0).asText());
+                    map.put("enterpriseName", htmlElementTds.get(0).asText());
                     map.put("personName","");
                 }
                 map.put("publishDate",htmlElementTds.get(1).asText());
@@ -213,16 +214,17 @@ public class CreditChinaHuNanSite extends SiteTaskExtend_CreditChina{
                         Map map = new HashMap();
                         List<HtmlElement> htmlElementTds = htmlElementTrs1.get(j).getElementsByTagName("td");
                         if(htmlElementTds.size()==3){
+                            map.put("source","信用中国（湖南）");
                             log.info("1企业名称:"+htmlElementTds.get(0).asText()+"------1数据最后更新时间:"+htmlElementTds.get(1).asText());
                             map.put("subject",subject);
                             map.put("sourceUrl",urlResult);
                             if(htmlElementTds.get(0).asText().trim().length()<6) {
                                 map.put("objectType", "02");
-                                map.put("commpanyName", "");
+                                map.put("enterpriseName", "");
                                 map.put("personName", htmlElementTds.get(0).asText());
                             }else{
                                 map.put("objectType", "01");
-                                map.put("commpanyName", htmlElementTds.get(0).asText());
+                                map.put("enterpriseName", htmlElementTds.get(0).asText());
                                 map.put("personName","");
                             }
                             map.put("publishDate",htmlElementTds.get(1).asText());

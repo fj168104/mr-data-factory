@@ -22,17 +22,24 @@ import java.util.Map;
  */
 
 @Slf4j
-@ConfigurationProperties(prefix = "proxydatabase") //接收application.yml中的proxydatabase下面的属性
+//@ConfigurationProperties(prefix = "proxydatabase") //接收application.yml中的proxydatabase下面的属性
 @Component
 public class ProxyIPDatabaseConnectionParam{
+    @Value("${proxydatabase.dbdriver}")
     private  String dbdriver;    //数据库驱动
+    @Value("${proxydatabase.dburl}")
     private  String dburl;    //操作的数据库地址，端口及库名
+    @Value("${proxydatabase.dbuser}")
     private  String dbuser;                       //数据库用户名
+    @Value("${proxydatabase.dbpassword}")
     private  String dbpassword;
-   /* @RequestMapping("/007")
-    public String test(){
-        return  dbdriver;
-    }*/
+
+    public ProxyIPDatabaseConnectionParam(){
+        this.dbdriver = dbdriver;
+        this.dburl = dburl;
+        this.dbuser = dbuser;
+        this.dbpassword = dbpassword;
+    }
 
     public String getDbdriver() {
         return dbdriver;

@@ -187,90 +187,20 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
             //来源地址String sourceUrl = url;
             personObjectMap.put("sourceUrl",sourceUrl);
             // 日期String dateString = "";
-            personObjectMap.put("dateString",dateString);
-            personObjectMap.put("commpanyName",commpanyName);
+            personObjectMap.put("judgeDate",dateString);
+            personObjectMap.put("publishDate",dateString);
+            personObjectMap.put("enterpriseName",commpanyName);
             personObjectMap.put("administrativeArea",administrativeArea);
-            personObjectMap.put("punishGress",punishGress);
+            personObjectMap.put("punishResult",punishGress);
             personObjectMap.put("rectifyAndReform",rectifyAndReform);
             personObjectMap.put("subject",subject);
             personObjectMap.put("punishType",punishType);
-
+            personObjectMap.put("punishReason","污染物排放严重超标");
+            personObjectMap.put("judgeAuth","生态环境部");
             listPersonObjectMap.add(personObjectMap);
-            /*log.info(
-                    "\n来源："+personObjectMap.get("source") +
-                            "\n来源地址："+personObjectMap.get("sourceUrl") +
-                            "\n日期："+personObjectMap.get("dateString")+
-                            "\n企业名称："+personObjectMap.get("commpanyName")+
-                            "\n行政区划："+personObjectMap.get("administrativeArea")+
-                            "\n处罚情况："+personObjectMap.get("punishGress")+
-                            "\n整改情况："+personObjectMap.get("rectifyAndReform")
-            );*/
-
         }
-
-
         for(Map<String,String> map : listPersonObjectMap){
-            log.info(
-                    "\n来源："+map.get("source") +
-                            "\n来源地址："+map.get("sourceUrl") +
-                            "\n日期："+map.get("dateString")+
-                            "\n企业名称："+map.get("commpanyName")+
-                            "\n行政区划："+map.get("administrativeArea")+
-                            "\n处罚情况："+map.get("punishGress")+
-                            "\n整改情况："+map.get("rectifyAndReform")
-            );
             adminPunishInsert(map);
-
         }
-
-
-
     }
-    public AdminPunish adminPunishInsert(Map<String,String> map){
-        AdminPunish adminPunish = new AdminPunish();
-        //created_at	本条记录创建时间
-        adminPunish.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        adminPunish.setUpdatedAt(new Date());
-        //source	数据来源
-        adminPunish.setSource(map.get("source"));
-        //subject	主题
-        adminPunish.setSubject(map.get("subject"));
-        //url	url
-        adminPunish.setUrl(map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        adminPunish.setObjectType("01");
-        //enterprise_name	企业名称
-        adminPunish.setEnterpriseName(map.get("commpanyName"));
-        //enterprise_code1	统一社会信用代码
-        adminPunish.setEnterpriseCode1("");
-        //enterprise_code2	营业执照注册号
-        adminPunish.setEnterpriseCode2("");
-        //enterprise_code3	组织机构代码
-        adminPunish.setEnterpriseCode3(map.get(""));
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        adminPunish.setPersonName("");
-        //person_id	法定代表人身份证号|负责人身份证号
-        adminPunish.setPersonId(map.get(""));
-        //punish_type	处罚类型
-        adminPunish.setPunishType(map.get("punishType"));
-        //punish_reason	处罚事由
-        adminPunish.setPunishReason(map.get("污染物排放严重超标"));
-        //punish_according	处罚依据
-        adminPunish.setPunishAccording("");
-        //punish_result	处罚结果
-        adminPunish.setPunishResult(map.get("punishGress"));
-        //judge_no	执行文号
-        adminPunish.setJudgeNo("");
-        //judge_date	执行时间
-        adminPunish.setJudgeDate(map.get("dateString"));
-        //judge_auth	判决机关
-        adminPunish.setJudgeAuth("生态环境部");
-        //publish_date	发布日期
-        adminPunish.setPublishDate(map.get("dateString"));
-
-        saveAdminPunishOne(adminPunish,false);
-        return adminPunish;
-    }
-
 }

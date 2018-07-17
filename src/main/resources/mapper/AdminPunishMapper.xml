@@ -10,12 +10,14 @@
     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
     <result column="source" property="source" jdbcType="VARCHAR" />
     <result column="subject" property="subject" jdbcType="VARCHAR" />
+    <result column="unique_key" property="uniqueKey" jdbcType="VARCHAR" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="object_type" property="objectType" jdbcType="VARCHAR" />
     <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR" />
     <result column="enterprise_code1" property="enterpriseCode1" jdbcType="VARCHAR" />
     <result column="enterprise_code2" property="enterpriseCode2" jdbcType="VARCHAR" />
     <result column="enterprise_code3" property="enterpriseCode3" jdbcType="VARCHAR" />
+    <result column="enterprise_code4" property="enterpriseCode4" jdbcType="VARCHAR" />
     <result column="person_name" property="personName" jdbcType="VARCHAR" />
     <result column="person_id" property="personId" jdbcType="VARCHAR" />
     <result column="punish_type" property="punishType" jdbcType="VARCHAR" />
@@ -58,5 +60,15 @@
     </if>
      LIMIT 0, 1
   </select>
-
+  
+  <!-- 通过判决书编号+企业名称(或个人名称)获得记录数 -->
+ <select id="selectCountByJudgeNoAndName" parameterType="java.lang.String" resultType="Integer">
+  	select count(1) from admin_punish where judge_no=#{judgeNo}
+  	<if test="objectType !=null and objectType == '01'">
+  		and enterprise_name=#{name}
+  	</if>
+  	<if test="objectType !=null and objectType == '02'">
+  		and person_name=#{name}
+  	</if>
+  </select>
 </mapper>

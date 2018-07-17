@@ -153,19 +153,18 @@ public class ShangHaiSite_XZCF extends SiteTaskExtend_CreditChina {
                     detailMap = (Map)strJson;
                     String sourceUrl = "http://cxw.shcredit.gov.cn:8081/sh_xyxxzc/cflist/newSgsCFSearchgrid.action?search=false&nd=&rows=10&page=1&sidx=&sord=asc&xzxdr="+detailMap.get("xzxdr");
                     detailMap.put("sourceUrl",sourceUrl);
-
+                    detailMap.put("source","信用中国（上海）");
+                    detailMap.put("subject","行政处罚");
+                    detailMap.put("enterpriseName",detailMap.remove("xzxdr"));
+                    detailMap.put("punishType",detailMap.remove("cflb"));
+                    detailMap.put("punishReason",detailMap.remove("cfsy"));
+                    detailMap.put("punishAccording",detailMap.remove("cfyj"));
+                    detailMap.put("judgeNo",detailMap.remove("cfwsh"));
+                    detailMap.put("judgeDate",detailMap.remove("cfjdrq"));
+                    detailMap.put("judgeAuth",detailMap.get("cfjguan"));
+                    //publish_date	发布日期
+                    detailMap.put("publishDate",detailMap.remove("cfjdrq"));
                 }
-                /*
-                处罚文书号 2011706255
-
-                处罚名称 韩清亮占道设摊一案
-                处罚类别 罚款
-                处罚事由 占道设摊
-                处罚依据 《上海市市容环境卫生管理条例》第二十五条第二款
-                行政相对人 韩清亮
-                处罚决定日期 2017/12/20
-                处罚机关 上海市静安区城市管理行政执法局
-                */
             }else{
                 return null;
             }
@@ -205,52 +204,6 @@ public class ShangHaiSite_XZCF extends SiteTaskExtend_CreditChina {
             punishDetail = pubPenaltyDetail(cfidList.get(i),createWebClient("",""));
             adminPunishInsert(punishDetail);
         }
-    }
-    public AdminPunish adminPunishInsert(Map<String,String> map){
-        AdminPunish adminPunish = new AdminPunish();
-        //created_at	本条记录创建时间
-        adminPunish.setCreatedAt(new Date());
-        //updated_at	本条记录最后更新时间
-        adminPunish.setUpdatedAt(new Date());
-        //source	数据来源
-        adminPunish.setSource("信用中国（上海）");
-        //subject	主题
-        adminPunish.setSubject("行政处罚");
-        //url	url
-        adminPunish.setUrl(map.get("sourceUrl"));
-        //object_type	主体类型: 01-企业 02-个人
-        adminPunish.setObjectType(map.get("xzxdr").toString().trim().length()<6?"02":"01");
-        //enterprise_name	企业名称
-        adminPunish.setEnterpriseName(map.get("xzxdr").trim().length()<6?"":map.get("xzxdr"));
-        //enterprise_code1	统一社会信用代码--cfXdrShxym
-        adminPunish.setEnterpriseCode1("");
-        //enterprise_code2	营业执照注册号
-        adminPunish.setEnterpriseCode2("");
-        //enterprise_code3	组织机构代码
-        adminPunish.setEnterpriseCode3("");
-        //person_name	法定代表人/负责人姓名|负责人姓名
-        adminPunish.setPersonName(map.get("xzxdr").toString().trim().length()<6?map.get("xzxdr"):"");
-        //person_id	法定代表人身份证号|负责人身份证号
-        adminPunish.setPersonId(map.get(""));
-        //punish_type	处罚类型
-        adminPunish.setPunishType(map.get("cflb"));
-        //punish_reason	处罚事由
-        adminPunish.setPunishReason(map.get("cfsy"));
-        //punish_according	处罚依据
-        adminPunish.setPunishAccording(map.get("cfyj"));
-        //punish_result	处罚结果
-        adminPunish.setPunishResult("");
-        //judge_no	执行文号
-        adminPunish.setJudgeNo(map.get("cfwsh"));
-        //judge_date	执行时间
-        adminPunish.setJudgeDate(map.get("cfjdrq"));
-        //judge_auth	判决机关
-        adminPunish.setJudgeAuth(map.get("cfjguan"));
-        //publish_date	发布日期
-        adminPunish.setPublishDate(map.get("cfjdrq"));
-
-        saveAdminPunishOne(adminPunish,false);
-        return adminPunish;
     }
 
 }

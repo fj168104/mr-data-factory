@@ -4,9 +4,7 @@ import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.proxy.IPModel.DatabaseMessage;
 import com.mr.proxy.IPModel.IPMessage;
 import com.mr.proxy.database.DataBaseBusinessOperation;
-import com.mr.proxy.htmlparse.URLFecter;
 import com.mr.proxy.httpbrowser.HtmlUnit66IPResponse;
-import com.mr.proxy.ipfilter.IPFilter;
 import com.mr.proxy.ipfilter.IPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,8 @@ import java.util.List;
 @Component("crawler_proxy_ip")
 public class MyTask_Crawler_IP_Proxy extends SiteTaskExtend{
     IPUtils ipUtils = new IPUtils();
-    DataBaseBusinessOperation dataBaseBusinessOperation = new DataBaseBusinessOperation();
+    @Autowired
+    DataBaseBusinessOperation dataBaseBusinessOperation;
     @Override
     protected String execute() throws Throwable {
 

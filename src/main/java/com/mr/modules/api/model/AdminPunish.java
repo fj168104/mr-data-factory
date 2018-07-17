@@ -33,6 +33,11 @@ public class AdminPunish extends BaseEntity {
     private String subject;
 
     /**
+     * 唯一性标识(同一数据来源的同一主题内唯一)
+     */
+    private String uniqueKey="";
+
+    /**
      * url
      */
     private String url;
@@ -66,6 +71,11 @@ public class AdminPunish extends BaseEntity {
      */
     //@Column(name = "enterprise_code3")
     private String enterpriseCode3;
+    
+    /**
+     * 税务登记号
+     */
+    private String enterpriseCode4;
 
     /**
      * 法定代表人/负责人姓名|负责人姓名
@@ -211,6 +221,14 @@ public class AdminPunish extends BaseEntity {
      */
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getUniqueKey() {
+        return uniqueKey;
+    }
+
+    public void setUniqueKey(String uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 
     /**
@@ -500,4 +518,12 @@ public class AdminPunish extends BaseEntity {
     public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
+
+	public String getEnterpriseCode4() {
+		return enterpriseCode4;
+	}
+
+	public void setEnterpriseCode4(String enterpriseCode4) {
+		this.enterpriseCode4 = enterpriseCode4;
+	}
 }

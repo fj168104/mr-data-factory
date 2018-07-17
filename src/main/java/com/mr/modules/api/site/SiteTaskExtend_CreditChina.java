@@ -448,9 +448,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         /**
          * 唯一性标识(同一数据来源的同一主题内唯一)
          */
-        discreditBlacklist.setUniqueKey(
-                discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()
-        );
+        discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth());
         isFlag = saveDisneycreditBlackListOne(discreditBlacklist,false);
 
         return isFlag;
@@ -506,7 +504,10 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         adminPunish.setJudgeAuth(map.get("judgeAuth")==null?"":map.get("judgeAuth"));
         //publish_date	发布日期
         adminPunish.setPublishDate(map.get("publishDate")==null?"":map.get("publishDate"));
-
+        /**
+         * 唯一性标识(同一数据来源的同一主题内唯一)
+         */
+        adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
         isFlag = saveAdminPunishOne(adminPunish,false);
         return isFlag;
     }

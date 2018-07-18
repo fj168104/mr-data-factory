@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94092 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94092.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -99,7 +96,7 @@ public class Gansu_94092 extends SiteTaskExtend_CreditChina {
 						"（2）将上述单位及其法定代表人的失信行为，作为不良记录推送到人民银行征信系统、工商信用系统以及发改、财政、税务、国土、房产、海关等部门，联合实施信用惩戒。包括限制其在金融机构贷款和办理信用卡，限制其开办新公司和投资入股，限制参与政府采购、招标投标，限制行政审批、政府扶持、市场准入、资质认证等。" +
 						"（3）对违反禁令高消费、有能力履行而拒不履行生效裁判的失信被执行人，人民法院将依法对单位处以100万元以下、对个人10万元以下罚款，对法定代表人和实际控制人采取司法拘留强制措施。情节严重构成犯罪的，根据《刑法》第三百一十三条和全国人大关于追究拒不执行法院判决罪立法解释的规定，严肃追究刑事责任。";
 				discreditBlacklist.setPunishResult(punishResult);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -119,7 +116,7 @@ public class Gansu_94092 extends SiteTaskExtend_CreditChina {
 							"（3）根据违法事实和情节，触犯刑法的一律移送司法机关。兰州高科石油化工有限公司、兰州陕西宝粤物资有限公司、酒泉祁茂农资批发中心的违法事实已移送公安机关。" +
 							"（4）不受理纳入黑榜名单的企业及其经营管理人员任何评先选优等表彰申请。";
 					dcbl.setPunishResult(punishResult);
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -145,7 +142,7 @@ public class Gansu_94092 extends SiteTaskExtend_CreditChina {
 							"（3）纳税人、扣缴义务人编造虚假计税依据的，由税务机关责令限期改正，并处五万元以下的罚款。" +
 							"（4）纳税人不进行纳税申报，不缴或者少缴应纳税款的，由税务机关追缴其不缴或者少缴的税款、滞纳金，并处不缴或者少缴的税款百分之五十以上五倍以下的罚款。";
 					dcbl.setPunishResult(punishResult);
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -171,7 +168,7 @@ public class Gansu_94092 extends SiteTaskExtend_CreditChina {
 							"（3）从纳税人滞纳税款之日起，依法按日加收滞纳税款万分之五的滞纳金。" +
 							"（4）继续加大黑榜纳税人信息曝光力度，对黑榜纳税人日常经营活动重点监控，进一步完善奖励诚信、约束失信的制度体系。";
 					dcbl.setPunishResult(punishResult);
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 

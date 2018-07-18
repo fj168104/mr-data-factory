@@ -25,11 +25,8 @@ import java.util.Map;
 @Slf4j
 @Component("shanxi_xzcf")
 @Scope("prototype")
-public class Shanxi_xzcf extends SiteTaskExtend {
+public class Shanxi_xzcf extends SiteTaskExtend_CreditChina {
 	String url = "http://www.creditsx.gov.cn/xzcfList.jspx";
-
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -139,7 +136,7 @@ public class Shanxi_xzcf extends SiteTaskExtend {
 					}
 				}
 				try{
-					adminPunishMapper.insert(adminPunish);
+					saveAdminPunishOne(adminPunish, false);
 				}catch (Exception e){
 					writeBizErrorLog(infoUrl, e.getMessage());
 				}

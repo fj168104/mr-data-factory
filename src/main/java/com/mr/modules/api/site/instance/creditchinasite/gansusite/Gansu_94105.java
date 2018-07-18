@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94105 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94105.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -106,7 +103,7 @@ public class Gansu_94105 extends SiteTaskExtend_CreditChina {
 						"（2）对企业的失信行为在征信系统记录，并通过媒体公布不履行义务信息；" +
 						"（3）对华亭县安源实业有限责任公司法定代表人采取拘留措施，并申请公安机关协助布控;对平凉崆峒水泥有限责任公司、平凉华陇宾馆有限责任公司法定代表人限制出境、限制高消费、纳入人民银行征信系统。";
 				discreditBlacklist.setPunishResult(punishResult);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -122,7 +119,7 @@ public class Gansu_94105 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("事由：")) {
 					dcbl.setPunishReason(text.replace("事由：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 				dcbl = createDefaultDiscreditBlacklist();
@@ -155,7 +152,7 @@ public class Gansu_94105 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩戒措施：")) {
 					dcbl.setPunishResult(text.replace("惩戒措施：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -185,7 +182,7 @@ public class Gansu_94105 extends SiteTaskExtend_CreditChina {
 						"（2）通过企业信用信息公示系统向社会公示；" +
 						"（3）自吊销《营业执照》之日起，法定代表人三年内不得担任其他企业的法定代表人。";
 				discreditBlacklist.setPunishResult(punishResult);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -205,7 +202,7 @@ public class Gansu_94105 extends SiteTaskExtend_CreditChina {
 				}
 				if (text.contains("惩戒措施：")) {
 					dcbl.setPunishResult(text.replace("惩戒措施：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 

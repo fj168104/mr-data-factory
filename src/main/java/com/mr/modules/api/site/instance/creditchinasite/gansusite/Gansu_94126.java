@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94126 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94126.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -103,7 +100,7 @@ public class Gansu_94126 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setObjectType("01");
 					discreditBlacklist.setEnterpriseName(text);
 					discreditBlacklist.setPunishResult(punishResult);
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}
 				if(objectType.equals("02")){
@@ -113,7 +110,7 @@ public class Gansu_94126 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPersonName(text.substring(0, text.indexOf("：")));
 					discreditBlacklist.setPersonId(text.substring(text.indexOf("：") + 1));
 					discreditBlacklist.setPunishResult(punishResult);
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}
 
@@ -138,7 +135,7 @@ public class Gansu_94126 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setObjectType("02");
 					discreditBlacklist.setPersonName(text.substring(0 , text.indexOf("（")));
 					discreditBlacklist.setPunishResult(punishResult);
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}else {
 					DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
@@ -146,7 +143,7 @@ public class Gansu_94126 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setObjectType("01");
 					discreditBlacklist.setEnterpriseName(text);
 					discreditBlacklist.setPunishResult(punishResult);
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}
 			}

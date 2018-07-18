@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94099 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94099.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -98,7 +95,7 @@ public class Gansu_94099 extends SiteTaskExtend_CreditChina {
 				DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setEnterpriseName(text.substring(text.indexOf("、") + 1));
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -114,7 +111,7 @@ public class Gansu_94099 extends SiteTaskExtend_CreditChina {
 				DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setEnterpriseName(text.substring(text.indexOf("、") + 1));
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -130,7 +127,7 @@ public class Gansu_94099 extends SiteTaskExtend_CreditChina {
 				DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setEnterpriseName(text.substring(text.indexOf("、") + 1));
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -152,7 +149,7 @@ public class Gansu_94099 extends SiteTaskExtend_CreditChina {
 				}else {
 					discreditBlacklist.setEnterpriseName(text.substring(text.indexOf("、") + 1));
 				}
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -168,7 +165,7 @@ public class Gansu_94099 extends SiteTaskExtend_CreditChina {
 				DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setEnterpriseName(text.substring(text.indexOf("、") + 1));
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 		}

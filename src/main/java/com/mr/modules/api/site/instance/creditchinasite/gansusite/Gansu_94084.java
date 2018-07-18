@@ -27,8 +27,6 @@ import java.util.*;
 public class Gansu_94084 extends SiteTaskExtend_CreditChina{
     String url ="http://www.gscredit.gov.cn/blackList/94084.jhtml";
 
-    @Autowired
-    DiscreditBlacklistMapper discreditBlacklistMapper;
     @Override
     protected String executeOne() throws Throwable {
         return super.executeOne();
@@ -110,7 +108,7 @@ public class Gansu_94084 extends SiteTaskExtend_CreditChina{
                         "2.对上述单位及其法定代表人、主要负责人、影响债务履行的直接责任人员、实际控制人的失信行为，作为不良记录推送到人民银行征信系统、工商信用系统以及发改、财政、税务、国土、房产、海关等部门，联合实施信用惩戒。包括限制其在金融机构贷款和办理信用卡，限制其开办新公司和投资入股，限制参与政府采购、招标投标，限制行政审批、政府扶持、市场准入、资质认证等。" +
                         "3.对违反禁令高消费、有能力履行而拒不履行生效裁判的失信被执行人，人民法院将依法对单位处以100万元以下、对个人10万元以下罚款，对法定代表人和实际控制人采取司法拘留强制措施。情节严重构成犯罪的，根据《刑法》第三百一十三条和全国人大关于追究拒不执行法院判决罪立法解释的规定，严肃追究刑事责任。";
                 discreditBlacklist.setPunishResult(punishResult);
-                discreditBlacklistMapper.insert(discreditBlacklist);
+                saveDisneycreditBlackListOne(discreditBlacklist, false);
                 continue;
             }
 
@@ -125,7 +123,7 @@ public class Gansu_94084 extends SiteTaskExtend_CreditChina{
 
                 if(text.contains("原因：")){
                     dcbl.setPunishReason(text.replace("原因：", ""));
-                    discreditBlacklistMapper.insert(dcbl);
+                    saveDisneycreditBlackListOne(dcbl, false);
                     continue;
                 }
                 dcbl = createDefaultDiscreditBlacklist();
@@ -155,7 +153,7 @@ public class Gansu_94084 extends SiteTaskExtend_CreditChina{
 
                 if(text.contains("原因：")){
                     dcbl.setPunishReason(text.replace("原因：", ""));
-                    discreditBlacklistMapper.insert(dcbl);
+                    saveDisneycreditBlackListOne(dcbl, false);
                     continue;
                 }
                 dcbl = createDefaultDiscreditBlacklist();
@@ -185,7 +183,7 @@ public class Gansu_94084 extends SiteTaskExtend_CreditChina{
 
                 if(text.contains("原因：")){
                     dcbl.setPunishReason(text.replace("原因：", ""));
-                    discreditBlacklistMapper.insert(dcbl);
+                    saveDisneycreditBlackListOne(dcbl, false);
                     continue;
                 }
                 dcbl = createDefaultDiscreditBlacklist();
@@ -215,7 +213,7 @@ public class Gansu_94084 extends SiteTaskExtend_CreditChina{
 
                 if(text.contains("原因：")){
                     dcbl.setPunishReason(text.replace("原因：", ""));
-                    discreditBlacklistMapper.insert(dcbl);
+                    saveDisneycreditBlackListOne(dcbl, false);
                     continue;
                 }
                 dcbl = createDefaultDiscreditBlacklist();
@@ -245,7 +243,7 @@ public class Gansu_94084 extends SiteTaskExtend_CreditChina{
 
                 if(text.contains("原因：")){
                     dcbl.setPunishReason(text.replace("原因：", ""));
-                    discreditBlacklistMapper.insert(dcbl);
+                    saveDisneycreditBlackListOne(dcbl, false);
                     log.info(dcbl.toString());
                     continue;
                 }

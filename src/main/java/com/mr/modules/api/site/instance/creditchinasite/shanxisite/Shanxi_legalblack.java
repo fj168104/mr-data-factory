@@ -3,6 +3,7 @@ package com.mr.modules.api.site.instance.creditchinasite.shanxisite;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,11 +25,8 @@ import java.util.Map;
 @Slf4j
 @Component("shanxi_legalblack")
 @Scope("prototype")
-public class Shanxi_legalblack extends SiteTaskExtend {
+public class Shanxi_legalblack extends SiteTaskExtend_CreditChina {
 	String url = "http://www.creditsx.gov.cn/legalblackList.jspx?redBlackType=redBlack";
-
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -142,7 +140,7 @@ public class Shanxi_legalblack extends SiteTaskExtend {
 					}
 				}
 				try {
-					adminPunishMapper.insert(adminPunish);
+					saveAdminPunishOne(adminPunish, false);
 				} catch (Exception e) {
 					writeBizErrorLog(infoUrl, e.getMessage());
 				}

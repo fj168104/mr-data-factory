@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94130.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -103,7 +100,7 @@ public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩戒措施：")) {
 					dcbl.setPunishResult(text.replace("惩戒措施：", "").replaceAll("\\s*", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -128,14 +125,14 @@ public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 					dcbl.setPunishReason(text.replace("原因：", "").replaceAll("\\s*", ""));
 					if (w < 2) {
 						w++;
-						discreditBlacklistMapper.insert(dcbl);
+						saveDisneycreditBlackListOne(dcbl, false);
 					}
 					continue;
 				}
 
 				if (text.contains("惩戒措施：")) {
 					dcbl.setPunishResult(text.replace("惩戒措施：", "").replaceAll("\\s*", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -161,7 +158,7 @@ public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩戒措施：")) {
 					dcbl.setPunishResult(text.replace("惩戒措施：", "").replaceAll("\\s*", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -195,7 +192,7 @@ public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 				dcbl.setEnterpriseName(text);
 				String punishResult = "责令该单位使用的相关特种设备自2015年5月11日起立即停止使用。";
 				dcbl.setPunishResult(punishResult);
-				discreditBlacklistMapper.insert(dcbl);
+				saveDisneycreditBlackListOne(dcbl, false);
 				continue;
 			}
 
@@ -215,7 +212,7 @@ public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩戒措施：")) {
 					dcbl.setPunishResult(text.replace("惩戒措施：", "").replaceAll("\\s*", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 

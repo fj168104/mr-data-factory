@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94096 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94096.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -91,7 +88,7 @@ public class Gansu_94096 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setEnterpriseName(text);
 				String punishResult = "自上述企业被吊销之日起该企业法定代表人三年内不得担任企业法定代表人";
 				discreditBlacklist.setPunishResult(punishResult);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -112,7 +109,7 @@ public class Gansu_94096 extends SiteTaskExtend_CreditChina {
 						"(3)根据违法事实和情节，触犯刑法的一律移送司法机关。" +
 						"(4)不受理纳入黑榜名单的企业及其经营管理人员任何评先选优等表彰申请。";
 				discreditBlacklist.setPunishResult(punishResult);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -135,7 +132,7 @@ public class Gansu_94096 extends SiteTaskExtend_CreditChina {
 						"(2)各级食品药品监督管理部门要加大黑榜企业和单位的监管力度。把列入食品药品黑榜名单的生产经营企业和使用单位作为重点监管对象，通过增加监督检查和抽验频次等方式加强监管。列入食品药品黑榜名单的生产经营者、责任人员，再次发生违法违规行为的，依法从重处罚。" +
 						"(3)充分依靠人民群众，营造食品药品安全社会共治格局。畅通12331食品药品安全投诉举报渠道，落实举报奖励制度，鼓励社会组织或个人对食品药品黑榜企业和单位进行监督，举报列入食品药品黑榜名单的生产经营者和责任人员的违法行为。";
 				discreditBlacklist.setPunishResult(punishResult);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 		}

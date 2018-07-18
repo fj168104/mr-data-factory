@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94101.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -103,7 +100,7 @@ public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩治措施：")) {
 					dcbl.setPunishResult(text.replace("惩治措施：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -130,7 +127,7 @@ public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩治措施：")) {
 					dcbl.setPunishResult(text.replace("惩治措施：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -157,7 +154,7 @@ public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩治措施：")) {
 					dcbl.setPunishResult(text.replace("惩治措施：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -188,7 +185,7 @@ public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩治措施：")) {
 					dcbl.setPunishResult(text.replace("惩治措施：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 
@@ -219,7 +216,7 @@ public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 
 				if (text.contains("惩治措施：")) {
 					dcbl.setPunishResult(text.replace("惩治措施：", ""));
-					discreditBlacklistMapper.insert(dcbl);
+					saveDisneycreditBlackListOne(dcbl, false);
 					continue;
 				}
 

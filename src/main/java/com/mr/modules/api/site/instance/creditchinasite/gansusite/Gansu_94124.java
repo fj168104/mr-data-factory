@@ -26,9 +26,6 @@ import java.util.Date;
 public class Gansu_94124 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94124.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -95,7 +92,7 @@ public class Gansu_94124 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setObjectType("01");
 					discreditBlacklist.setEnterpriseName(text);
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}
 				if(objectType.equals("02")){
@@ -104,7 +101,7 @@ public class Gansu_94124 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setObjectType("02");
 					discreditBlacklist.setPersonName(text.substring(0, 4).replaceAll("\\s*", ""));
 					discreditBlacklist.setPersonId(text.substring(4).replaceAll("\\s*", ""));
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}
 
@@ -122,7 +119,7 @@ public class Gansu_94124 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setObjectType("01");
 				discreditBlacklist.setEnterpriseName(text);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -138,7 +135,7 @@ public class Gansu_94124 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setObjectType("01");
 				discreditBlacklist.setEnterpriseName(text);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 

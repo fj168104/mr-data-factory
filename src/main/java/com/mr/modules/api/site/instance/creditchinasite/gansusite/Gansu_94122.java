@@ -26,8 +26,6 @@ import java.util.Date;
 public class Gansu_94122 extends SiteTaskExtend_CreditChina {
 	String url = "http://www.gscredit.gov.cn/blackList/94122.jhtml";
 
-	@Autowired
-	DiscreditBlacklistMapper discreditBlacklistMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -95,7 +93,7 @@ public class Gansu_94122 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setObjectType("01");
 					discreditBlacklist.setEnterpriseName(text);
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}
 				if(objectType.equals("02")){
@@ -103,7 +101,7 @@ public class Gansu_94122 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setObjectType("02");
 					discreditBlacklist.setPersonName(text);
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 					continue;
 				}
 
@@ -130,7 +128,7 @@ public class Gansu_94122 extends SiteTaskExtend_CreditChina {
 						discreditBlacklist.setSubject(subject);
 						discreditBlacklist.setObjectType("02");
 						discreditBlacklist.setPersonName(pName);
-						discreditBlacklistMapper.insert(discreditBlacklist);
+						saveDisneycreditBlackListOne(discreditBlacklist, false);
 					}
 					continue;
 				}
@@ -149,7 +147,7 @@ public class Gansu_94122 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setObjectType("01");
 				discreditBlacklist.setEnterpriseName(text);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 
@@ -165,7 +163,7 @@ public class Gansu_94122 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setSubject(subject);
 				discreditBlacklist.setObjectType("01");
 				discreditBlacklist.setEnterpriseName(text);
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 				continue;
 			}
 

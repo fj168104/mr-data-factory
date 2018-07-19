@@ -32,8 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-126208")
 @Scope("prototype")
 public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
 
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/126208.jhtml";
 
@@ -102,6 +100,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省兰州市法院");
 					discreditBlacklist.setEnterpriseName(text.substring(text.indexOf(".") + 1, text.indexOf(" ")).trim());
 					discreditBlacklist.setPersonName(text.substring(text.indexOf(" ") + 1).trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -114,6 +113,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setJudgeAuth("甘肃省兰州市农委");
 					discreditBlacklist.setEnterpriseName(text.substring(text.indexOf(".") + 1).trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -135,6 +135,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishReason(text.replace("违规行为：", ""));
 				} else if (text.contains("处罚措施：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishResult(text.replace("处罚措施：", ""));
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -148,6 +149,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省兰州市工信委");
 					discreditBlacklist.setEnterpriseName(text.substring(text.indexOf(".") + 1).trim());
 					discreditBlacklist.setPersonName(text.substring(text.indexOf("公司") + 2).trim());
+                    discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 			}
@@ -169,6 +171,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+        blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

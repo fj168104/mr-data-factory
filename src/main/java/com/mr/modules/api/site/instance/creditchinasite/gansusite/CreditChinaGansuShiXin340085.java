@@ -80,6 +80,7 @@ public class CreditChinaGansuShiXin340085 extends SiteTaskExtend_CreditChina {
 					if (endIndex != item.length()) {
 						blackList.setPunishReason(item.substring(endIndex + 1, item.indexOf("）"))); // 列入原因
 					}
+					blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 					discreditBlacklistMapper.insert(blackList);
 				}
 			}
@@ -100,6 +101,7 @@ public class CreditChinaGansuShiXin340085 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

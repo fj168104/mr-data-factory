@@ -95,6 +95,7 @@ public class CreditChinaGansuShiXin95838 extends SiteTaskExtend_CreditChina {
 						break;
 				}
 			}
+			blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 			discreditBlacklistMapper.insert(blackList);
 		}
 		log.debug("==============================");

@@ -31,9 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-94110")
 @Scope("prototype")
 public class CreditChinaGansuBlack94110 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/94110.jhtml";
 
 	/**
@@ -108,6 +105,7 @@ public class CreditChinaGansuBlack94110 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishReason("提炼使用废弃油脂");
 					discreditBlacklist.setPunishResult("公安立案");
 				}
+				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 				discreditBlacklistMapper.insert(discreditBlacklist);
 			}
 			// 二、市质监局发布2户质量违法企业
@@ -126,6 +124,7 @@ public class CreditChinaGansuBlack94110 extends SiteTaskExtend_CreditChina {
 						+ "3.根据违法事实和情节，触犯刑法的一律移送司法机关。"//
 						+ "4.不受理纳入黑榜名单的企业及其经营管理人员任何评先选优等表彰申请。";
 				discreditBlacklist.setPunishResult(punishResult);
+				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 				discreditBlacklistMapper.insert(discreditBlacklist);
 			}
 		}
@@ -146,6 +145,7 @@ public class CreditChinaGansuBlack94110 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

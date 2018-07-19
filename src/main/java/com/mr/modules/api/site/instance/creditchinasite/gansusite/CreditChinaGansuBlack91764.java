@@ -32,9 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-91764")
 @Scope("prototype")
 public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/91764.jhtml";
 
 	/**
@@ -98,6 +95,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 						blackList.setPunishReason(item.substring(5));// 处罚原因
 					} else if (item.contains("惩戒措施：") && blackList != null) {
 						blackList.setPunishResult(item.substring(5));// 处罚结果
+						blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 						discreditBlacklistMapper.insert(blackList);// 保存记录
 					}
 				}
@@ -116,6 +114,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 				blackList.setEnterpriseName(text.substring(text.indexOf("、") + 1));// 企业名称
 				blackList.setDiscreditAction("不履行被执行义务");
 				blackList.setPunishResult("依法进行信用惩戒，重拳打击“老赖”，维护社会诚信体系");
+				blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 				discreditBlacklistMapper.insert(blackList);
 			}
 		}
@@ -137,6 +136,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 						blackList.setPunishReason(item.substring(5));// 处罚原因
 					} else if (item.contains("惩戒措施：") && blackList != null) {
 						blackList.setPunishResult(item.substring(5));// 处罚结果
+						blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 						discreditBlacklistMapper.insert(blackList);// 保存记录
 					}
 				}
@@ -160,6 +160,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseName("白银大福鑫矿业投资有限公司");// 企业名称
 		blackList.setPunishReason("超过6个月未营业");// 处罚原因
 		blackList.setPunishResult("吊销营业执照");// 处罚结果
+		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 		discreditBlacklistMapper.insert(blackList);// 保存记录
 		
 		blackList = createDiscreditBlacklistObject();
@@ -168,6 +169,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 		blackList.setPunishReason("超过6个月未营业");// 处罚原因
 		blackList.setPunishResult("吊销营业执照");// 处罚结果
 		blackList.setEnterpriseName("白银佰力信投资管理有限公司");// 企业名称
+		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 		discreditBlacklistMapper.insert(blackList);// 保存记录
 		
 		blackList = createDiscreditBlacklistObject();
@@ -177,6 +179,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 		blackList.setPunishResult("处以罚款5000元");// 处罚结果
 		blackList.setObjectType("02");
 		blackList.setPersonName("孙晓云");
+		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 		discreditBlacklistMapper.insert(blackList);// 保存记录
 		
 		blackList = createDiscreditBlacklistObject();
@@ -186,6 +189,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 		blackList.setPunishResult("处以罚款4900元");// 处罚结果
 		blackList.setObjectType("02");
 		blackList.setPersonName("马如军");
+		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 		discreditBlacklistMapper.insert(blackList);// 保存记录
 		
 		log.info("=====五、白银市地税局企业诚信“黑榜”企业名单：======");
@@ -199,6 +203,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 				blackList.setSubject("市地税局企业失信名单");// 主题
 				blackList.setJudgeAuth("甘肃省白银市地方税务局");// 判决机关
 				blackList.setEnterpriseName(text.substring(text.indexOf("、") + 1));// 企业名称
+				blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 				discreditBlacklistMapper.insert(blackList);
 			}
 		}
@@ -223,6 +228,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

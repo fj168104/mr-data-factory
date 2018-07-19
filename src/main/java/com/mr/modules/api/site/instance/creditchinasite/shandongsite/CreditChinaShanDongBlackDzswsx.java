@@ -102,7 +102,7 @@ public class CreditChinaShanDongBlackDzswsx extends SiteTaskExtend_CreditChina {
 	}
 
 	/**
-	 * @param document
+	 * @param indexHtml
 	 * @return
 	 */
 	private int getPageNum(String indexHtml) {
@@ -143,6 +143,7 @@ public class CreditChinaShanDongBlackDzswsx extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型
@@ -177,6 +178,7 @@ public class CreditChinaShanDongBlackDzswsx extends SiteTaskExtend_CreditChina {
 				blackList.setPublishDate(value);// 发布日期
 			}
 		}
+		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 		discreditBlacklistMapper.insert(blackList);
 		log.debug("==============================");
 	}

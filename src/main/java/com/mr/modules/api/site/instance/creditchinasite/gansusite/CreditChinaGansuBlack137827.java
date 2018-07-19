@@ -32,8 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-137827")
 @Scope("prototype")
 public class CreditChinaGansuBlack137827 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
 
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/137827.jhtml";
 
@@ -85,6 +83,7 @@ public class CreditChinaGansuBlack137827 extends SiteTaskExtend_CreditChina {
 					+ "在信用等级初评中，425家物业企业中被评定为A级企业的有25家，AA级企业290家，AAA企业42家，AAAA企业20家。拟列入物业管理诚信档案“黑名单”物业企业48家。";
 			discreditBlacklist.setPunishReason(punishReason);
 			discreditBlacklist.setPunishResult("该企业拟列入物业管理诚信档案“黑名单”");
+			discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 			discreditBlacklistMapper.insert(discreditBlacklist);
 			discreditBlacklist = null;
 			continue;

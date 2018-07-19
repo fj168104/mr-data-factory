@@ -30,9 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-91754")
 @Scope("prototype")
 public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/91754.jhtml";
 
 	/**
@@ -113,6 +110,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setJudgeAuth("甘肃省白银市工商管理局");
 					discreditBlacklist.setEnterpriseName(text.trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -125,6 +123,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setJudgeAuth("甘肃省白银市地方税务局");
 					discreditBlacklist.setEnterpriseName(text.trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -137,6 +136,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setJudgeAuth("甘肃省白银市国家税务局");
 					discreditBlacklist.setEnterpriseName(text.trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -149,6 +149,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setJudgeAuth("甘肃省白银市农牧局");
 					discreditBlacklist.setEnterpriseName(text.trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -161,6 +162,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setJudgeAuth("甘肃省白银市食品药品监督管理局");
 					discreditBlacklist.setEnterpriseName(text.trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -173,6 +175,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setSubject(subject);
 					discreditBlacklist.setJudgeAuth("甘肃省白银市中级人民法院");
 					discreditBlacklist.setEnterpriseName(text.trim());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -195,6 +198,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

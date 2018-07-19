@@ -104,7 +104,7 @@ public class CreditChinaShanDongBlackAqsc extends SiteTaskExtend_CreditChina {
 	}
 
 	/**
-	 * @param document
+	 * @param indexHtml
 	 * @return
 	 */
 	private int getPageNum(String indexHtml) {
@@ -197,6 +197,7 @@ public class CreditChinaShanDongBlackAqsc extends SiteTaskExtend_CreditChina {
 
 			}
 		}
+		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 		discreditBlacklistMapper.insert(blackList);
 		log.debug("==============================");
 	}

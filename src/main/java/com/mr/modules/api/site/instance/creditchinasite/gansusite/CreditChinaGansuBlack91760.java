@@ -32,9 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-91760")
 @Scope("prototype")
 public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/91760.jhtml";
 
 	/**
@@ -136,6 +133,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 							+ "（二）对于自然人、单位及其法定代表人的失信行为，作为不良记录推送到人民银行征信系统、工商信用系统以及发改、财政、税务、国土、房产、海关等部门，联合实施信用惩戒。包括限制其在金融机构贷款和办理信用卡，限制其开办新公司和投资入股，限制参与政府采购、招标投标，限制行政审批、政府扶持、市场准入、资质认证，限制在国土、房地产管理部门办理产权转移、权属变更等。"//
 							+ "（三）对违反禁令高消费、有能力履行而拒不履行生效裁判的失信被执行人，人民法院将依法对单位处以100万元以下、对个人10万元以下罚款，对法定代表人和实际控制人采取司法拘留强制措施。情节严重构成犯罪的，将依法追究刑事责任。";
 					discreditBlacklist.setPunishResult(punishResult);
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -159,6 +157,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 						discreditBlacklist.setJudgeAuth("甘肃省庆阳市住房和城乡建设局");
 					}
 					discreditBlacklist.setPunishResult("全市通报批评");
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -168,6 +167,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 				if (text.contains("惩戒措施：")) {// 处理结束,重新判断itemIndex
 					if (discreditBlacklist != null) {
 						discreditBlacklist.setPunishResult(text.replace("惩戒措施：", ""));
+						discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 						discreditBlacklistMapper.insert(discreditBlacklist);
 					}
 					itemIndex = 0;
@@ -195,6 +195,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 					String punishResult = "（一）下发《责令改正通知书》，进行限期整改，整改期内，货运企业暂停新增货运业务和运力的审批；驾驶培训机构暂停培训业务，并通报公安部门暂停受理考试。"//
 							+ "（二）整改期满，辖区县局及市局相关帮包科室对整改情况进行复查验收，逾期不整改或者整改不合格的，由原许可机关吊销其经营许可。";
 					discreditBlacklist.setPunishResult(punishResult);
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				}
 				continue;
@@ -217,6 +218,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

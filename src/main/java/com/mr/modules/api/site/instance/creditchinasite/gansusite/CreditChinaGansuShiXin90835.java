@@ -19,10 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 信用中国（甘肃）-住房公积金贷款失信人员名单公示
- * 
+ *
  * http://www.gscredit.gov.cn/shiXin/90835.jhtml
- * 
- * 
+ *
+ *
  * @author pxu 2018年6月26日
  */
 @Slf4j
@@ -104,6 +104,7 @@ public class CreditChinaGansuShiXin90835 extends SiteTaskExtend_CreditChina {
 				}
 			}
 			blackList.setDiscreditAction(discreditAction);
+            blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
 			discreditBlacklistMapper.insert(blackList);
 		}
 		log.debug("==============================");

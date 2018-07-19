@@ -6,6 +6,7 @@ import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,13 +23,10 @@ import java.util.concurrent.Callable;
 @Slf4j
 @Component("xizang_fygr")
 @Scope("prototype")
-public class Xizang_fygr extends SiteTaskExtend {
+public class Xizang_fygr extends SiteTaskExtend_CreditChina {
 	String url = "http://www.creditxizang.gov.cn/xyxz/ueditor/jsp/upload/file/20161128/1480314150019004187.pdf";
 
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
-
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -75,7 +73,7 @@ public class Xizang_fygr extends SiteTaskExtend {
 			adminPunish.setPersonName(sis[0]);
 			adminPunish.setPersonId(sis[1]);
 			adminPunish.setJudgeAuth(sis[2] + "法院");
-			adminPunishMapper.insert(adminPunish);
+			saveAdminPunishOne(adminPunish, false);
 		}
 	}
 

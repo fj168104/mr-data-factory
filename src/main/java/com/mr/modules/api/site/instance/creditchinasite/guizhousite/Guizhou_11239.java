@@ -34,9 +34,6 @@ public class Guizhou_11239 extends SiteTaskExtend_CreditChina {
 	@Value("${download-dir}")
 	private String downloadDir;
 
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
-
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -77,7 +74,7 @@ public class Guizhou_11239 extends SiteTaskExtend_CreditChina {
 			adminPunish.setPersonId(row.getCell(5).getStringCellValue());
 			adminPunish.setPunishReason(row.getCell(8).getStringCellValue());
 			adminPunish.setJudgeAuth(row.getCell(7).getStringCellValue());
-			adminPunishMapper.insert(adminPunish);
+			saveAdminPunishOne(adminPunish, false);
 		}
 	}
 

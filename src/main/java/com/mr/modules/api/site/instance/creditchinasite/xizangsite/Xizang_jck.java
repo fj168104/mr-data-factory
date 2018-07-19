@@ -7,6 +7,7 @@ import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,13 +30,10 @@ import java.util.concurrent.Callable;
 @Slf4j
 @Component("xizang_jck")
 @Scope("prototype")
-public class Xizang_jck extends SiteTaskExtend {
+public class Xizang_jck extends SiteTaskExtend_CreditChina {
 	String url = "http://www.creditxizang.gov.cn/xyxz/ueditor/jsp/upload/file/20161128/1480314185755050447.pdf";
 
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
-
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -98,7 +96,7 @@ public class Xizang_jck extends SiteTaskExtend {
 					adminPunish.setEnterpriseName(adminPunish.getEnterpriseName() + "公司");
 					adminPunish.setPunishReason("");
 				}
-				adminPunishMapper.insert(adminPunish);
+				saveAdminPunishOne(adminPunish, false);
 				j++;
 				continue;
 			}

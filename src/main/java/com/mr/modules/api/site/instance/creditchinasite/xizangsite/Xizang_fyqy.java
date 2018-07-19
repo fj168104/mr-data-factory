@@ -6,6 +6,7 @@ import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,13 +23,10 @@ import java.util.concurrent.Callable;
 @Slf4j
 @Component("xizang_fyqy")
 @Scope("prototype")
-public class Xizang_fyqy extends SiteTaskExtend {
+public class Xizang_fyqy extends SiteTaskExtend_CreditChina {
 	String url = "http://www.creditxizang.gov.cn/xyxz/ueditor/jsp/upload/file/20161128/1480314111565008355.pdf";
 
 	protected OCRUtil ocrUtil = SpringUtils.getBean(OCRUtil.class);
-
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -74,35 +72,35 @@ public class Xizang_fyqy extends SiteTaskExtend {
 				adminPunish.setEnterpriseCode2("74191508—0");
 				adminPunish.setPersonName("吴忠和");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				adminPunishMapper.insert(adminPunish);
+				saveAdminPunishOne(adminPunish, false);
 				continue;
 			}
 			if (i == 2) {
 				adminPunish.setEnterpriseCode2("68684241—2");
 				adminPunish.setPersonName("攀维超");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				adminPunishMapper.insert(adminPunish);
+				saveAdminPunishOne(adminPunish, false);
 				continue;
 			}
 			if (i == 3) {
 				adminPunish.setEnterpriseCode2("78910651—4");
 				adminPunish.setPersonName("方相胜");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				adminPunishMapper.insert(adminPunish);
+				saveAdminPunishOne(adminPunish, false);
 				continue;
 			}
 			if (i == 4) {
 				adminPunish.setEnterpriseCode2("68682020—5");
 				adminPunish.setPersonName("万冬");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				adminPunishMapper.insert(adminPunish);
+				saveAdminPunishOne(adminPunish, false);
 				continue;
 			}
 			if (i == 22) {
 				adminPunish.setEnterpriseCode2("68683480—X");
 				adminPunish.setPersonName("陈林");
 				adminPunish.setJudgeAuth("昌都市中级人民法院");
-				adminPunishMapper.insert(adminPunish);
+				saveAdminPunishOne(adminPunish, false);
 				continue;
 			}
 
@@ -111,7 +109,7 @@ public class Xizang_fyqy extends SiteTaskExtend {
 			adminPunish.setEnterpriseCode2(sis[0]);
 			adminPunish.setPersonName(sis[1]);
 			adminPunish.setJudgeAuth(sis[2] + "法院");
-			adminPunishMapper.insert(adminPunish);
+			saveAdminPunishOne(adminPunish, false);
 		}
 	}
 

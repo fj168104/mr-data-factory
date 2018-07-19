@@ -6,6 +6,7 @@ import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,11 +23,8 @@ import java.util.concurrent.Callable;
 @Slf4j
 @Component("xizang_tq")
 @Scope("prototype")
-public class Xizang_tq extends SiteTaskExtend {
+public class Xizang_tq extends SiteTaskExtend_CreditChina {
 	String url = "http://www.creditxizang.gov.cn/xyxz//staticPage/D56C0CC1ECD247419A499F59A85584A1.html?colId=1";
-
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -69,7 +67,7 @@ public class Xizang_tq extends SiteTaskExtend {
 			adminPunish.setPunishReason("拖欠民工工资");
 			adminPunish.setPunishResult("对企业和相关从业人员，自治区住建厅要求各地各部门要在政府采购、招投标、履约担保、资质审核、融资贷款、市场准入等方面依法依规予以限制，" +
 					"使失信企业或人员在西藏自治区范围内“一处失信、处处受限”，提高企业失信违法成本，从而形成治理欠薪的高压态势，在社会上起到震慑作用。");
-			adminPunishMapper.insert(adminPunish);
+			saveAdminPunishOne(adminPunish, false);
 		}
 	}
 

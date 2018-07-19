@@ -4,6 +4,7 @@ import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
+import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,11 +26,8 @@ import java.util.Map;
 @Slf4j
 @Component("hebei_xzcf")
 @Scope("prototype")
-public class Hebei_xzcf extends SiteTaskExtend {
+public class Hebei_xzcf extends SiteTaskExtend_CreditChina {
 	String url = "http://www.credithebei.gov.cn:8082/was5/web/detail?record=%d&channelid=284249";
-
-	@Autowired
-	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -139,7 +137,7 @@ public class Hebei_xzcf extends SiteTaskExtend {
 				}
 			}
 			try{
-				adminPunishMapper.insert(adminPunish);
+				saveAdminPunishOne(adminPunish, false);
 			}catch (Exception e){
 				writeBizErrorLog(String.format(aUrl,i), e.getMessage());
 			}

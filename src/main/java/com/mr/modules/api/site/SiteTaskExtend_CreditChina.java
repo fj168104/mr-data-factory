@@ -390,7 +390,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         discreditBlacklist.setEnterpriseCode3(map.get("enterpriseCode3")==null?"":map.get("enterpriseCode3").toString());
 
         //enterprise_code4	纳税人识别号
-        discreditBlacklist.setEnterpriseCode3(map.get("enterpriseCode4")==null?"":map.get("enterpriseCode4").toString());
+        discreditBlacklist.setEnterpriseCode4(map.get("enterpriseCode4")==null?"":map.get("enterpriseCode4").toString());
         /**
          * 法定代表人/负责人姓名|负责人姓名
          */

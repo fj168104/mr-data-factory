@@ -18,24 +18,23 @@ public class ExcelUtil {
     /**
      * 将excel文件内容生成List<Map<String, Object>>
      *
-     * @param xlsPath
-     * @param columeNames
+     * @param xlsPath     excel文件路径
+     * @param columnNames 列名数组
      * @return
      * @throws Exception
      */
-    public static List<Map<String, Object>> importFromXls(String xlsPath, String[] columeNames) throws Exception {
+    public static List<Map<String, Object>> importFromXls(String xlsPath, String[] columnNames) throws Exception {
         File importFile = new File(xlsPath);
         Configuration configuration = new Configuration();
         configuration.setStartRowNo(1);
         List<ImportCell> importCells = Lists.newArrayList();
-        for (int i = 0; i < columeNames.length; i++) {
-            importCells.add(new ImportCell(i, columeNames[i]));
+        for (int i = 0; i < columnNames.length; i++) {
+            importCells.add(new ImportCell(i, columnNames[i]));
         }
         configuration.setImportCells(importCells);
         configuration.setImportFileType(Configuration.ImportFileType.EXCEL);
 
         MapResult mapResult = (MapResult) FileImportExecutor.importFile(configuration, importFile, importFile.getName());
-        List<Map<String, Object>> maps = mapResult.getResult();
-        return maps;
+        return mapResult.getResult();
     }
 }

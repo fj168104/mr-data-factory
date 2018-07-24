@@ -31,9 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-94089")
 @Scope("prototype")
 public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/94089.jhtml";
 
 	/**
@@ -123,6 +120,7 @@ public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishReason(items[1]);
 					discreditBlacklist.setPunishResult(items[2]);
 				}
+				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 				discreditBlacklistMapper.insert(discreditBlacklist);
 				discreditBlacklist = null;
 				continue;
@@ -140,6 +138,7 @@ public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setEnterpriseName(items[0]);// 企业名称
 				discreditBlacklist.setPunishReason(items[1]);
 				discreditBlacklist.setPunishResult(items[2]);
+				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 				discreditBlacklistMapper.insert(discreditBlacklist);
 				discreditBlacklist = null;
 				if (text.contains("兰州陕西宝粤物资有限公司")) {// 处理结束,重新判断itemIndex
@@ -163,6 +162,7 @@ public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
 					punishResult.append("3.从纳税人滞纳税款之日起，依法按日加收滞纳税款万分之五的滞纳金。");
 					punishResult.append("4.继续加大“黑榜”纳税人信息曝光力度，对“黑榜”纳税人日常经营活动重点监控。");
 					discreditBlacklist.setPunishResult(punishResult.toString());
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 					discreditBlacklist = null;
 				} else {

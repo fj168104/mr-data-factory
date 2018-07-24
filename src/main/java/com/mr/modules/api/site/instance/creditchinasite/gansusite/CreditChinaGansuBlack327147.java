@@ -79,6 +79,7 @@ public class CreditChinaGansuBlack327147 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setSubject("江西黑榜");
 				discreditBlacklist.setDiscreditType(discreditType);
 				discreditBlacklist.setEnterpriseName(text);
+				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 				discreditBlacklistMapper.insert(discreditBlacklist);
 			}
 		}
@@ -99,6 +100,7 @@ public class CreditChinaGansuBlack327147 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

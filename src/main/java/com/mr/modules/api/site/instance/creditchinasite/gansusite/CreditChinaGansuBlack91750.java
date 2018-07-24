@@ -32,9 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component("creditchina-gansu-black-91750")
 @Scope("prototype")
 public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
-	@Autowired
-	private DiscreditBlacklistMapper discreditBlacklistMapper;
-
 	private String url = CreditChinaSite.GANSU.getBaseUrl() + "/blackList/91750.jhtml";
 
 	/**
@@ -116,6 +113,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 				}
 				if (text.contains("事由：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishReason(text.replace("事由：", ""));
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				} else {
 					iCount++;
@@ -133,6 +131,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishReason(text.replace("事由：", ""));
 				} else if (text.contains("惩戒措施：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishResult(text.replace("惩戒措施：", ""));
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 					itemIndex = 0;// 处理结束
 				} else {
@@ -153,6 +152,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishReason(text.replace("事由：", ""));
 				} else if (text.contains("惩戒措施：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishResult(text.replace("惩戒措施：", ""));
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 					if (iCount == 11) {// 处理结束
 						itemIndex = 0;
@@ -174,6 +174,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 				}
 				if (text.contains("事由：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishReason(text.replace("事由：", ""));
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 				} else {
 					iCount++;
@@ -200,6 +201,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishReason(text.replace("事由：", ""));
 				} else if (text.contains("惩戒措施：") && discreditBlacklist != null) {// 第1和第3条数据入库
 					discreditBlacklist.setPunishResult(text.replace("惩戒措施：", ""));
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 					if (iCount == 3) {// 处理结束
 						itemIndex = 0;
@@ -207,6 +209,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 				} else if (Pattern.compile("\\d+[\\.].*").matcher(text).matches() && discreditBlacklist != null) {// 第2条数据入库
 					discreditBlacklist.setPunishResult(discreditBlacklist.getPunishResult() + text);
 					if (text.startsWith("3")) {
+						discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 						discreditBlacklistMapper.insert(discreditBlacklist);
 					}
 				} else {
@@ -224,6 +227,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishReason(text.replace("事由：", ""));
 				} else if (text.contains("惩戒措施：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishResult(text.replace("惩戒措施：", ""));
+					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 					discreditBlacklistMapper.insert(discreditBlacklist);
 					if (iCount == 2) {// 处理结束
 						itemIndex = 0;
@@ -255,6 +259,7 @@ public class CreditChinaGansuBlack91750 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

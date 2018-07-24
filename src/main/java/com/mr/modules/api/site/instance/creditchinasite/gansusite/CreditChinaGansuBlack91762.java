@@ -112,6 +112,7 @@ public class CreditChinaGansuBlack91762 extends SiteTaskExtend_CreditChina {
 						+ "4、涉嫌构成拒不执行人民法院判决裁定罪的，移送公安机关侦查、起诉或申请人人身受到伤害、财产受重大损失的，可以向人民法院申请自诉。"//
 						+ "5、特别是禁止子女就读高收费私立学校。";
 				discreditBlacklist.setPunishResult(punishResult);
+				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 				discreditBlacklistMapper.insert(discreditBlacklist);
 				continue;
 			}
@@ -133,6 +134,7 @@ public class CreditChinaGansuBlack91762 extends SiteTaskExtend_CreditChina {
 						+ "（4）列入重点监控对象，提高监督检查频次，发现税收违法违规行为的，不得适用规定处罚幅度内的最低标准。"//
 						+ "（5）将纳税信用评价结果通报相关部门，按照法律法规等有关规定，在经营、投融资、取得政府供应土地、进出口、出入境、注册新公司、工程招投标、政府采购、获得荣誉、安全许可、生产许可、从业任职资格、资质审核等方面予以限制或禁止。";
 				discreditBlacklist.setPunishResult(punishResult);
+				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
 				discreditBlacklistMapper.insert(discreditBlacklist);
 				continue;
 			}
@@ -154,6 +156,7 @@ public class CreditChinaGansuBlack91762 extends SiteTaskExtend_CreditChina {
 		blackList.setEnterpriseCode1("");// 统一社会信用代码
 		blackList.setEnterpriseCode2("");// 营业执照注册号
 		blackList.setEnterpriseCode3("");// 组织机构代码
+		blackList.setEnterpriseCode4("");// 税务登记号
 		blackList.setPersonName("");// 法定代表人/负责人姓名|负责人姓名
 		blackList.setPersonId("");// 法定代表人身份证号|负责人身份证号
 		blackList.setDiscreditType("");// 失信类型

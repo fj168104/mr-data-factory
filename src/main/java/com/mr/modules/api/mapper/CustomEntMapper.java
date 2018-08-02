@@ -4,6 +4,7 @@ import com.mr.common.base.mapper.BaseMapper;
 import com.mr.modules.api.model.CustomEnt;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface CustomEntMapper extends BaseMapper<CustomEnt> {
@@ -28,7 +29,7 @@ public interface CustomEntMapper extends BaseMapper<CustomEnt> {
      * @param startDate        发布时间
      * @return
      */
-    List<CustomEnt> selectByUrl(@Param("url") String url , @Param("enterpriseName") String enterpriseName , @Param("startDate") String startDate);
+    List<CustomEnt> selectByUrl(@Param("url") String url , @Param("enterpriseName") String enterpriseName , @Param("startDate") Date startDate);
 
     /**
      * 判断记录此url地址是否已经存在
@@ -37,5 +38,5 @@ public interface CustomEntMapper extends BaseMapper<CustomEnt> {
      * @param startDate
      * @return
      */
-    int deleteByUrl(@Param("url") String url , @Param("enterpriseName") String enterpriseName , @Param("startDate") String startDate);
+    int deleteByUrl(@Param("url") String url , @Param("enterpriseName") String enterpriseName , @Param("startDate") Date startDate);
 }

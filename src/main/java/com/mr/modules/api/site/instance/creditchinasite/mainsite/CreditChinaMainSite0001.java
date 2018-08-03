@@ -147,7 +147,7 @@ public class CreditChinaMainSite0001 extends SiteTaskExtend_CreditChina{
                         OrgObjectMap.put("sourceUrl",pagePDFUrl);
                         //环评机构名称、String environDiscussOrg = "";
                         environDiscussOrg = punishOrgTemp;
-                        OrgObjectMap.put("enterpriseName",environDiscussOrg);
+                        OrgObjectMap.put("enterpriseName",environDiscussOrg.replaceAll(".*([0-9]+)",""));
                         // 资质证号、String aptitudeNo = "";
                         OrgObjectMap.put("judgeNo",aptitudeNo);
                         // 惩罚时间、

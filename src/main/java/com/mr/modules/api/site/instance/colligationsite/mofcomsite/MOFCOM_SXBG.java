@@ -74,7 +74,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
 
 
     }
-    @Async(value="asyncServiceExecutor")
+    //@Async(value="asyncServiceExecutor")
     public void htmlParse(String baseUrl ,String resultUrl)throws Throwable{
         log.info("******************************************************当前线程为："+Thread.currentThread().getName());
         WebClient webClient = createWebClient("","");
@@ -82,9 +82,6 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
             HtmlPage htmlPage = webClient.getPage(resultUrl);
             List<HtmlElement> htmlElementList = htmlPage.getByXPath("//body//section[@class='blank']//div[@class='column_01']//section[@class='clearfix mt20p messageCon']//article[@class='mainL fl']//div[@class='newsList']//ul[@class='newsList01']//li");
             for(HtmlElement htmlElement :htmlElementList){
-
-
-
                 if(!htmlElement.getAttribute("class").equals("listline")){
                     //创建对象
                     ScrapyData scrapyData = new ScrapyData();
@@ -110,7 +107,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                     try {
                         saveFile(htmlPageDetail,urlTitle+".html",filePath);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error("源文件html下载有异常·····"+e.getMessage());
                     }
                     //获取目标HTML 的对应标签模块
                     DomElement imageSrc =  htmlPageDetail.getElementById("zoom");
@@ -132,8 +129,9 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                             Page page = webClientDetail.getPage(imageSrcUrl);
                             try {
                                 String[] strFile = file.split("\\.");
-                                String flieName = urlTitle+"."+strFile[1];
-                                scrapyData.setAttachmentType(strFile[1]);
+                                int maxIndex = strFile.length-1;
+                                String flieName = urlTitle+"."+strFile[maxIndex];
+                                scrapyData.setAttachmentType(strFile[maxIndex]);
                                 saveFile(page,flieName,filePath);
                             } catch (Exception e) {
                                 log.error("图片附件下载有异常·····"+e.getMessage());
@@ -147,8 +145,9 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                             Page page = imageSrcUrlAA.click();
                             try {
                                 String[] strFile = file.split("\\.");
-                                String flieName = urlTitle+"."+strFile[1];
-                                scrapyData.setAttachmentType(strFile[1]);
+                                int maxIndex = strFile.length-1;
+                                String flieName = urlTitle+"."+strFile[maxIndex];
+                                scrapyData.setAttachmentType(strFile[maxIndex]);
                                 saveFile(page,flieName,filePath);
                             } catch (Exception e) {
                                 log.error("非图片附件下载有异常·····"+e.getMessage());
@@ -160,7 +159,11 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                         }
                     }
                     //入库
-                    saveScrapyDataOne(scrapyData,false);
+                    boolean isFlag = saveScrapyDataOne(scrapyData,false);
+                    //如果记录已经在库中存在，就推测遍历
+                    if(isFlag){
+                        break;
+                    }
                 }
             }
         } catch (IOException e) {

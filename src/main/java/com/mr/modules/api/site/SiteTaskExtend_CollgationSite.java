@@ -93,7 +93,7 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
         //是否使用不安全的SSL
         wc.getOptions().setUseInsecureSSL(true);
         //启用JS解释器，默认为true
-        wc.getOptions().setJavaScriptEnabled(true);
+        wc.getOptions().setJavaScriptEnabled(false);
         //禁用CSS TODO HTMLUNIT 本来就没有界面所以静止 false为不启用
         wc.getOptions().setCssEnabled(false);
         //js运行错误时，是否抛出异常 false:为不启用

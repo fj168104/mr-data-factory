@@ -269,13 +269,12 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
      * 下载页面
      * @param page
      * @param file
-     * @param urlHashCodePath
+     * @param filePath
      * @return
      */
-    public String saveFile(Page page, String file,String urlHashCodePath)  {
+    public String saveFile(Page page, String file,String filePath)  {
         try {
             InputStream is = page.getWebResponse().getContentAsStream();
-            String filePath = "F:\\20180507证通滴水征信平台学习\\爬虫项目\\第三期综合站点\\中国打击侵权假冒工作网"+File.separator+urlHashCodePath;
             File fileName = new File(filePath);
             if(!fileName.exists()){
                 fileName.mkdir();
@@ -630,6 +629,30 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
          */
         adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
         isFlag = saveAdminPunishOne(adminPunish,false);
+        return isFlag;
+    }
+
+    public boolean scrapyDataInsert(Map<String,String> map){
+        boolean isFlag = true;
+        ScrapyData scrapyData = new ScrapyData();
+        //created_at	本条记录创建时间
+        scrapyData.setCreatedAt(new Date());
+        //source	数据来源
+        scrapyData.setSource(map.get("source"));
+        //url	地址
+        scrapyData.setUrl(map.get("sourceUrl"));
+        //hash_key	url的md5结果（如有附件，则保存在此目录中）
+        scrapyData.setHashKey(map.get("hashKey"));
+        //attachment_type	附件类型（pdf,doc,xls,jpg,tiff...）
+        scrapyData.setAttachmentType(map.get("attachmentType"));
+        //html	正文html
+        scrapyData.setHtml(map.get("html"));
+        //text	正文text，提取到的正文
+        scrapyData.setText(map.get("text"));
+        //fields	提取到的关键数据
+        scrapyData.setFields(map.get("fields"));
+
+        isFlag = saveScrapyDataOne(scrapyData,false);
         return isFlag;
     }
 

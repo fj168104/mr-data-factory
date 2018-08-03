@@ -7,6 +7,7 @@ import com.mr.modules.api.model.ScrapyData;
 import com.mr.modules.api.site.SiteTaskExtend_CollgationSite;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
@@ -82,10 +83,11 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
             List<HtmlElement> htmlElementList = htmlPage.getByXPath("//body//section[@class='blank']//div[@class='column_01']//section[@class='clearfix mt20p messageCon']//article[@class='mainL fl']//div[@class='newsList']//ul[@class='newsList01']//li");
             for(HtmlElement htmlElement :htmlElementList){
 
-                //创建对象
-                ScrapyData scrapyData = new ScrapyData();
+
 
                 if(!htmlElement.getAttribute("class").equals("listline")){
+                    //创建对象
+                    ScrapyData scrapyData = new ScrapyData();
                     HtmlElement htmlElementLi = htmlElement;
                     HtmlElement htmlElementA = htmlElementLi.getElementsByTagName("a").get(0);
                     //目标地址Url
@@ -112,57 +114,54 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                     }
                     //获取目标HTML 的对应标签模块
                     DomElement imageSrc =  htmlPageDetail.getElementById("zoom");
-                    String textHtml = imageSrc.asXml();
-                    scrapyData.setHtml(textHtml);
-                    scrapyData.setText("发布主题："+urlTitle+"\n发布时间："+publishDate+"\n"+imageSrc.asText());
+                    //获取正文模块,拼接上主题与发布时间
+                    String textHtml = "<p>发布主题："+urlTitle+"</p>"+
+                            "<p>发布时间："+publishDate+"</p>"+
+                            imageSrc.asXml();
+                    scrapyData.setHtml(Jsoup.parse(textHtml).html());
+                    scrapyData.setText("　　发布主题："+urlTitle+"　　\n发布时间："+publishDate+"\n"+imageSrc.asText());
+                    scrapyData.setFields(fields);
                     if(imageSrc!=null){
 
                         DomNodeList<HtmlElement> imageSrcImg =  imageSrc.getElementsByTagName("img");
                         DomNodeList<HtmlElement> imageSrcA =  imageSrc.getElementsByTagName("a");
                         if(imageSrcImg.size()>0&&imageSrcA.size()<1){//图片标签
-                            for(int i=0;i<imageSrcA.size();i++){
-                                HtmlElement imageSrcUrlDD =  imageSrcImg.get(i);
-                                String imageSrcUrl = imageSrcUrlDD.getAttribute("src");
-                                String file = imageSrcUrlDD.getAttribute("title");
-                                Page page = webClientDetail.getPage(imageSrcUrl);
-                                try {
-                                    String[] strFile = file.split("\\.");
-                                    String flieName = urlTitle+"."+strFile[1];
-                                    scrapyData.setAttachmentType(strFile[1]);
-                                    saveFile(page,flieName,filePath);
-                                } catch (Exception e) {
-                                    log.error("图片附件下载有异常·····"+e.getMessage());
-                                }finally {
-                                    webClientDetail.close();
-                                }
+                            HtmlElement imageSrcUrlDD =  imageSrcImg.get(0);
+                            String imageSrcUrl = imageSrcUrlDD.getAttribute("src");
+                            String file = imageSrcUrlDD.getAttribute("title");
+                            Page page = webClientDetail.getPage(imageSrcUrl);
+                            try {
+                                String[] strFile = file.split("\\.");
+                                String flieName = urlTitle+"."+strFile[1];
+                                scrapyData.setAttachmentType(strFile[1]);
+                                saveFile(page,flieName,filePath);
+                            } catch (Exception e) {
+                                log.error("图片附件下载有异常·····"+e.getMessage());
+                            }finally {
+                                webClientDetail.close();
                             }
 
                         }else if (imageSrcA.size()>0){//非图片标签
-                            for(int i=0;i<imageSrcA.size();i++){
-                                HtmlAnchor imageSrcUrlAA =  (HtmlAnchor) imageSrcA.get(i);
-                                String file = imageSrcUrlAA.asText();
-                                Page page = imageSrcUrlAA.click();
-                                try {
-                                    String[] strFile = file.split(".");
-                                    String flieName = urlTitle+"."+strFile[1];
-                                    scrapyData.setAttachmentType(strFile[1]);
-                                    saveFile(page,flieName,filePath);
-                                } catch (Exception e) {
-                                    log.error("非图片附件下载有异常·····"+e.getMessage());
-                                }finally {
-                                    webClientDetail.close();
-                                }
+                            HtmlAnchor imageSrcUrlAA =  (HtmlAnchor) imageSrcA.get(0);
+                            String file = imageSrcUrlAA.asText();
+                            Page page = imageSrcUrlAA.click();
+                            try {
+                                String[] strFile = file.split("\\.");
+                                String flieName = urlTitle+"."+strFile[1];
+                                scrapyData.setAttachmentType(strFile[1]);
+                                saveFile(page,flieName,filePath);
+                            } catch (Exception e) {
+                                log.error("非图片附件下载有异常·····"+e.getMessage());
+                            }finally {
+                                webClientDetail.close();
                             }
-
                         }else {//TODO 其他情况
                             continue;
                         }
-
                     }
-
+                    //入库
+                    saveScrapyDataOne(scrapyData,false);
                 }
-                //入库
-                saveScrapyDataOne(scrapyData,false);
             }
         } catch (IOException e) {
             log.error("发生IO处理异常，请检查···"+e.getMessage());

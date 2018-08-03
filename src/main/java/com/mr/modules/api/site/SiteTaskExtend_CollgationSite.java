@@ -81,11 +81,11 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
     public WebClient createWebClient(String ip, String port) throws Throwable{
         WebClient wc =  null;
         if ("".equals(ip) || "".equals(port)||ip==null||port==null) {
-            wc = new WebClient(BrowserVersion.getDefault());
+            wc = new WebClient(BrowserVersion.CHROME);
             log.info("通过本地ip进行处理···");
         } else {
             //获取代理对象
-            wc = new WebClient(BrowserVersion.getDefault(), ip,Integer.valueOf(port));
+            wc = new WebClient(BrowserVersion.CHROME, ip,Integer.valueOf(port));
             log.info("通过代理进行处理···");
         }
 
@@ -277,7 +277,7 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
             InputStream is = page.getWebResponse().getContentAsStream();
             File fileName = new File(filePath);
             if(!fileName.exists()){
-                fileName.mkdir();
+                fileName.mkdirs();
             }
             FileOutputStream output = new FileOutputStream(filePath + File.separator + file);
             IOUtils.copy(is, output);

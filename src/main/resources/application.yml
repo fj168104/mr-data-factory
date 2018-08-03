@@ -84,29 +84,14 @@ mapper:
       - com.mr.common.base.mapper.BaseMapper
   not-empty: false
   identity: MYSQL
-
-myProps: #自定义的属性和值
-  simpleProp: simplePropValue
-  arrayProps: 1,2,3,4,5
-  listProp1:
-    - name: abc
-      value: abcValue
-    - name: efg
-      value: efgValue
-  listProp2:
-    - config2Value1
-    - config2Vavlue2
-  mapProps:
-    key1: value1
-    key2: value2
-
----
 #配置ipproxy pool数据源参数参数
 proxydatabase:
   dbdriver: com.mysql.jdbc.Driver
   dburl: jdbc:mysql://47.100.7.81:3306/data_factory_xu?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
   dbuser: root
   dbpassword: Root@1234
+---
+
 #开发环境配置
 server:
   #端口

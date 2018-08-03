@@ -28,16 +28,27 @@ import java.util.Map;
  * 注：目前没有存储标题的属性
  */
 @Slf4j
-@Component("/mofcom_sxbg")
+@Component("mofcom_sxbg")
 @Scope("prototype")
 public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
+    @Override
+    protected String execute() throws Throwable {
+        webContext();
+       return null;
+    }
+
+    @Override
+    protected String executeOne() throws Throwable {
+        return super.executeOne();
+    }
+
     //源文件存储的跟路径
     String fileBasePath = OCRUtil.DOWNLOAD_DIR+ File.separator+"mofcomsite"+File.separator;
     //数据来源
     String source = "国家商务部网站";
     //要提取的字段
     String fields = "source,subject,url,enterprise_name,publish_date/punishDate,judge_no,title";
-    //唯一标识 注：一般为，title/JubgeNo+enterpriseName+publishDate/punishDate
+    //唯一标识 注：一般为，title/JubgeNo+enterpriseName+publishdate/punishdate
     String unique_key = "";
     public void webContext(){
         String baseUrl = "http://www.ipraction.gov.cn";
@@ -116,8 +127,9 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                                 Page page = webClientDetail.getPage(imageSrcUrl);
                                 try {
                                     String[] strFile = file.split("\\.");
+                                    String flieName = urlTitle+"."+strFile[1];
                                     scrapyData.setAttachmentType(strFile[1]);
-                                    saveFile(page,urlTitle+"."+strFile[1],filePath);
+                                    saveFile(page,flieName,filePath);
                                 } catch (Exception e) {
                                     log.error("图片附件下载有异常·····"+e.getMessage());
                                 }finally {
@@ -132,8 +144,9 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                                 Page page = imageSrcUrlAA.click();
                                 try {
                                     String[] strFile = file.split(".");
+                                    String flieName = urlTitle+"."+strFile[1];
                                     scrapyData.setAttachmentType(strFile[1]);
-                                    saveFile(page,urlTitle+"."+strFile[1],filePath);
+                                    saveFile(page,flieName,filePath);
                                 } catch (Exception e) {
                                     log.error("非图片附件下载有异常·····"+e.getMessage());
                                 }finally {
@@ -148,7 +161,8 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                     }
 
                 }
-
+                //入库
+                saveScrapyDataOne(scrapyData,false);
             }
         } catch (IOException e) {
             log.error("发生IO处理异常，请检查···"+e.getMessage());

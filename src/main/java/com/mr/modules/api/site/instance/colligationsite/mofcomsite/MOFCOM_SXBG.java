@@ -3,6 +3,7 @@ package com.mr.modules.api.site.instance.colligationsite.mofcomsite;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
 import com.mr.common.OCRUtil;
+import com.mr.modules.api.model.Proxypool;
 import com.mr.modules.api.model.ScrapyData;
 import com.mr.modules.api.site.SiteTaskExtend_CollgationSite;
 import com.mr.modules.api.site.instance.colligationsite.util.ExecutorConfig;
@@ -58,61 +59,76 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
     //唯一标识 注：一般为，title/JubgeNo+enterpriseName+publishdate/punishdate
     String unique_key = "";
     public void webContext(){
+        List<Proxypool> proxypoolList = proxypoolMapper.selectProxyPool();
+        proxypoolList.clear();
         String baseUrl = "http://www.ipraction.gov.cn";
         String urlNext = "http://www.ipraction.gov.cn/article/xxgk/shxy/sxbg/?2";
         //String urln = "http://www.ipraction.gov.cn/article/xxgk/shxy/sxbg/?"+n;
         //第一页
         log.info("**********************************第 {} 页*******************************",1);
         try {
-            htmlParse(baseUrl,urlNext);
+            htmlParse(baseUrl,urlNext,proxypoolList);
         } catch (Throwable throwable) {
             log.error("请查阅错误信息···"+throwable.getMessage());
         }
         //第2页  到 第351页
-        for(int n=90;n<352;n++){//并发处理
+        for(int n=2;n<354;n++){//并发处理
             int m = n;
-            log.info("**********************************第 {} 页*******************************",n);
-            executorConfig.asyncServiceExecutor().execute(new Runnable() {
+            log.info("**********************************第 {} 页*******************************",m);
+            String urln = "http://www.ipraction.gov.cn/article/xxgk/shxy/sxbg/?"+m;
+            try {
+                htmlParse(baseUrl,urln,proxypoolList);
+            } catch (Throwable throwable) {
+                log.error("请查阅错误信息···"+throwable.getMessage());
+            }
+            /*executorConfig.asyncServiceExecutor().execute(new Runnable() {
+
                 String urln = "http://www.ipraction.gov.cn/article/xxgk/shxy/sxbg/?"+m;
+
                 @Override
                 public void run() {
-
+                    log.info("**********************************第 {} 页*******************************",m);
                     try {
-                        htmlParse(baseUrl,urln);
+                        htmlParse(baseUrl,urln,proxypoolList);
                     } catch (Throwable throwable) {
                         log.error("请查阅错误信息···"+throwable.getMessage());
                     }
                 }
-            });
+            });*/
 
         }
 
 
 
     }
-    @Async(value="asyncServiceExecutor")
-    public void htmlParse(String baseUrl ,String resultUrl)throws Throwable{
+    //@Async(value="asyncServiceExecutor")
+    public void htmlParse(String baseUrl ,String resultUrl,List<Proxypool> proxypoolList)throws Throwable{
         log.info("******************************************************当前线程为："+Thread.currentThread().getName());
-        WebClient webClient = createWebClient("","");
+        String ip = "";
+        String port = "";
 
         //repeats 从试次数
         boolean repeatFlag = true;
         int repeatTime = 0;
-        while(repeatTime<5&&repeatFlag){
+        while(repeatTime<10&&repeatFlag){
+            WebClient webClient = createWebClient(ip,port);
+
             try {
                 HtmlPage htmlPage = null;
                 try {
                      htmlPage = webClient.getPage(resultUrl);
                 } catch (Exception e) {
+                    repeatFlag =true;
                     repeatTime = repeatTime+1;
                     log.error("发生IO处理异常，请检查···"+e.getMessage());
                     log.info("程序重试中···重试次数为5,第{}次···重试",repeatTime);
-                    Thread.sleep(6000);
-                    repeatFlag =true;
-                    if(repeatTime==5){
-                        break;
-                    }
+                    Thread.sleep(10000);
+                    if(proxypoolList.size()>0){
+                        port = proxypoolList.get(0).getIpport();
+                        ip = proxypoolList.get(0).getIpaddress();
 
+                        proxypoolList.remove(0);
+                    }
                 }
 
                 List<HtmlElement> htmlElementList = htmlPage.getByXPath("//body//section[@class='blank']//div[@class='column_01']//section[@class='clearfix mt20p messageCon']//article[@class='mainL fl']//div[@class='newsList']//ul[@class='newsList01']//li");
@@ -137,25 +153,29 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                         String publishDate = htmlElementLi.getElementsByTagName("span").get(0).asText();
 
                         //创建新的浏览器，访问详情界面信息
-                        WebClient webClientDetail = createWebClient("","");
+                        WebClient webClientDetail = createWebClient(ip,port);
                         HtmlPage htmlPageDetail = null;
                         try {
                             htmlPageDetail = webClientDetail.getPage(urlDetail);
                         } catch (Exception e) {
+                            repeatFlag =true;
                             repeatTime = repeatTime+1;
                             log.error("发生IO处理异常，请检查···"+e.getMessage());
                             log.info("程序重试中···重试次数为5,第{}次···重试",repeatTime);
-                            Thread.sleep(6000);
-                            repeatFlag =true;
-                            if(repeatTime==5){
-                                break;
-                            }
+                            Thread.sleep(10000);
+                            if(proxypoolList.size()>0){
+                                port = proxypoolList.get(0).getIpport();
+                                ip = proxypoolList.get(0).getIpaddress();
 
+                                proxypoolList.remove(0);
+                            }
                         }
                         try {
                             saveFile(htmlPageDetail,urlTitle+".html",filePath);
                         } catch (Exception e) {
+                            repeatFlag =true;
                             log.error("源文件html下载有异常·····"+e.getMessage());
+                            continue;
                         }
                         //获取目标HTML 的对应标签模块
                         DomElement imageSrc =  htmlPageDetail.getElementById("zoom");
@@ -182,7 +202,9 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                                     scrapyData.setAttachmentType(strFile[maxIndex]);
                                     saveFile(page,flieName,filePath);
                                 } catch (Exception e) {
+                                    repeatFlag =true;
                                     log.error("图片附件下载有异常·····"+e.getMessage());
+                                    continue;
                                 }finally {
                                     webClientDetail.close();
                                 }
@@ -198,7 +220,9 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                                     scrapyData.setAttachmentType(strFile[maxIndex]);
                                     saveFile(page,flieName,filePath);
                                 } catch (Exception e) {
+                                    repeatFlag =true;
                                     log.error("非图片附件下载有异常·····"+e.getMessage());
+                                    continue;
                                 }finally {
                                     webClientDetail.close();
                                 }
@@ -209,21 +233,27 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                         //入库
                         boolean isFlag = saveScrapyDataOne(scrapyData,false);
                         //如果记录已经在库中存在，就推测遍历
-                        if(isFlag){
+                        /*if(isFlag){
                             break;
-                        }
+                        }*/
                     }
                 }
                 repeatFlag =false;
             } catch (Exception e) {
+                repeatFlag =true;
                 repeatTime = repeatTime+1;
                 log.error("发生IO处理异常，请检查···"+e.getMessage());
                 log.info("程序重试中···重试次数为5,第{}次···重试",repeatTime);
-                Thread.sleep(6000);
+                Thread.sleep(10000);
                 repeatFlag =true;
-                if(repeatTime==5){
-                    break;
+
+                if(proxypoolList.size()>0){
+                    port = proxypoolList.get(0).getIpport();
+                    ip = proxypoolList.get(0).getIpaddress();
+
+                    proxypoolList.remove(0);
                 }
+
 
             }finally {
                 webClient.close();

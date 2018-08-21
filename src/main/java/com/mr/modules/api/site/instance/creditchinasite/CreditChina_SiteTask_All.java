@@ -74,7 +74,7 @@ public class CreditChina_SiteTask_All extends SiteTaskExtend {
 			"creditchinahainan_xzcf",
 			"creditchinasichuan_blacklist",
 			"guizhou_11239",
-			"guizhou_xzcfa",
+			"guizhou_xzcf",
 			"creditchina_ningxia_blacklist",
 			"creditchina_ningxia_xzcf",
 			"shanxi_xzcf",

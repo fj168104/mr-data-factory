@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mr.modules.api.mapper.ProductionQualityMapper" >
+  <resultMap id="BaseResultMap" type="com.mr.modules.api.model.ProductionQuality" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="source" property="source" jdbcType="VARCHAR" />
+    <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR" />
+    <result column="enterprise_code1" property="enterpriseCode1" jdbcType="VARCHAR" />
+    <result column="enterprise_code2" property="enterpriseCode2" jdbcType="VARCHAR" />
+    <result column="enterprise_code3" property="enterpriseCode3" jdbcType="VARCHAR" />
+    <result column="oper_production" property="operProduction" jdbcType="VARCHAR" />
+    <result column="oper_result" property="operResult" jdbcType="VARCHAR" />
+    <result column="oper_org" property="operOrg" jdbcType="VARCHAR" />
+    <result column="publish_date" property="publishDate" jdbcType="DATE" />
+  </resultMap>
+  <!--通过业务主键删除-->
+  <delete id="deleteAllByUrl" parameterType="java.lang.String">
+    DELETE FROM PRODUCTION_QUALITY WHERE url = #{url}
+  </delete>
+
+  <!--通过业务主键查找-->
+  <select id="selectCountByUrl" parameterType="java.lang.String" resultType="Integer">
+    SELECT count(1) FROM PRODUCTION_QUALITY WHERE url = #{url}
+  </select>
+
+  <select id="selectByUrl" resultMap="BaseResultMap">
+    SELECT * FROM PRODUCTION_QUALITY c WHERE 1 =1
+    <if test="url != null">
+      AND c.URL = #{url}
+    </if>
+    <if test="enterpriseName != null">
+      AND c.ENTERPRISE_NAME = #{enterpriseName}
+    </if>
+    <if test="publishDate != null">
+      AND c.PUBLISH_DATE = #{publishDate}
+    </if>
+    LIMIT 0, 1
+  </select>
+  <!--通过链接地址删除-->
+  <delete id="deleteByUrl" parameterType="java.lang.String">
+    DELETE FROM PRODUCTION_QUALITY WHERE URL = #{url} AND ENTERPRISE_NAME = #{enterpriseName} AND PUBLISH_DATE = #{publishDate}
+  </delete>
+</mapper>

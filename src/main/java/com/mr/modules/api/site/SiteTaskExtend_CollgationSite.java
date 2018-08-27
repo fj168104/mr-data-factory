@@ -4,32 +4,39 @@ import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.mr.common.OCRUtil;
 import com.mr.common.util.CrawlerUtil;
-
-import com.mr.modules.api.mapper.AdminPunishMapper;
-import com.mr.modules.api.mapper.DiscreditBlacklistMapper;
-import com.mr.modules.api.mapper.ProxypoolMapper;
-import com.mr.modules.api.model.AdminPunish;
-import com.mr.modules.api.model.DiscreditBlacklist;
-import com.mr.modules.api.model.Proxypool;
+import com.mr.modules.api.mapper.*;
+import com.mr.modules.api.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
- * @auterh 2018-06
+ * @auterh zjxu
+ * @DateTIme 2018-08
  */
 @Slf4j
-public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
+public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
+    @Autowired
+    DiscreditBlacklistMapper discreditBlacklistMapper;
     @Autowired
     protected ProxypoolMapper proxypoolMapper;
     @Autowired
     protected AdminPunishMapper adminPunishMapper;
     @Autowired
-    protected DiscreditBlacklistMapper discreditBlacklistMapper;
+    protected CreditLevelMapper creditLevelMapper;
+    @Autowired
+    protected ProductionQualityMapper productionQualityMapper;
+    @Autowired
+    protected ScrapyDataMapper scrapyDataMapper;
+    @Autowired
+    protected CustomEntMapper customEntMapper;
     @Override
     protected String execute() throws Throwable {
         return null;
@@ -74,11 +81,11 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     public WebClient createWebClient(String ip, String port) throws Throwable{
         WebClient wc =  null;
         if ("".equals(ip) || "".equals(port)||ip==null||port==null) {
-            wc = new WebClient(BrowserVersion.getDefault());
+            wc = new WebClient(BrowserVersion.CHROME);
             log.info("通过本地ip进行处理···");
         } else {
             //获取代理对象
-            wc = new WebClient(BrowserVersion.getDefault(), ip,Integer.valueOf(port));
+            wc = new WebClient(BrowserVersion.CHROME, ip,Integer.valueOf(port));
             log.info("通过代理进行处理···");
         }
 
@@ -86,7 +93,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         //是否使用不安全的SSL
         wc.getOptions().setUseInsecureSSL(true);
         //启用JS解释器，默认为true
-        wc.getOptions().setJavaScriptEnabled(true);
+        wc.getOptions().setJavaScriptEnabled(false);
         //禁用CSS TODO HTMLUNIT 本来就没有界面所以静止 false为不启用
         wc.getOptions().setCssEnabled(false);
         //js运行错误时，是否抛出异常 false:为不启用
@@ -259,6 +266,30 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
     }
 
     /**
+     * 下载页面
+     * @param page
+     * @param file
+     * @param filePath
+     * @return
+     */
+    public String saveFile(Page page, String file,String filePath)  {
+        try {
+            InputStream is = page.getWebResponse().getContentAsStream();
+            File fileName = new File(filePath);
+            if(!fileName.exists()){
+                fileName.mkdirs();
+            }
+            FileOutputStream output = new FileOutputStream(filePath + File.separator + file);
+            IOUtils.copy(is, output);
+            output.close();
+        }catch (FileNotFoundException fe){
+            log.error("保存文件出现文件不能找到异常······请排查！"+fe.getMessage());
+        }catch (IOException e) {
+            log.error("保存文件出现IO异常······请排查！"+e.getMessage());
+        }
+        return file;
+    }
+    /**
      * 获取IP代理池中的IP与Port
      * @return
      */
@@ -328,6 +359,95 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         return isFlag;
     }
 
+    /**
+     * 爬网原始数据及中间数据入库
+     * @param scrapyData
+     * @param isForce
+     * @return
+     */
+    protected boolean saveScrapyDataOne(ScrapyData scrapyData, Boolean isForce) {
+        boolean isFlag = false;
+        int scrapyDataCount = scrapyDataMapper.selectCountByUrl(scrapyData.getUrl());
+
+        if (!isForce && scrapyDataCount>0) {
+            log.info("Url为："+scrapyData.getUrl()+"此记录已经存在···不需要入库");
+            isFlag = true;
+        }else if(!isForce && scrapyDataCount<=0){
+            scrapyDataMapper.insert(scrapyData);
+            log.info("Url为："+scrapyData.getUrl()+"此记录不存在···需要入库");
+        } else if(isForce){
+            if(scrapyDataCount>0){
+                scrapyDataMapper.deleteAllByUrl(scrapyData.getUrl());
+                scrapyDataMapper.insert(scrapyData);
+            }else{
+                scrapyDataMapper.insert(scrapyData);
+            }
+            log.info("Url为："+scrapyData.getUrl()+"此记录入库完成···");
+        }else{
+            log.info("Url为："+scrapyData.getUrl()+"此记录不满足入库条件···");
+        }
+        return isFlag;
+    }
+
+    /**
+     * 质检曝光数据(工信部，商务部)
+     * @param productionQuality
+     * @param isForce
+     * @return
+     */
+    protected boolean saveProductionQualityOne(ProductionQuality productionQuality, Boolean isForce) {
+        boolean isFlag = false;
+        List<ProductionQuality> productionQualityList = productionQualityMapper.selectByUrl(productionQuality.getUrl(),productionQuality.getEnterpriseName(),productionQuality.getPublishDate());
+
+        if (!isForce && productionQualityList.size()>0) {
+            log.info("Url为："+productionQuality.getUrl()+"此记录已经存在···不需要入库");
+            isFlag = true;
+        }else if(!isForce && productionQualityList.size()<=0){
+            productionQualityMapper.insert(productionQuality);
+            log.info("Url为："+productionQuality.getUrl()+"此记录不存在···需要入库");
+        } else if(isForce){
+            if(productionQualityList.size()>0){
+                productionQualityMapper.deleteByUrl(productionQuality.getUrl(),productionQuality.getEnterpriseName(),productionQuality.getPublishDate());
+                productionQualityMapper.insert(productionQuality);
+            }else{
+                productionQualityMapper.insert(productionQuality);
+            }
+            log.info("Url为："+productionQuality.getUrl()+"此记录入库完成···");
+        }else{
+            log.info("Url为："+productionQuality.getUrl()+"此记录不满足入库条件···");
+        }
+        return isFlag;
+    }
+
+    /**
+     * 海关企业名录（失信，异常）
+     * @param customEnt
+     * @param isForce
+     * @return
+     */
+    protected boolean saveCustomEntOne(CustomEnt customEnt, Boolean isForce) {
+        boolean isFlag = false;
+        List<CustomEnt> customEntList = customEntMapper.selectByUrl(customEnt.getUrl(),customEnt.getEnterpriseName(),customEnt.getStartDate());
+
+        if (!isForce && customEntList.size()>0) {
+            log.info("Url为："+customEnt.getUrl()+"此记录已经存在···不需要入库");
+            isFlag = true;
+        }else if(!isForce && customEntList.size()<=0){
+            customEntMapper.insert(customEnt);
+            log.info("Url为："+customEnt.getUrl()+"此记录不存在···需要入库");
+        } else if(isForce){
+            if(customEntList.size()>0){
+                customEntMapper.deleteByUrl(customEnt.getUrl(),customEnt.getEnterpriseName(),customEnt.getStartDate());
+                customEntMapper.insert(customEnt);
+            }else{
+                customEntMapper.insert(customEnt);
+            }
+            log.info("Url为："+customEnt.getUrl()+"此记录入库完成···");
+        }else{
+            log.info("Url为："+customEnt.getUrl()+"此记录不满足入库条件···");
+        }
+        return isFlag;
+    }
     /**
      * 入库黑名单
      * @param map
@@ -448,9 +568,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         /**
          * 唯一性标识(同一数据来源的同一主题内唯一)
          */
-        discreditBlacklist.setUniqueKey(
-                discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()
-        );
+        discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth());
         isFlag = saveDisneycreditBlackListOne(discreditBlacklist,false);
 
         return isFlag;
@@ -475,7 +593,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         //url	url
         adminPunish.setUrl(map.get("sourceUrl")==null?"":map.get("sourceUrl"));
         //object_type	主体类型: 01-企业 02-个人
-        adminPunish.setObjectType(map.get("enterpriseName").length()<6?"01": "2");
+        adminPunish.setObjectType("01");
         //enterprise_name	企业名称
         adminPunish.setEnterpriseName(map.get("enterpriseName")==null?"": map.get("enterpriseName"));
         //enterprise_code1	统一社会信用代码--cfXdrShxym
@@ -506,8 +624,35 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         adminPunish.setJudgeAuth(map.get("judgeAuth")==null?"":map.get("judgeAuth"));
         //publish_date	发布日期
         adminPunish.setPublishDate(map.get("publishDate")==null?"":map.get("publishDate"));
-
+        /**
+         * 唯一性标识(同一数据来源的同一主题内唯一)
+         */
+        adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
         isFlag = saveAdminPunishOne(adminPunish,false);
+        return isFlag;
+    }
+
+    public boolean scrapyDataInsert(Map<String,String> map){
+        boolean isFlag = true;
+        ScrapyData scrapyData = new ScrapyData();
+        //created_at	本条记录创建时间
+        scrapyData.setCreatedAt(new Date());
+        //source	数据来源
+        scrapyData.setSource(map.get("source"));
+        //url	地址
+        scrapyData.setUrl(map.get("sourceUrl"));
+        //hash_key	url的md5结果（如有附件，则保存在此目录中）
+        scrapyData.setHashKey(map.get("hashKey"));
+        //attachment_type	附件类型（pdf,doc,xls,jpg,tiff...）
+        scrapyData.setAttachmentType(map.get("attachmentType"));
+        //html	正文html
+        scrapyData.setHtml(map.get("html"));
+        //text	正文text，提取到的正文
+        scrapyData.setText(map.get("text"));
+        //fields	提取到的关键数据
+        scrapyData.setFields(map.get("fields"));
+
+        isFlag = saveScrapyDataOne(scrapyData,false);
         return isFlag;
     }
 

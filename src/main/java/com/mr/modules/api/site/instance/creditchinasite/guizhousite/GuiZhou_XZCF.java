@@ -1,27 +1,40 @@
 package com.mr.modules.api.site.instance.creditchinasite.guizhousite;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.ImmediateRefreshHandler;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.google.common.collect.Maps;
+import com.mr.common.IdempotentOperator;
+import com.mr.framework.core.collection.CollectionUtil;
+import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.SiteParams;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.net.URLCodec;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.html.HTMLIFrameElement;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * 来源：信用中国（贵州）
@@ -30,154 +43,191 @@ import java.util.Map;
  * 地址：http://www.gzcx.gov.cn/a/xinxishuanggongshi/shuanggongshichaxun/?creditCorpusCode=S&sgstype=xzcf&sgskeywords=
  * RESULT_URL:http://202.98.195.12:7809/CreditWebApi/f/sgs/xzcfxx/list?accessKey=556d8122421340ae8799bae4ad5c03a1&sid=eqk1koj1i23e72scs7f6osq4k3&keywords=
  * 注：关键字 进行了URLencord.encode(keyWord,"utf-8")两次转码 如：String str = URLEncoder.encode(URLEncoder.encode("贵州松河公司松河煤矿","utf-8"),"utf-8");
- *
  */
 @Slf4j
 @Component("guizhou_xzcf")
 @Scope("prototype")
-public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina{
-    @Autowired
-    SiteParams siteParams;
-    @Override
-    protected String execute() throws Throwable {
-        String keyWord = siteParams.map.get("keyWord");
-        if(keyWord==null){
-            keyWord="";
-        }
-        webContext(keyWord);
-        return  null;
-    }
+public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
+	private String url = "http://www.gzcx.gov.cn/a/xinxishuanggongshi/";
+//	private String listUrl = "http://202.98.195.12:7809/CreditWebApi/f/sgs/xzcfxx/list?" +
+//			"accessKey=556d8122421340ae8799bae4ad5c03a1&sid=bo2jbfvecte32biererdln2533&areacode=%s&areatype=4&";
 
-    @Override
-    protected String executeOne() throws Throwable {
-        return super.executeOne();
-    }
+	private String listUrl = "http://202.98.195.12:7809/CreditWebApi/f/sgs/xzcfxx/list";
 
-    public void webContext(String keyWord){
-        try {
-            keyWord = URLEncoder.encode(keyWord,"UTF-8");
-            String url = "http://www.gzcx.gov.cn/a/xinxishuanggongshi/shuanggongshichaxun/?creditCorpusCode=S&sgstype=xzcf&sgskeywords="+keyWord;
+	private String detailUrl = "http://service.gzcx.gov.cn:7809/CreditWebApi/%s";
+	@Value("${download-dir}")
+	private String downloadDir;
 
-            WebClient webClient = createWebClient("","");
-            HtmlPage htmlPage = webClient.getPage(url);
+	@Override
+	protected String executeOne() throws Throwable {
+		return super.executeOne();
+	}
 
-            //5.1 获取内嵌界面Iframe
-            HtmlElement htmlElementIframe =  (HtmlElement)htmlPage.getByXPath("//body[@class='wrapper']//div[@class='main_body']//div[@id='sgsmain']//iframe[@id='sgsmain']").get(0);
-            String Iframe_SRC = htmlElementIframe.getAttribute("src")+"&keywords="+keyWord;
-            if(Iframe_SRC.contains("xzxkxx")){
-                Iframe_SRC = Iframe_SRC.replaceAll("xzxkxx","xzcfxx");
-            }
-            HtmlPage htmlPageIframe = webClient.getPage(Iframe_SRC);
-            //5.2 获取列表清单数据
-            List<HtmlElement> htmlElementList = htmlPageIframe.getByXPath("//body//div[@class='publicitywrap']//div[@class='publicitylist']//ul//li");
-            int pageIndex =1;
-            log.info("************************************第 "+pageIndex+" 页**************************************");
-            for(HtmlElement htmlElementLi : htmlElementList){
-                HtmlElement htmlElementA_Href = htmlElementLi.getElementsByTagName("h3").get(0).getElementsByTagName("a").get(0);
-                //明细地址
-                String detailHref = htmlElementA_Href.getAttribute("href");
-                HtmlElement htmlElementP = htmlElementLi.getElementsByTagName("p").get(0);
-                //更新时间
-                String updateDate = htmlElementP.asText().replaceAll(".*：","");
-                log.info("\n updateDate:"+updateDate+"---detailHref:"+detailHref);
-                resultDetail(detailHref);
-            }
-            //翻页操作paginate_button next
-            List<HtmlElement> htmlElementNextPage = htmlPageIframe.getByXPath("//body//div[@class='publicitywrap']//div[@class='pagination']//div[@class='col-sm-6 padding-right0']//ul[@class='no-mar pull-right']//li[@class='paginate_button next']");
-            HtmlElement htmlElementNext = null;
-            //翻页标识
-            Boolean nextFlag = false;
-            if(htmlElementNextPage.size()>0){
-                htmlElementNext = htmlElementNextPage.get(0);
-                nextFlag = true;
-            }
+	@Override
+	protected String execute() throws Throwable {
+		try {
+			extractContext(url);
+		} catch (Exception e) {
+			e.printStackTrace();
+			writeBizErrorLog(url, e.getMessage());
+		}
+		return null;
+	}
 
-            while (nextFlag){
-                log.info("************************************第 "+ ++pageIndex +" 页**************************************");
-                htmlPageIframe = htmlElementNext.click();
-                //5.2 获取列表清单数据
-                htmlElementList = htmlPageIframe.getByXPath("//body//div[@class='publicitywrap']//div[@class='publicitylist']//ul//li");
+	/**
+	 * 获取网页内容
+	 * 行政处罚决定书文号、案件名称、处罚类别、处罚事由、处罚依据、行政相对人名称、组织机构代码、工商登记码、税务登记号、
+	 * 法定代表人居民身份证号、法定代表人姓名、处罚结果、处罚生效期、处罚机关、当前状态、地方编码、备注、信息提供部门、数据报送时间
+	 */
+	public void extractContext(String url) throws Exception {
+		Document totalDoc = Jsoup.parse(getData(url));
+		Elements listElements = totalDoc.getElementsByClass("header-area-list");
+		for (int i = 0; i < listElements.size(); i++) {
+			Element listElement = listElements.get(i);
+			Elements liElements = listElement.getElementsByTag("li");
+			for (int j = 0; j < liElements.size(); j++) {
+				Element liElement = liElements.get(j);
+				String onclick = liElement.attr("onclick");
+				if (StrUtil.isNotEmpty(onclick)) {
+					String code = onclick.substring(onclick.lastIndexOf(",") + 1)
+							.replace("'", "").replace(")", "");
+					String address = liElement.text();
+//					String sListUrl = String.format(listUrl, code);
+//					log.info("address: {}, url: {} ", address, sListUrl);
 
-                for(HtmlElement htmlElementLi : htmlElementList){
-                    HtmlElement htmlElementA_Href = htmlElementLi.getElementsByTagName("h3").get(0).getElementsByTagName("a").get(0);
-                    //明细地址
-                    String detailHref = htmlElementA_Href.getAttribute("href");
-                    HtmlElement htmlElementP = htmlElementLi.getElementsByTagName("p").get(0);
-                    //更新时间
-                    String updateDate = htmlElementP.asText().replaceAll(".*：","");
-                    log.info("\n updateDate:"+updateDate+"---detailHref:"+detailHref);
-                    resultDetail(detailHref);
-                }
-                //翻页操作
-                htmlElementNextPage = htmlPageIframe.getByXPath("//body//div[@class='publicitywrap']//div[@class='pagination']//div[@class='col-sm-6 padding-right0']//ul[@class='no-mar pull-right']//li[@class='paginate_button next']");
-                //翻页标识
-                if(htmlElementNextPage.size()>0&&htmlElementNextPage.get(0).asXml().contains("下一页")){
-                    htmlElementNext = htmlElementNextPage.get(0);
-                    nextFlag = true;
-                }else {
-                    break;
-                }
-            }
+					//区域内的主题明细
+					inner:
+					for (int k = 1; ; k++) {
+						Map<String, String> params = Maps.newHashMap();
+						params.put("accessKey", "556d8122421340ae8799bae4ad5c03a1");
+						params.put("sid", "bo2jbfvecte32biererdln2533");
+						params.put("pageNo", String.valueOf(k));
+						params.put("pageSize", "10");
+						params.put("count", "16");
+						params.put("areacode", code);
+						params.put("areatype", "4");
+						String sListStr = postData(listUrl, params);
+						Document listDoc = Jsoup.parse(sListStr);
+						Elements detailElements = listDoc.getElementsByClass("publicitylist").first().getElementsByTag("li");
+						if (CollectionUtil.isEmpty(detailElements)) break inner;
 
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-    }
-    public Map resultDetail(String url){
-        Map map = new HashMap();
-        try {
-            WebClient webClient = createWebClient("","");
-            HtmlPage htmlPageDetail = webClient.getPage(url);
-            HtmlElement htmlElementIframe = (HtmlElement)htmlPageDetail.getByXPath("//body//div[@class='main_body']//div[@class='body_part_left']//div[@class='xycxbody']//iframe[@id='xycxmain']").get(0);
-            String detailSrc = htmlElementIframe.getAttribute("src");
-            htmlPageDetail = webClient.getPage(detailSrc);
-            HtmlElement htmlElementCompanyName = (HtmlElement)htmlPageDetail.getByXPath("//body//div[@class='companyinfo']//div[@class='top']").get(0);
-            //公司名称
-            String qymc = htmlElementCompanyName.getElementsByTagName("h3").get(0).asText();
-            //统一社会信用代码
-            String tyshxydm = htmlElementCompanyName.getElementsByTagName("p").get(0).asText();
-            //企业地址
-            String zydz = htmlElementCompanyName.getElementsByTagName("p").get(1).asText();
-            List<HtmlElement> htmlElementDetail = htmlPageDetail.getByXPath("//body//div[@class='companyinfo']//div[@class='tab-wrap']//ul[@class='tab-bot']//li[@id='bot_3']//div[@class='con']//table//tbody");
-            for(HtmlElement htmlElementTRs : htmlElementDetail){
-                List<HtmlElement> htmlElementTR = htmlElementTRs.getElementsByTagName("tr");
-                if(htmlElementTR.size()==10){
-                    String cfwh = htmlElementTR.get(0).getElementsByTagName("td").get(1).asText();
-                    String fddbr = htmlElementTR.get(1).getElementsByTagName("td").get(1).asText();
-                    String cflb = htmlElementTR.get(2).getElementsByTagName("td").get(1).asText();
-                    String cfjg = htmlElementTR.get(3).getElementsByTagName("td").get(1).asText();
-                    String cfsy = htmlElementTR.get(4).getElementsByTagName("td").get(1).asText();
-                    String cfyj = htmlElementTR.get(5).getElementsByTagName("td").get(1).asText();
-                    String punishOrg = htmlElementTR.get(6).getElementsByTagName("td").get(1).asText();
-                    String cfrq = htmlElementTR.get(7).getElementsByTagName("td").get(1).asText();
-                    String cfyxq = htmlElementTR.get(8).getElementsByTagName("td").get(1).asText();
-                    String gssj = htmlElementTR.get(9).getElementsByTagName("td").get(1).asText();
-                    map.put("enterpriseName",qymc);
-                    map.put("enterpriseCode1",tyshxydm);
-                    map.put("address",zydz);
-                    map.put("judgeNo",cfwh);
-                    map.put("personName",fddbr);
-                    map.put("punishType",cflb);
-                    map.put("punishResult",cfjg);
-                    map.put("punishReason",cfsy);
-                    map.put("punishAccording",cfyj);
-                    map.put("punishValidateDate",cfyxq);
-                    map.put("punishDate",cfrq);
-                    map.put("judgeAuth",punishOrg);
-                    map.put("publishDate",gssj);
-                    map.put("sourceUrl","http://www.gzcx.gov.cn/a/xinxishuanggongshi/shuanggongshichaxun/?creditCorpusCode=S&sgstype=xzcf&sgskeywords="+qymc);
-                    map.put("source","信用中国（贵州）");
-                    map.put("subject","行政处罚");
-                    //数据入库
-                    adminPunishInsert(map);
-                }
-            }
+						for (int m = 0; m < detailElements.size(); m++) {
+							AdminPunish adminPunish = createDefaultAdminPunish();
 
-        } catch (Throwable throwable) {
-            log.error("网络连接异常···清查看···"+throwable.getMessage());
-        }
-        return map;
-    }
+							Element detailElement = detailElements.get(m);
+							Element aElement = detailElement.getElementsByTag("a").first();
+							String holderName = aElement.text();
+							String shref = aElement.attr("href");
+							String dHref = String.format(detailUrl, shref.substring(shref.indexOf("?") + 1));
+							Document holderDoc = Jsoup.parse(getData(dHref));
+							Element divElement = holderDoc.getElementsByClass("companyinfo").first();
+							Element topElement = divElement.getElementsByClass("top").first();
+							if (topElement.getElementsByTag("h3") == null
+									|| topElement.getElementsByTag("h3").size() <= 0) continue;
+							String name = topElement.getElementsByTag("h3").first().text();
+							String pCode = topElement.getElementsByTag("p").first().text();
+
+							adminPunish.setUrl(dHref);
+							if (pCode.contains("身份证号")) {
+								adminPunish.setPersonName(name);
+								adminPunish.setPersonId(pCode);
+								adminPunish.setObjectType("02");
+							} else {
+								adminPunish.setEnterpriseName(name);
+								adminPunish.setEnterpriseCode1(pCode);
+							}
+
+							Elements trElements = divElement.getElementById("bot_3").getElementsByTag("tr");
+							for (int t = 0; t < trElements.size(); t++) {
+								Elements tdElements = trElements.get(i).getElementsByTag("td");
+								if (tdElements.first().text().contains("处罚文书号") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setJudgeNo(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("法定代表人姓名") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setPersonName(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("处罚类别") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setPunishType(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("处罚结果") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setPunishResult(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("处罚事由") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setPunishReason(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("处罚依据") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setPunishAccording(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("处罚机关") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setJudgeAuth(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("处罚决定日期") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setJudgeDate(tdElements.last().text());
+								}
+								if (tdElements.first().text().contains("处罚公示期") && StrUtil.isNotEmpty(tdElements.last().text())) {
+									adminPunish.setPublishDate(tdElements.last().text());
+								}
+							}
+							adminPunish.setUniqueKey(dHref + "@" + adminPunish.getEnterpriseName() + "@" + adminPunish.getPersonName() + "@" + adminPunish.getJudgeNo() + "@" + adminPunish.getJudgeAuth());
+							saveAdminPunishOne(adminPunish, false);
+						}
+
+					}
+
+				}
+			}
+		}
+
+	}
+
+	protected String getData(String url) {
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return GuiZhou_XZCF.super.getData(url);
+			}
+		}){
+			@Override
+			protected void callOnExection() {
+				GuiZhou_XZCF.super.getData(GuiZhou_XZCF.this.url);
+			}
+		}.execute(30);
+	}
+
+	protected String postData(String url, Map<String, String> requestParams) {
+		return new IdempotentOperator<String>(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return GuiZhou_XZCF.super.postData(url, requestParams);
+			}
+		}){
+			@Override
+			protected void callOnExection() {
+				GuiZhou_XZCF.super.getData(GuiZhou_XZCF.this.url);
+			}
+		}.execute(30);
+	}
+
+
+	private AdminPunish createDefaultAdminPunish() {
+		AdminPunish adminPunish = new AdminPunish();
+
+		adminPunish.setCreatedAt(new Date());
+		adminPunish.setUpdatedAt(new Date());
+		adminPunish.setSource("信用中国（贵州）");
+//		adminPunish.setUrl(url);
+		adminPunish.setSubject("");
+		adminPunish.setObjectType("01");
+		adminPunish.setEnterpriseCode1("");
+		adminPunish.setEnterpriseCode2("");
+		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
+		adminPunish.setPersonName("");
+		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
+		return adminPunish;
+	}
 
 
 }

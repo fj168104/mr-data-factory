@@ -74,8 +74,12 @@ public class Guizhou_11239 extends SiteTaskExtend_CreditChina {
 			adminPunish.setPersonId(row.getCell(5).getStringCellValue());
 			adminPunish.setPunishReason(row.getCell(8).getStringCellValue());
 			adminPunish.setJudgeAuth(row.getCell(7).getStringCellValue());
-			adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-			saveAdminPunishOne(adminPunish, false);
+			try {
+				adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+				saveAdminPunishOne(adminPunish, false);
+			}catch (Exception e){
+				writeBizErrorLog(url, e.getMessage());
+			}
 		}
 	}
 

@@ -67,7 +67,12 @@ public class Xizang_tq extends SiteTaskExtend_CreditChina {
 			adminPunish.setPunishReason("拖欠民工工资");
 			adminPunish.setPunishResult("对企业和相关从业人员，自治区住建厅要求各地各部门要在政府采购、招投标、履约担保、资质审核、融资贷款、市场准入等方面依法依规予以限制，" +
 					"使失信企业或人员在西藏自治区范围内“一处失信、处处受限”，提高企业失信违法成本，从而形成治理欠薪的高压态势，在社会上起到震慑作用。");
-			saveAdminPunishOne(adminPunish, false);
+			try{
+				adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+				saveAdminPunishOne(adminPunish, false);
+			}catch (Exception e){
+				writeBizErrorLog(url, e.getMessage());
+			}
 		}
 	}
 
@@ -78,15 +83,18 @@ public class Xizang_tq extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用西藏");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（西藏）");
 		adminPunish.setUrl(url);
+		adminPunish.setSubject("");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

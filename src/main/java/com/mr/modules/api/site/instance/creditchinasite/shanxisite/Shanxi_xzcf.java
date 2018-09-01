@@ -51,7 +51,7 @@ public class Shanxi_xzcf extends SiteTaskExtend_CreditChina {
 	public void extractContext(String url) {
 		String dUrlPrefix = "http://www.creditsx.gov.cn";
 
-		Document document = Jsoup.parse(getData(url));
+		Document document = Jsoup.parse(getData(url, 3));
 		Element elementPageDiv = document.getElementsByClass("page").first();
 		int pages = elementPageDiv.getElementsByTag("option").size();
 
@@ -136,6 +136,7 @@ public class Shanxi_xzcf extends SiteTaskExtend_CreditChina {
 					}
 				}
 				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
 					saveAdminPunishOne(adminPunish, false);
 				}catch (Exception e){
 					writeBizErrorLog(infoUrl, e.getMessage());
@@ -150,15 +151,18 @@ public class Shanxi_xzcf extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用山西");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（山西）");
 		adminPunish.setUrl(url);
+		adminPunish.setSubject("");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

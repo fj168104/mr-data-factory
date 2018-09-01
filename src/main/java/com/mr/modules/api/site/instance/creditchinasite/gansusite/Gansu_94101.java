@@ -233,6 +233,16 @@ public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 
 	}
 
+	protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
+		try{
+			discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
+			return super.saveDisneycreditBlackListOne(discreditBlacklist, false);
+		}catch (Exception e){
+			writeBizErrorLog(url, e.getMessage());
+		}
+		return true;
+	}
+
 	private DiscreditBlacklist createDefaultDiscreditBlacklist() {
 		DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
 
@@ -241,6 +251,7 @@ public class Gansu_94101 extends SiteTaskExtend_CreditChina {
 		discreditBlacklist.setSource("信用中国（甘肃）");
 		discreditBlacklist.setUrl(url);
 		discreditBlacklist.setObjectType("01");
+		discreditBlacklist.setEnterpriseName("");
 		discreditBlacklist.setEnterpriseCode1("");
 		discreditBlacklist.setEnterpriseCode2("");
 		discreditBlacklist.setEnterpriseCode3("");

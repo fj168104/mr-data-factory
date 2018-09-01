@@ -106,8 +106,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 						params.put("count", "16");
 						params.put("areacode", code);
 						params.put("areatype", "4");
-						String sListStr = postData(listUrl, params);
-						Document listDoc = Jsoup.parse(sListStr);
+						Document listDoc = getListDocument(listUrl, params);
 						Elements detailElements = listDoc.getElementsByClass("publicitylist").first().getElementsByTag("li");
 						if (CollectionUtil.isEmpty(detailElements)) break inner;
 
@@ -119,7 +118,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 							String holderName = aElement.text();
 							String shref = aElement.attr("href");
 							String dHref = String.format(detailUrl, shref.substring(shref.indexOf("?") + 1));
-							Document holderDoc = Jsoup.parse(getData(dHref));
+							Document holderDoc = getHolderDocument(dHref);
 							Element divElement = holderDoc.getElementsByClass("companyinfo").first();
 							Element topElement = divElement.getElementsByClass("top").first();
 							if (topElement.getElementsByTag("h3") == null
@@ -180,32 +179,41 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 
 	}
 
-	protected String getData(String url) {
-		return new IdempotentOperator<String>(new Callable<String>() {
+	private Document getListDocument(String url, Map<String, String> requestParams) {
+		return new IdempotentOperator<Document>(new Callable<Document>() {
 			@Override
-			public String call() throws Exception {
-				return GuiZhou_XZCF.super.getData(url);
+			public Document call() throws Exception {
+				String sListStr = postData(listUrl, requestParams);
+				Document listDoc = Jsoup.parse(sListStr);
+				Elements detailElements = listDoc.getElementsByClass("publicitylist").first().getElementsByTag("li");
+				return listDoc;
 			}
 		}){
 			@Override
-			protected void callOnExection() {
+			protected void callOnExection(Throwable e) {
+				e.printStackTrace();
 				GuiZhou_XZCF.super.getData(GuiZhou_XZCF.this.url);
 			}
-		}.execute(30);
+		}.execute();
 	}
 
-	protected String postData(String url, Map<String, String> requestParams) {
-		return new IdempotentOperator<String>(new Callable<String>() {
+
+	private Document getHolderDocument(String url) {
+		return new IdempotentOperator<Document>(new Callable<Document>() {
 			@Override
-			public String call() throws Exception {
-				return GuiZhou_XZCF.super.postData(url, requestParams);
+			public Document call() throws Exception {
+				Document holderDoc = Jsoup.parse(getData(url));
+				Element divElement = holderDoc.getElementsByClass("companyinfo").first();
+				Element topElement = divElement.getElementsByClass("top").first();
+				return holderDoc;
 			}
 		}){
 			@Override
-			protected void callOnExection() {
+			protected void callOnExection(Throwable e) {
+				e.printStackTrace();
 				GuiZhou_XZCF.super.getData(GuiZhou_XZCF.this.url);
 			}
-		}.execute(30);
+		}.execute();
 	}
 
 

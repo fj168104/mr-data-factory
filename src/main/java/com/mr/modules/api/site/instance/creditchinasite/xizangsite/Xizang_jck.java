@@ -96,7 +96,12 @@ public class Xizang_jck extends SiteTaskExtend_CreditChina {
 					adminPunish.setEnterpriseName(adminPunish.getEnterpriseName() + "公司");
 					adminPunish.setPunishReason("");
 				}
-				saveAdminPunishOne(adminPunish, false);
+				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+					saveAdminPunishOne(adminPunish, false);
+				}catch (Exception e){
+					writeBizErrorLog(url, e.getMessage());
+				}
 				j++;
 				continue;
 			}
@@ -109,15 +114,18 @@ public class Xizang_jck extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用西藏");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（西藏）");
 		adminPunish.setUrl(url);
+		adminPunish.setSubject("");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

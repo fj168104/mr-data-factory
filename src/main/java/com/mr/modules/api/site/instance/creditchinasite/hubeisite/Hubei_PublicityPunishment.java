@@ -24,10 +24,13 @@ import java.util.Map;
  * 2.http://www.hbcredit.gov.cn/credithb/gkgs/list.html
  */
 @Slf4j
-@Component("hubei_publicitypunishment")
+@Component("hubei_publicityPunishment")
 @Scope("prototype")
 public class Hubei_PublicityPunishment extends SiteTaskExtend_CreditChina {
 	String url = "http://www.hbcredit.gov.cn/credithb/gkgs/list.html";
+
+	@Autowired
+	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -142,6 +145,7 @@ public class Hubei_PublicityPunishment extends SiteTaskExtend_CreditChina {
 					}
 				}
 				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
 					saveAdminPunishOne(adminPunish, false);
 				}catch (Exception e){
 					writeBizErrorLog(infoUrl, e.getMessage());
@@ -156,15 +160,18 @@ public class Hubei_PublicityPunishment extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用湖北");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（湖北）");
 		adminPunish.setUrl(url);
+		adminPunish.setSubject("");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

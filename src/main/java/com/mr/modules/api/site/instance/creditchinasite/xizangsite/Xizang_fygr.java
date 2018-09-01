@@ -73,7 +73,13 @@ public class Xizang_fygr extends SiteTaskExtend_CreditChina {
 			adminPunish.setPersonName(sis[0]);
 			adminPunish.setPersonId(sis[1]);
 			adminPunish.setJudgeAuth(sis[2] + "法院");
-			saveAdminPunishOne(adminPunish, false);
+			try{
+				adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+				saveAdminPunishOne(adminPunish, false);
+			}catch (Exception e){
+				writeBizErrorLog(url, e.getMessage());
+			}
+
 		}
 	}
 
@@ -82,15 +88,18 @@ public class Xizang_fygr extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用西藏");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（西藏）");
 		adminPunish.setUrl(url);
-		adminPunish.setObjectType("02");
+		adminPunish.setSubject("");
+		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

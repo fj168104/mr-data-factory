@@ -1,13 +1,16 @@
 package com.mr.modules.api.site.instance.creditchinasite.hubeisite;
 
 import com.mr.framework.core.util.StrUtil;
+import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +30,8 @@ public class Hubei_Blacklist extends SiteTaskExtend_CreditChina {
 	String url = "http://www.hbcredit.gov.cn/credithb/gkgs/listNew.html";
 
 	String[] classNames = {"FY", "DS", "GUOS", "HB", "GongS", "SYJ", "SW"};
+	@Autowired
+	AdminPunishMapper adminPunishMapper;
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -127,9 +132,10 @@ public class Hubei_Blacklist extends SiteTaskExtend_CreditChina {
 						continue;
 					}
 				}
-				try {
+				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
 					saveAdminPunishOne(adminPunish, false);
-				} catch (Exception e) {
+				}catch (Exception e){
 					writeBizErrorLog(infoUrl, e.getMessage());
 				}
 
@@ -142,15 +148,18 @@ public class Hubei_Blacklist extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用湖北");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（湖北）");
 		adminPunish.setUrl(url);
+		adminPunish.setSubject("");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

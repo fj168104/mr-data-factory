@@ -72,35 +72,60 @@ public class Xizang_fyqy extends SiteTaskExtend_CreditChina {
 				adminPunish.setEnterpriseCode2("74191508—0");
 				adminPunish.setPersonName("吴忠和");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				saveAdminPunishOne(adminPunish, false);
+				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+					saveAdminPunishOne(adminPunish, false);
+				}catch (Exception e){
+					writeBizErrorLog(url, e.getMessage());
+				}
 				continue;
 			}
 			if (i == 2) {
 				adminPunish.setEnterpriseCode2("68684241—2");
 				adminPunish.setPersonName("攀维超");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				saveAdminPunishOne(adminPunish, false);
+				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+					saveAdminPunishOne(adminPunish, false);
+				}catch (Exception e){
+					writeBizErrorLog(url, e.getMessage());
+				}
 				continue;
 			}
 			if (i == 3) {
 				adminPunish.setEnterpriseCode2("78910651—4");
 				adminPunish.setPersonName("方相胜");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				saveAdminPunishOne(adminPunish, false);
+				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+					saveAdminPunishOne(adminPunish, false);
+				}catch (Exception e){
+					writeBizErrorLog(url, e.getMessage());
+				}
 				continue;
 			}
 			if (i == 4) {
 				adminPunish.setEnterpriseCode2("68682020—5");
 				adminPunish.setPersonName("万冬");
 				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
-				saveAdminPunishOne(adminPunish, false);
+				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+					saveAdminPunishOne(adminPunish, false);
+				}catch (Exception e){
+					writeBizErrorLog(url, e.getMessage());
+				}
 				continue;
 			}
 			if (i == 22) {
 				adminPunish.setEnterpriseCode2("68683480—X");
 				adminPunish.setPersonName("陈林");
 				adminPunish.setJudgeAuth("昌都市中级人民法院");
-				saveAdminPunishOne(adminPunish, false);
+				try{
+					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+					saveAdminPunishOne(adminPunish, false);
+				}catch (Exception e){
+					writeBizErrorLog(url, e.getMessage());
+				}
 				continue;
 			}
 
@@ -109,7 +134,12 @@ public class Xizang_fyqy extends SiteTaskExtend_CreditChina {
 			adminPunish.setEnterpriseCode2(sis[0]);
 			adminPunish.setPersonName(sis[1]);
 			adminPunish.setJudgeAuth(sis[2] + "法院");
-			saveAdminPunishOne(adminPunish, false);
+			try{
+				adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
+				saveAdminPunishOne(adminPunish, false);
+			}catch (Exception e){
+				writeBizErrorLog(url, e.getMessage());
+			}
 		}
 	}
 
@@ -118,15 +148,18 @@ public class Xizang_fyqy extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用西藏");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（西藏）");
 		adminPunish.setUrl(url);
+		adminPunish.setSubject("");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

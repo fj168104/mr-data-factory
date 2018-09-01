@@ -44,6 +44,7 @@ public class IdempotentOperator<T> {
 					Thread.sleep(retryTimes * 1000);
 					log.info("retry...");
 				} catch (InterruptedException e1) {
+					callOnExection(e);
 					e1.printStackTrace();
 				}
 			}
@@ -56,5 +57,8 @@ public class IdempotentOperator<T> {
 				throw new RuntimeException("超过重试次数,执行失败");
 			}
 		return result;
+	}
+
+	protected void callOnExection(Throwable e){
 	}
 }

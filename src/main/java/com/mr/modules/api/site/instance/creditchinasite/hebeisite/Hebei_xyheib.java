@@ -3,6 +3,7 @@ package com.mr.modules.api.site.instance.creditchinasite.hebeisite;
 import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import lombok.extern.slf4j.Slf4j;
@@ -55,51 +56,93 @@ public class Hebei_xyheib extends SiteTaskExtend_CreditChina {
 			log.debug("hebei_xyheib record=" + i);
 			Document detailDoc = Jsoup.parse(getData(aUrl));
 			Element divElement = detailDoc.getElementsByClass("div_slider").first();
-			Elements spanElements = divElement.getElementsByTag("span");
-			AdminPunish adminPunish = createDefaultAdminPunish();
-			adminPunish.setUrl(url);
-			for (int j = 0; j < spanElements.size(); j++) {
-				Element spanElement = spanElements.get(j);
-				String[] kvString = spanElement.text().split("：");
-				if(kvString.length < 2) continue;
-				String key = kvString[0];
-				String value = kvString[1];
+			Elements trElements = divElement.getElementsByTag("tr");
+			DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
+			discreditBlacklist.setUrl(aUrl);
+			for (int j = 0; j < trElements.size(); j++) {
+				Element trElement = trElements.get(j);
+				String keyString = trElement.getElementsByTag("td").get(0).text();
+				String valueString = trElement.getElementsByTag("td").get(1).text().trim();
 
-				if (key.contains("企业名称")) {
-					if(adminPunishMapper.selectByUrl(url, value, null, null, null).size() > 0) return;
-					adminPunish.setEnterpriseName(value);
+				if (keyString.contains("企业名称")) {
+					if(StrUtil.isEmpty(valueString)) return;
+					discreditBlacklist.setEnterpriseName(valueString);
 					continue;
 				}
 
-				if (key.contains("统一社会信用代码")) {
-					adminPunish.setEnterpriseCode1(value);
+
+				if (keyString.contains("统一社会信用代码")) {
+					discreditBlacklist.setEnterpriseCode1(valueString);
+					continue;
+				}
+
+				if (keyString.contains("工商注册号码")) {
+					discreditBlacklist.setEnterpriseCode2(valueString);
+					continue;
+				}
+
+				if (keyString.contains("组织机构代码")) {
+					discreditBlacklist.setEnterpriseCode3(valueString);
+					continue;
+				}
+
+				if (keyString.contains("载入黑名单原因")) {
+					discreditBlacklist.setPunishReason(valueString);
+					continue;
+				}
+
+				if (keyString.contains("当前黑名单状态")) {
+					discreditBlacklist.setStatus(valueString);
+					continue;
+				}
+
+				if (keyString.contains("载入日期")) {
+					discreditBlacklist.setPublishDate(valueString);
+					continue;
+				}
+
+				if (keyString.contains("判定机关")) {
+					discreditBlacklist.setJudgeAuth(valueString);
 					continue;
 				}
 
 			}
-			try{
-				saveAdminPunishOne(adminPunish, false);
-			}catch (Exception e){
-				writeBizErrorLog(String.format(aUrl,i), e.getMessage());
-			}
-
+			saveDisneycreditBlackListOne(discreditBlacklist, false);
 		}
 	}
 
-	private AdminPunish createDefaultAdminPunish() {
-		AdminPunish adminPunish = new AdminPunish();
+	protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
+		try{
+			discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
+			return super.saveDisneycreditBlackListOne(discreditBlacklist, false);
+		}catch (Exception e){
+			writeBizErrorLog(url, e.getMessage());
+		}
+		return true;
+	}
 
-		adminPunish.setCreatedAt(new Date());
-		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用河北");
-		adminPunish.setSubject("");
-		adminPunish.setObjectType("01");
-		adminPunish.setEnterpriseCode1("");
-		adminPunish.setEnterpriseCode2("");
-		adminPunish.setEnterpriseCode3("");
-		adminPunish.setPersonName("");
-		adminPunish.setPersonId("");
-		return adminPunish;
+	private DiscreditBlacklist createDefaultDiscreditBlacklist() {
+		DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
+
+		discreditBlacklist.setCreatedAt(new Date());
+		discreditBlacklist.setUpdatedAt(new Date());
+		discreditBlacklist.setSource("信用中国（河北）");
+		discreditBlacklist.setSubject("黑名单");
+		discreditBlacklist.setUrl(url);
+		discreditBlacklist.setObjectType("01");
+		discreditBlacklist.setEnterpriseName("");
+		discreditBlacklist.setEnterpriseCode1("");
+		discreditBlacklist.setEnterpriseCode2("");
+		discreditBlacklist.setEnterpriseCode3("");
+		discreditBlacklist.setPersonName("");
+		discreditBlacklist.setPersonId("");
+		discreditBlacklist.setDiscreditType("");
+		discreditBlacklist.setDiscreditAction("");
+		discreditBlacklist.setJudgeNo("");
+		discreditBlacklist.setJudgeDate("");
+		discreditBlacklist.setJudgeAuth("");
+		discreditBlacklist.setStatus("");
+		return discreditBlacklist;
 	}
 
 }

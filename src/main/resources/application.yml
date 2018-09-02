@@ -90,6 +90,11 @@ proxydatabase:
   dburl: jdbc:mysql://47.100.7.81:3306/data_factory_xu?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
   dbuser: root
   dbpassword: Root@1234
+#配置是否启用固定代理,默认不启用：false，启用：true，
+proxyfixed:
+  flag: false
+  ip: 203.142.34.37
+  port: 52335
 ---
 
 #开发环境配置

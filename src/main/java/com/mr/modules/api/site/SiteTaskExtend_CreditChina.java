@@ -50,15 +50,15 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         return super.executeOne();
     }
     
-    @Override
-	protected String getData(String url) {
-    	try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		return CrawlerUtil.getHtmlPage(url);
-	}
+//    @Override
+//	protected String getData(String url) {
+//    	try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		return CrawlerUtil.getHtmlPage(url);
+//	}
     
 	/**
 	 * 获取页面数据

@@ -113,6 +113,7 @@ public class Shanxi_personblack extends SiteTaskExtend_CreditChina {
 							}
 						}
 						try{
+							adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
 							saveAdminPunishOne(adminPunish, false);
 						}catch (Exception e){
 							writeBizErrorLog(infoUrl, e.getMessage());
@@ -128,15 +129,18 @@ public class Shanxi_personblack extends SiteTaskExtend_CreditChina {
 
 		adminPunish.setCreatedAt(new Date());
 		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用山西");
-		adminPunish.setSubject("");
+		adminPunish.setSource("信用中国（山西）");
 		adminPunish.setUrl(url);
-		adminPunish.setObjectType("02");
+		adminPunish.setSubject("");
+		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");
 		adminPunish.setEnterpriseCode3("");
+		adminPunish.setEnterpriseName("");
 		adminPunish.setPersonName("");
 		adminPunish.setPersonId("");
+		adminPunish.setJudgeNo("");
+		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
 

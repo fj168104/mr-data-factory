@@ -16,6 +16,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.xpath.operations.Bool;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,7 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.concurrent.*;
 
 /**
  * 来源：信用中国（贵州）
@@ -74,6 +75,124 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 		return null;
 	}
 
+	private class ElementCaller implements Callable<Boolean> {
+		private Element listElement;
+		private CountDownLatch countDownLatch;
+		private int i;
+
+		public ElementCaller(Element listElement, CountDownLatch countDownLatch, int i) {
+			this.listElement = listElement;
+			this.countDownLatch = countDownLatch;
+			this.i = i;
+		}
+
+		@Override
+		public Boolean call() throws Exception {
+			Boolean result = false;
+			try {
+				Elements liElements = listElement.getElementsByTag("li");
+				for (int j = 0; j < liElements.size(); j++) {
+					Element liElement = liElements.get(j);
+					String onclick = liElement.attr("onclick");
+					if (StrUtil.isNotEmpty(onclick)) {
+						String code = onclick.substring(onclick.lastIndexOf(",") + 1)
+								.replace("'", "").replace(")", "");
+						String address = liElement.text();
+//					String sListUrl = String.format(listUrl, code);
+//					log.info("address: {}, url: {} ", address, sListUrl);
+
+						//区域内的主题明细
+						inner:
+						for (int k = 1; ; k++) {
+							log.info("i = {}, j = {}, k = {}", i, j, k);
+							Map<String, String> params = Maps.newHashMap();
+							params.put("accessKey", "556d8122421340ae8799bae4ad5c03a1");
+							params.put("sid", "bo2jbfvecte32biererdln2533");
+							params.put("pageNo", String.valueOf(k));
+							params.put("pageSize", "10");
+							params.put("count", "16");
+							params.put("areacode", code);
+							params.put("areatype", "4");
+							Document listDoc = getListDocument(listUrl, params);
+							Elements detailElements = listDoc.getElementsByClass("publicitylist").first().getElementsByTag("li");
+							if (CollectionUtil.isEmpty(detailElements)) break inner;
+
+							for (int m = 0; m < detailElements.size(); m++) {
+								AdminPunish adminPunish = createDefaultAdminPunish();
+
+								Element detailElement = detailElements.get(m);
+								Element aElement = detailElement.getElementsByTag("a").first();
+								String holderName = aElement.text();
+								String shref = aElement.attr("href");
+								String dHref = String.format(detailUrl, shref.substring(shref.indexOf("?") + 1));
+								Document holderDoc = getHolderDocument(dHref);
+								Element divElement = holderDoc.getElementsByClass("companyinfo").first();
+								Element topElement = divElement.getElementsByClass("top").first();
+								if (topElement.getElementsByTag("h3") == null
+										|| topElement.getElementsByTag("h3").size() <= 0) continue;
+								String name = topElement.getElementsByTag("h3").first().text();
+								String pCode = topElement.getElementsByTag("p").first().text();
+
+								adminPunish.setUrl(dHref);
+								if (pCode.contains("身份证号")) {
+									adminPunish.setPersonName(name);
+									adminPunish.setPersonId(pCode);
+									adminPunish.setObjectType("02");
+								} else {
+									adminPunish.setEnterpriseName(name);
+									adminPunish.setEnterpriseCode1(pCode);
+								}
+
+								Elements trElements = divElement.getElementById("bot_3").getElementsByTag("tr");
+								for (int t = 0; t < trElements.size(); t++) {
+									Elements tdElements = trElements.get(i).getElementsByTag("td");
+									if (tdElements.first().text().contains("处罚文书号") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setJudgeNo(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("法定代表人姓名") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setPersonName(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("处罚类别") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setPunishType(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("处罚结果") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setPunishResult(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("处罚事由") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setPunishReason(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("处罚依据") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setPunishAccording(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("处罚机关") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setJudgeAuth(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("处罚决定日期") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setJudgeDate(tdElements.last().text());
+									}
+									if (tdElements.first().text().contains("处罚公示期") && StrUtil.isNotEmpty(tdElements.last().text())) {
+										adminPunish.setPublishDate(tdElements.last().text());
+									}
+								}
+								adminPunish.setUniqueKey(dHref + "@" + adminPunish.getEnterpriseName() + "@" + adminPunish.getPersonName() + "@" + adminPunish.getJudgeNo() + "@" + adminPunish.getJudgeAuth());
+								saveAdminPunishOne(adminPunish, false);
+							}
+						}
+
+					}
+				}
+				result = true;
+			} catch (Exception e) {
+				log.warn(e.getMessage());
+			} finally {
+				countDownLatch.countDown();
+				log.info("listElement execute ok, detail:{}", listElement.text());
+			}
+
+			return result;
+		}
+	}
+
 	/**
 	 * 获取网页内容
 	 * 行政处罚决定书文号、案件名称、处罚类别、处罚事由、处罚依据、行政相对人名称、组织机构代码、工商登记码、税务登记号、
@@ -82,102 +201,20 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 	public void extractContext(String url) throws Exception {
 		Document totalDoc = Jsoup.parse(getData(url));
 		Elements listElements = totalDoc.getElementsByClass("header-area-list");
+		CountDownLatch countDownLatch = new CountDownLatch(listElements.size()) {
+			@Override
+			public void await() throws InterruptedException {
+				super.await();
+				log.info(Thread.currentThread().getName() + " count down is ok");
+			}
+		};
+
 		for (int i = 0; i < listElements.size(); i++) {
 			Element listElement = listElements.get(i);
-			Elements liElements = listElement.getElementsByTag("li");
-			for (int j = 0; j < liElements.size(); j++) {
-				Element liElement = liElements.get(j);
-				String onclick = liElement.attr("onclick");
-				if (StrUtil.isNotEmpty(onclick)) {
-					String code = onclick.substring(onclick.lastIndexOf(",") + 1)
-							.replace("'", "").replace(")", "");
-					String address = liElement.text();
-//					String sListUrl = String.format(listUrl, code);
-//					log.info("address: {}, url: {} ", address, sListUrl);
-
-					//区域内的主题明细
-					inner:
-					for (int k = 1; ; k++) {
-						log.info("i = {}, j = {}, k = {}", i, j, k);
-						Map<String, String> params = Maps.newHashMap();
-						params.put("accessKey", "556d8122421340ae8799bae4ad5c03a1");
-						params.put("sid", "bo2jbfvecte32biererdln2533");
-						params.put("pageNo", String.valueOf(k));
-						params.put("pageSize", "10");
-						params.put("count", "16");
-						params.put("areacode", code);
-						params.put("areatype", "4");
-						Document listDoc = getListDocument(listUrl, params);
-						Elements detailElements = listDoc.getElementsByClass("publicitylist").first().getElementsByTag("li");
-						if (CollectionUtil.isEmpty(detailElements)) break inner;
-
-						for (int m = 0; m < detailElements.size(); m++) {
-							AdminPunish adminPunish = createDefaultAdminPunish();
-
-							Element detailElement = detailElements.get(m);
-							Element aElement = detailElement.getElementsByTag("a").first();
-							String holderName = aElement.text();
-							String shref = aElement.attr("href");
-							String dHref = String.format(detailUrl, shref.substring(shref.indexOf("?") + 1));
-							Document holderDoc = getHolderDocument(dHref);
-							Element divElement = holderDoc.getElementsByClass("companyinfo").first();
-							Element topElement = divElement.getElementsByClass("top").first();
-							if (topElement.getElementsByTag("h3") == null
-									|| topElement.getElementsByTag("h3").size() <= 0) continue;
-							String name = topElement.getElementsByTag("h3").first().text();
-							String pCode = topElement.getElementsByTag("p").first().text();
-
-							adminPunish.setUrl(dHref);
-							if (pCode.contains("身份证号")) {
-								adminPunish.setPersonName(name);
-								adminPunish.setPersonId(pCode);
-								adminPunish.setObjectType("02");
-							} else {
-								adminPunish.setEnterpriseName(name);
-								adminPunish.setEnterpriseCode1(pCode);
-							}
-
-							Elements trElements = divElement.getElementById("bot_3").getElementsByTag("tr");
-							for (int t = 0; t < trElements.size(); t++) {
-								Elements tdElements = trElements.get(i).getElementsByTag("td");
-								if (tdElements.first().text().contains("处罚文书号") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setJudgeNo(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("法定代表人姓名") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setPersonName(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("处罚类别") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setPunishType(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("处罚结果") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setPunishResult(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("处罚事由") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setPunishReason(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("处罚依据") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setPunishAccording(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("处罚机关") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setJudgeAuth(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("处罚决定日期") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setJudgeDate(tdElements.last().text());
-								}
-								if (tdElements.first().text().contains("处罚公示期") && StrUtil.isNotEmpty(tdElements.last().text())) {
-									adminPunish.setPublishDate(tdElements.last().text());
-								}
-							}
-							adminPunish.setUniqueKey(dHref + "@" + adminPunish.getEnterpriseName() + "@" + adminPunish.getPersonName() + "@" + adminPunish.getJudgeNo() + "@" + adminPunish.getJudgeAuth());
-							saveAdminPunishOne(adminPunish, false);
-						}
-
-					}
-
-				}
-			}
+			ExecutorService executor = Executors.newFixedThreadPool(listElements.size());
+			Future<Boolean> future = executor.submit(new ElementCaller(listElement, countDownLatch, i));
 		}
-
+		countDownLatch.await();
 	}
 
 	private Document getListDocument(String url, Map<String, String> requestParams) {
@@ -211,7 +248,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 		}) {
 			@Override
 			protected void callOnExection(Throwable e) {
-				e.printStackTrace();
+				log.warn(e.getMessage());
 				GuiZhou_XZCF.super.getData(GuiZhou_XZCF.this.url);
 			}
 		}.execute();

@@ -103,7 +103,11 @@ public class Hebei_xzcf extends SiteTaskExtend_CreditChina {
 
 				if (keyString.contains("行政相对人名称")) {
 					if(StrUtil.isEmpty(valueString)) return;
-					adminPunish.setEnterpriseName(valueString);
+					if(valueString.contains("公司")){
+						adminPunish.setEnterpriseName(valueString);
+					}else {
+						adminPunish.setPersonName(valueString);
+					}
 					continue;
 				}
 

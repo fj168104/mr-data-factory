@@ -98,6 +98,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 					//区域内的主题明细
 					inner:
 					for (int k = 1; ; k++) {
+						log.info("i = {}, j = {}, k = {}", i, j, k);
 						Map<String, String> params = Maps.newHashMap();
 						params.put("accessKey", "556d8122421340ae8799bae4ad5c03a1");
 						params.put("sid", "bo2jbfvecte32biererdln2533");
@@ -183,12 +184,12 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 		return new IdempotentOperator<Document>(new Callable<Document>() {
 			@Override
 			public Document call() throws Exception {
-				String sListStr = postData(listUrl, requestParams);
+				String sListStr = postData(url, requestParams);
 				Document listDoc = Jsoup.parse(sListStr);
 				Elements detailElements = listDoc.getElementsByClass("publicitylist").first().getElementsByTag("li");
 				return listDoc;
 			}
-		}){
+		}) {
 			@Override
 			protected void callOnExection(Throwable e) {
 				e.printStackTrace();
@@ -207,7 +208,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 				Element topElement = divElement.getElementsByClass("top").first();
 				return holderDoc;
 			}
-		}){
+		}) {
 			@Override
 			protected void callOnExection(Throwable e) {
 				e.printStackTrace();

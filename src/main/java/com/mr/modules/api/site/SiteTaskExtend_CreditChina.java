@@ -14,6 +14,7 @@ import com.mr.modules.api.model.Proxypool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -24,6 +25,15 @@ import java.util.*;
  */
 @Slf4j
 public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
+    //固定代理属性配置
+    @Value("${proxyfixed.flag}")
+    private boolean fixedflag;
+    @Value("${proxyfixed.ip}")
+    private String fixedIP;
+    @Value("${proxyfixed.port}")
+    private int fixedPort;
+
+
     @Autowired
     protected ProxypoolMapper proxypoolMapper;
     @Autowired
@@ -81,7 +91,12 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
             wc = new WebClient(BrowserVersion.getDefault(), ip,Integer.valueOf(port));
             log.info("通过代理进行处理···");
         }
-
+        if(fixedflag==true){
+            log.info("系统通过固定代理IP进行处理···IP：{}，PORT：{}",fixedIP,fixedPort);
+            ProxyConfig proxyConfig = wc.getOptions().getProxyConfig();
+            proxyConfig.setProxyHost(fixedIP);
+            proxyConfig.setProxyPort(fixedPort);
+        }
         //设置浏览器版本
         //是否使用不安全的SSL
         wc.getOptions().setUseInsecureSSL(true);
@@ -119,12 +134,18 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param waitTime
      * @return
      */
-	public static String getHtmlPage(String url, int waitTime) {
+	public  String getHtmlPage(String url, int waitTime) {
         if(waitTime<0){
             waitTime = 1000;
         }
         //设置浏览器版本
         WebClient wc = new WebClient(BrowserVersion.CHROME);
+        if(fixedflag==true){
+            log.info("系统通过固定代理IP进行处理···IP：{}，PORT：{}",fixedIP,fixedPort);
+            ProxyConfig proxyConfig = wc.getOptions().getProxyConfig();
+            proxyConfig.setProxyHost(fixedIP);
+            proxyConfig.setProxyPort(fixedPort);
+        }
         //是否使用不安全的SSL
         wc.getOptions().setUseInsecureSSL(true);
         //启用JS解释器，默认为true
@@ -185,7 +206,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param port
      * @return
      */
-    public static String getHtmlPageProxy(String url, int waitTime,String ip,int port) {
+    public  String getHtmlPageProxy(String url, int waitTime,String ip,int port) {
         if(waitTime<0){
             waitTime = 1000;
         }
@@ -195,6 +216,14 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         WebClient wc = new WebClient(BrowserVersion.CHROME);
         //设置通过代理区爬起网页
         wc.getOptions().setProxyConfig(proxyConfig);
+
+        if(fixedflag==true){
+            log.info("系统通过固定代理IP进行处理···IP：{}，PORT：{}",fixedIP,fixedPort);
+            proxyConfig = wc.getOptions().getProxyConfig();
+            proxyConfig.setProxyHost(fixedIP);
+            proxyConfig.setProxyPort(fixedPort);
+        }
+
         //是否使用不安全的SSL
         wc.getOptions().setUseInsecureSSL(true);
         //启用JS解释器，默认为true

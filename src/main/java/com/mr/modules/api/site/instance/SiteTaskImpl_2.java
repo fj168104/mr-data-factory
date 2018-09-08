@@ -636,8 +636,8 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		if (StringUtils.isEmpty(detailAll)) return;
 		{
 			if (detailAll.indexOf("经查") > -1 && detailAll.indexOf("：") > -1 && factIndex > -1) {
-				String tmp = detailAll.substring(detailAll.indexOf("经查") + 4);
-				irregularities = tmp.substring(detailAll.indexOf("：") + 1, factIndex);
+//				String tmp = detailAll.substring(detailAll.indexOf("经查") + 4);
+				irregularities = detailAll.substring(detailAll.indexOf("经查") + 4, factIndex);
 			}
 		}
 
@@ -876,7 +876,7 @@ public class SiteTaskImpl_2 extends SiteTaskExtend {
 		cityMap.put("宁波", "http://www.csrc.gov.cn/pub/ningbo/nbxzcf/");
 		cityMap.put("厦门", "http://www.csrc.gov.cn/pub/xiamen/xmxzcf/");
 		cityMap.put("青岛", "http://www.csrc.gov.cn/pub/qingdao/xzcf/");
-//		cityMap.put("天津", "http://www.csrc.gov.cn/pub/tianjin/xzcf/");
+		cityMap.put("天津", "http://www.csrc.gov.cn/pub/tianjin/xzcf/");
 
 		return cityMap;
 	}

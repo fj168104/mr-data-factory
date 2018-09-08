@@ -601,7 +601,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 		return financeMonitorPunish;
 	}
 
-	protected void handlePunishDate(FinanceMonitorPunish financeMonitorPunish){
+	protected void handlePunishDate(FinanceMonitorPunish financeMonitorPunish) {
 		if (StrUtil.isNotEmpty(financeMonitorPunish.getPunishDate())) {
 			String pDate = financeMonitorPunish.getPunishDate().replaceAll("\\s*", "");
 			if (extracterZH(pDate).equals("年月日")) {
@@ -609,7 +609,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 				Date date = DateUtil.parse(pDate, "yyyy-MM-dd");
 				String format = DateUtil.format(date, "yyyy-MM-dd");
 				financeMonitorPunish.setPunishDate(format);
-			} else if (pDate.contains("〇")) {
+			} else if (pDate.contains("〇") || pDate.contains("O") || pDate.contains("Ｏ") || pDate.contains("○")) {
 				String sYear = pDate.substring(0, pDate.indexOf("年"));
 				String tyear = sYear.replace("一", "1")
 						.replace("二", "2")
@@ -620,7 +620,10 @@ public abstract class SiteTaskExtend extends SiteTask {
 						.replace("七", "7")
 						.replace("八", "8")
 						.replace("九", "9")
-						.replace("〇", "0");
+						.replace("〇", "0")
+						.replace("O", "0")
+						.replace("Ｏ", "0")
+						.replace("○", "0");
 
 				String sMonth = pDate.substring(pDate.indexOf("年") + 1, pDate.indexOf("月"));
 				String tMonth = sMonth.replace("十一", "11")
@@ -670,6 +673,25 @@ public abstract class SiteTaskExtend extends SiteTask {
 						.replace("一", "1");
 				pDate = tyear + "-" + tMonth + "-" + tDay;
 				financeMonitorPunish.setPunishDate(pDate);
+			} else if (extracterZH(pDate).equals("年月日至")) {
+				//from
+				String pDate1 = pDate.substring(0, pDate.indexOf("至"));
+				pDate1 = pDate1.replace("年", "-").replace("月", "-").replace("日", "");
+				Date date1 = DateUtil.parse(pDate1, "yyyy-MM-dd");
+				String format1 = DateUtil.format(date1, "yyyy-MM-dd");
+
+				//to
+				String pDate2 = pDate.substring(pDate.indexOf("至") + 1);
+				if (!pDate2.contains("年")) {
+					pDate2 = pDate1.substring(0, pDate1.indexOf("年")) + "-" + pDate2.replace("月", "-").replace("日", "");
+				} else {
+					pDate2 = pDate2.replace("年", "-").replace("月", "-").replace("日", "");
+				}
+				Date date2 = DateUtil.parse(pDate2, "yyyy-MM-dd");
+				String format2 = DateUtil.format(date2, "yyyy-MM-dd");
+
+				financeMonitorPunish.setPunishDate(format1 + "~" + format2);
+
 			}
 
 		}

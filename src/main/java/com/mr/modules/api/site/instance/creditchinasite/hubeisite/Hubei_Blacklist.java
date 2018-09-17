@@ -116,10 +116,10 @@ public class Hubei_Blacklist extends SiteTaskExtend_CreditChina {
 						continue;
 					}
 
-					if (keyString.contains("来源单位")) {
-						adminPunish.setSource(valueString);
-						continue;
-					}
+//					if (keyString.contains("来源单位")) {
+//						adminPunish.setSource(valueString);
+//						continue;
+//					}
 
 					if (keyString.contains("列入日期")) {
 						adminPunish.setPublishDate(valueString);

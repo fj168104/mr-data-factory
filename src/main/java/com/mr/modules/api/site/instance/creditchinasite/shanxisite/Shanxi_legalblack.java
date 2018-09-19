@@ -1,5 +1,9 @@
 package com.mr.modules.api.site.instance.creditchinasite.shanxisite;
 
+import com.google.common.collect.Maps;
+import com.mr.framework.json.JSONArray;
+import com.mr.framework.json.JSONObject;
+import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
@@ -10,6 +14,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +31,9 @@ import java.util.Map;
 @Component("shanxi_legalblack")
 @Scope("prototype")
 public class Shanxi_legalblack extends SiteTaskExtend_CreditChina {
-	String url = "http://www.creditsx.gov.cn/legalblackList.jspx?redBlackType=redBlack";
+	String PAGE_SIZE = "10000";
+	String url = "http://www.creditsx.gov.cn/legalblackListNew.jspx";
+	String detailUrlTp = "http://www.creditsx.gov.cn/legalblackDetial-%s.jspx";
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -50,6 +57,45 @@ public class Shanxi_legalblack extends SiteTaskExtend_CreditChina {
 	 * 原始数据
 	 */
 	public void extractContext(String url) {
+		Map<String, String> requestMap = Maps.newHashMap();
+		requestMap.put("pageNo", "1");
+		requestMap.put("pageSize", PAGE_SIZE);
+		requestMap.put("value", "");
+
+		String json = postData(url, requestMap);
+		JSONArray jsonArray = JSONUtil.parseArray(json);
+
+		for(int i = 0; i < jsonArray.size(); i++){
+			JSONObject object = jsonArray.getJSONObject(i);
+			String detailUrl = String.format(detailUrlTp, object.getStr("id"));
+			log.info("detailUrl = " + detailUrl);
+			Document document = Jsoup.parse(getData(detailUrl, 3));
+
+		}
+
+		String detailUrl = String.format()
+		if (thString.contains("主体名称")) {
+			adminPunish.setEnterpriseName(tdString.trim());
+			continue;
+		}
+		if (thString.contains("统一社会信用代码")) {
+			adminPunish.setEnterpriseCode1(tdString.trim());
+			continue;
+		}
+		if (thString.contains("列入原因")) {
+			adminPunish.setPunishReason(tdString.trim());
+			continue;
+		}
+		if (thString.contains("决定机关")) {
+			adminPunish.setJudgeAuth(tdString.trim());
+			continue;
+		}
+		if (thString.contains("最后修改日期")) {
+			adminPunish.setPublishDate(tdString.trim());
+			continue;
+		}
+
+
 		String dUrlPrefix = "http://www.creditsx.gov.cn";
 
 		Document document = Jsoup.parse(getData(url));

@@ -1,5 +1,8 @@
 package com.mr.modules.api.site.instance.creditchinasite.shanxisite;
 
+import com.mr.framework.json.JSON;
+import com.mr.framework.json.JSONObject;
+import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.site.SiteTaskExtend;
@@ -20,13 +23,13 @@ import java.util.Map;
 /**
  * @auther 1.信用中国（山西）
  * 1、法人行政处罚信息
- * 2.http://www.creditsx.gov.cn/xzcfList.jspx
+ * 2.http://www.creditsx.gov.cn/xzcfListNew.jspx
  */
 @Slf4j
 @Component("shanxi_xzcf")
 @Scope("prototype")
 public class Shanxi_xzcf extends SiteTaskExtend_CreditChina {
-	String url = "http://www.creditsx.gov.cn/xzcfList.jspx";
+	String url = "http://www.creditsx.gov.cn/xzcfListNew.jspx";
 
 	@Override
 	protected String executeOne() throws Throwable {
@@ -49,101 +52,55 @@ public class Shanxi_xzcf extends SiteTaskExtend_CreditChina {
 	 * 法定代表人居民身份证号、法定代表人姓名、处罚结果、处罚生效期、处罚机关、当前状态、地方编码、备注、信息提供部门、数据报送时间
 	 */
 	public void extractContext(String url) {
-		String dUrlPrefix = "http://www.creditsx.gov.cn";
+		String detailUrlTp = "http://www.creditsx.gov.cn/xzcfDetialNew-%s.jspx";
 
 		Document document = Jsoup.parse(getData(url, 3));
-		Element elementPageDiv = document.getElementsByClass("page").first();
-		int pages = elementPageDiv.getElementsByTag("option").size();
+		Element ulElement = document.getElementById("search-result-list");
+		Elements liElements = ulElement.getElementsByTag("li");
 
-		for (int page = 1; page <= pages; page++) {
-			Map<String, String> map = new HashMap<>();
-			map.put("pageNo", String.valueOf(page));
-			map.put("area_id", "140000");
-			Document listDoc = Jsoup.parse(postData(url, map, 3));
-			Element div = listDoc.getElementsByClass("body-view-bottom").first();
-			Elements aElements = div.getElementsByTag("a");
-			for (int i = 0; i < aElements.size(); i++) {
-				String infoUrl = dUrlPrefix + aElements.get(i).attr("href");
-				Document infoDoc = Jsoup.parse(getData(infoUrl));
-				Elements trElements = infoDoc.getElementsByTag("tr");
-				AdminPunish adminPunish = createDefaultAdminPunish();
-				for (Element trElement : trElements) {
-					String thString = trElement.getElementsByTag("th").first().text();
-					String tdString = trElement.getElementsByTag("td").first().text().trim();
-					if (thString.contains("行政处罚决定书文号")) {
-						adminPunish.setJudgeNo(tdString);
-						continue;
-					}
+		for (int i = 0; i < liElements.size(); i++) {
+			Element divEle = liElements.get(i).getElementsByClass("company-box clearfix").first();
+			String sId = divEle.id();
+			String detailUrl = String.format(detailUrlTp, sId);
+			log.info("detailUrl=" + detailUrl);
+			JSONObject json = JSONUtil.parseObj(getData(detailUrl, 3));
 
-					if (thString.contains("处罚类别")) {
-						adminPunish.setPunishType(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚事由")) {
-						adminPunish.setPunishReason(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚依据")) {
-						adminPunish.setPunishAccording(tdString);
-						continue;
-					}
-
-					if (thString.contains("行政相对人名称")) {
-						adminPunish.setEnterpriseName(tdString);
-						continue;
-					}
-
-					if (thString.contains("统一社会信用代码")) {
-						adminPunish.setEnterpriseCode1(tdString);
-						continue;
-					}
-
-					if (thString.contains("组织机构代码")) {
-						adminPunish.setEnterpriseCode3(tdString);
-						continue;
-					}
-
-					if (thString.contains("工商登记码")) {
-						adminPunish.setEnterpriseCode2(tdString);
-						continue;
-					}
-
-					if (thString.contains("法定代表人居民身份证号")) {
-						adminPunish.setPersonId(tdString);
-						continue;
-					}
-
-					if (thString.contains("法定代表人姓名")) {
-						adminPunish.setPersonName(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚结果")) {
-						adminPunish.setPunishResult(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚生效期")) {
-						adminPunish.setPublishDate(tdString);
-						continue;
-					}
-
-					if (thString.contains("处罚机关")) {
-						adminPunish.setJudgeAuth(tdString);
-						continue;
-					}
-				}
-				try{
-					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-					saveAdminPunishOne(adminPunish, false);
-				}catch (Exception e){
-					writeBizErrorLog(infoUrl, e.getMessage());
-				}
-
+			AdminPunish adminPunish = createDefaultAdminPunish();
+			//行政处罚决定书文号
+			adminPunish.setJudgeNo(json.getStr("cfWsh"));
+			//处罚类别
+			adminPunish.setPunishType(json.getStr("cfCflb"));
+			//处罚事由
+			adminPunish.setPunishReason(json.getStr("cfSy"));
+			//处罚依据
+			adminPunish.setPunishAccording(json.getStr("cfYj"));
+			//行政相对人名称
+			adminPunish.setEnterpriseName(json.getStr("cfXdrMc"));
+			//统一社会信用代码
+			adminPunish.setEnterpriseCode1(json.getStr("cfXdrShxym"));
+			//组织机构代码
+			adminPunish.setEnterpriseCode3("");
+			//工商登记码
+			adminPunish.setEnterpriseCode2("");
+			//法定代表人居民身份证号
+			adminPunish.setPersonId("");
+			//法定代表人姓名
+			adminPunish.setPersonName("");
+			//处罚结果
+			adminPunish.setPunishResult(json.getStr("cfJg"));
+			//处罚生效期
+			adminPunish.setPublishDate(json.getStr("cfSxq"));
+			//处罚机关
+			adminPunish.setJudgeAuth(json.getStr("cfXzjg"));
+			try {
+				adminPunish.setUniqueKey(adminPunish.getUrl() + "@" + adminPunish.getEnterpriseName() + "@" + adminPunish.getPersonName() + "@" + adminPunish.getJudgeNo() + "@" + adminPunish.getJudgeAuth());
+				saveAdminPunishOne(adminPunish, false);
+			} catch (Exception e) {
+				writeBizErrorLog(detailUrl, e.getMessage());
 			}
 		}
+
+
 	}
 
 	private AdminPunish createDefaultAdminPunish() {

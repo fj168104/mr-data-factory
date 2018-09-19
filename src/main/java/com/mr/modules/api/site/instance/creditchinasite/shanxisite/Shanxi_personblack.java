@@ -31,7 +31,7 @@ import java.util.Map;
 @Component("shanxi_personblack")
 @Scope("prototype")
 public class Shanxi_personblack extends SiteTaskExtend_CreditChina {
-	String PAGE_SIZE = "10000";
+	String PAGE_SIZE = "100";
 	String url = "http://www.creditsx.gov.cn/personblackListNew.jspx";
 	String detailUrlTp = "http://www.creditsx.gov.cn/personblackDetial-%s.jspx";
 

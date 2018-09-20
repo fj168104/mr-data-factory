@@ -132,7 +132,7 @@ public class CreditChinaShanXiSiteEntBlackList extends SiteTaskExtend_CreditChin
                 Map result = om.readValue(jsonResult,Map.class);
                 Map detailMap = (Map)result.get("dataList");
                 detailMap.put("sourceUrl",urlResult);
-                detailMap.put("source","信用中国(陕西)");
+                detailMap.put("source","信用中国（陕西）");
                 detailMap.put("subject","黑名单-法人及组织");
                 detailMap.put("objectType","01");
                 detailMap.put("enterpriseName",detailMap.remove("xy010101"));

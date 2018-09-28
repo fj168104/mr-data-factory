@@ -51,7 +51,7 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
         return super.executeOne();
     }
 
-    String baseUrl = "http://www.nxcredit.gov.cn ";
+    String baseUrl = "http://www.nxcredit.gov.cn";
 
     public void webContext(String keyWord) {
 

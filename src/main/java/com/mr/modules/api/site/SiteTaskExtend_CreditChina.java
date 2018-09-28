@@ -11,6 +11,7 @@ import com.mr.modules.api.mapper.ProxypoolMapper;
 import com.mr.modules.api.model.AdminPunish;
 import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.model.Proxypool;
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -304,6 +305,8 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param isForce true:强制保存插入;false:如果存在就不再保存（如系统中已存在该记录）
      */
     protected boolean saveAdminPunishOne(AdminPunish adminPunish, Boolean isForce) {
+        //唯一主键
+        adminPunish.setUniqueKey(MD5Util.encode(adminPunish.getUrl()+adminPunish.getEnterpriseName()+adminPunish.getPersonName()+adminPunish.getJudgeNo()+adminPunish.getJudgeAuth()));
         //是否存在标识 true:存在 false：不存在
         boolean isFlag = false;
         List<AdminPunish> adminPunishList = adminPunishMapper.selectByUrl(adminPunish.getUrl(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
@@ -334,6 +337,8 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      * @param isForce true:强制保存插入;false:如果存在就不再保存（如系统中已存在该记录）
      */
     protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
+        //唯一主键
+        discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+discreditBlacklist.getEnterpriseName()+discreditBlacklist.getPersonName()+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()));
         boolean isFlag = false;
         List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
         String strDiscreditBlacklist = "url地址："+discreditBlacklist.getUrl()+"\n企业名称："+discreditBlacklist.getEnterpriseName()+"\n+负责人名称："+discreditBlacklist.getPersonName()+"\n处罚文号："+discreditBlacklist.getJudgeNo();

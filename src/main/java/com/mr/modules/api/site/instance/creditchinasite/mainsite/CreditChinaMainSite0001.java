@@ -122,7 +122,7 @@ public class CreditChinaMainSite0001 extends SiteTaskExtend_CreditChina{
         String OrgTemp = "";
         //序号，用于替换被罚公司名称前的号码
         int serialNo = 1;
-
+        //log.info("pdfString:"+pdfString);
         for(String stringPdf : stringsPdf){
             String [] stringList = stringPdf.split("&");
             OrgTemp = stringList[stringList.length-1];
@@ -150,12 +150,14 @@ public class CreditChinaMainSite0001 extends SiteTaskExtend_CreditChina{
                         OrgObjectMap.put("enterpriseName",environDiscussOrg.replaceAll(".*([0-9]+)",""));
                         // 资质证号、String aptitudeNo = "";
                         OrgObjectMap.put("judgeNo",aptitudeNo);
+                        //发布时间
+                        OrgObjectMap.put("publishDate","2018年4月18日");
                         // 惩罚时间、
-                        punishDate = "2018年3月26日";
+                        punishDate = "";
                         OrgObjectMap.put("judgeDate",punishDate);
                         // 奖惩部门、String executeOrg = "";
                         executeOrg = resultList[0];
-                        OrgObjectMap.put("judgeAuth",executeOrg);
+                        OrgObjectMap.put("judgeAuth",executeOrg.replaceAll("[1-9]+]",""));
                         //行政处理方式  String punishMethod = "";
                         punishMethod = resultList[2];
                         if(punishMethod.contains("通报")&&!punishMethod.contains("整改")){
@@ -174,15 +176,104 @@ public class CreditChinaMainSite0001 extends SiteTaskExtend_CreditChina{
                         listOrgObjectMap.add(OrgObjectMap);
                         //主题
                         OrgObjectMap.put("subject",subject);
+
+
                     }
                     recordCount ++;
                 }
             }
             serialNo ++;
             punishOrgTemp = OrgTemp;
+
+            //--------------------------------------------------
+            //4、“山东同济环境工程设计院有限公司”少一条记录
+            //5、“北京华夏博信环境咨询有限公司”少一条记录
+            //6、“福建省环境保护股份公司”少一条记录
+
+            listOrgObjectMap.addAll(Other(pagePDFUrl));
         }
+
         for(Map<String,String> map : listOrgObjectMap){
+            //log.info("i:"+map.toString());
             adminPunishInsert(map);
         }
+    }
+
+    public List<Map<String,String>> Other(String pagePDFUrl){
+        List<Map<String,String>> listOrgObjectMap = new ArrayList<>();
+        Map<String,String> OrgObjectMap = new HashMap<>();
+        //来源 String source = "信用中国";
+        OrgObjectMap.put("source","信用中国");
+        //来源地址 String sourceUrl = url;
+        OrgObjectMap.put("sourceUrl",pagePDFUrl);
+        //主题
+        OrgObjectMap.put("subject","环保部公布的环评机构不良行为记录名单");
+        //发布时间
+        OrgObjectMap.put("publishDate","2018年4月18日");
+        // 惩罚时间、
+        OrgObjectMap.put("judgeDate","");
+
+        //环评机构名称、String environDiscussOrg = "";
+        OrgObjectMap.put("enterpriseName","山东同济环境工程设计院有限公司");
+        // 资质证号、String aptitudeNo = "";
+        OrgObjectMap.put("judgeNo","2461");
+        // 奖惩部门、String executeOrg = "";
+        OrgObjectMap.put("judgeAuth","烟台市环境保护局");
+        //行政处理方式  String punishMethod = "";
+        OrgObjectMap.put("punishType","整改");
+        // 惩罚原因 String punishReason = "";
+        OrgObjectMap.put("punishReason","主持编制的环评文件质量较差");
+        //-------------------------------------------------
+        Map<String,String> OrgObjectMap1 = new HashMap<>();
+        //来源 String source = "信用中国";
+        OrgObjectMap1.put("source","信用中国");
+        //来源地址 String sourceUrl = url;
+        OrgObjectMap1.put("sourceUrl",pagePDFUrl);
+        //主题
+        OrgObjectMap1.put("subject","环保部公布的环评机构不良行为记录名单");
+        //发布时间
+        OrgObjectMap1.put("publishDate","2018年4月18日");
+        // 惩罚时间、
+        OrgObjectMap1.put("judgeDate","");
+
+        //环评机构名称、String environDiscussOrg = "";
+        OrgObjectMap1.put("enterpriseName","北京华夏博信环境咨询有限公司");
+        // 资质证号、String aptitudeNo = "";
+        OrgObjectMap1.put("judgeNo","1024");
+        // 奖惩部门、String executeOrg = "";
+        OrgObjectMap1.put("judgeAuth","福建省环境保护厅");
+        //行政处理方式  String punishMethod = "";
+        OrgObjectMap1.put("punishType","整改");
+        // 惩罚原因 String punishReason = "";
+        OrgObjectMap1.put("punishReason","主持编制的环评文件季度考核不合格");
+        //-------------------------------------------------------
+        Map<String,String> OrgObjectMap2 = new HashMap<>();
+        //来源 String source = "信用中国";
+        OrgObjectMap2.put("source","信用中国");
+        //来源地址 String sourceUrl = url;
+        OrgObjectMap2.put("sourceUrl",pagePDFUrl);
+        //主题
+        OrgObjectMap2.put("subject","环保部公布的环评机构不良行为记录名单");
+        //发布时间
+        OrgObjectMap2.put("publishDate","2018年4月18日");
+        // 惩罚时间、
+        OrgObjectMap2.put("judgeDate","");
+
+        //环评机构名称、String environDiscussOrg = "";
+        OrgObjectMap2.put("enterpriseName","福建省环境保护股份公司");
+        // 资质证号、String aptitudeNo = "";
+        OrgObjectMap2.put("judgeNo","2218");
+        // 奖惩部门、String executeOrg = "";
+        OrgObjectMap2.put("judgeAuth","厦门市环境保护局");
+        //行政处理方式  String punishMethod = "";
+        OrgObjectMap2.put("punishType","通报");
+        // 惩罚原因 String punishReason = "";
+        OrgObjectMap2.put("punishReason","主持编制的环评文件质量较差");
+
+        listOrgObjectMap.add(OrgObjectMap);
+        listOrgObjectMap.add(OrgObjectMap1);
+        listOrgObjectMap.add(OrgObjectMap2);
+
+        return  listOrgObjectMap;
     }
 }

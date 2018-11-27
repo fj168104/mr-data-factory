@@ -67,7 +67,7 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
         // 违法情形、
         String transgress = "";
         // 日期
-        String dateString = "2018年1月16日";
+        String dateString = "2018年4月25日";
         Document document  = Jsoup.parse(getHtmlPage(url,1000));
         Element element = document.getElementsByClass("TRS_Editor").first();
         Element elementA_PDF = element.getElementsByTag("a").first();
@@ -115,6 +115,7 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
         //replaceAll("\\u0020+([0-9]+)\\u0020+", "(\r\n|\r|\n|\n\r)")
         String[] strPdf = pdfString.split("\\u0020+([0-9]{1,6})\\u0020+");
         for(String str : strPdf){
+            log.info("str:"+str);
             if(str.contains("1 广州永和肉食加工有限公司")){
                 str = str.replace("1 广州永和肉食加工有限公司","广州永和肉食加工有限公司");//1 广州永和肉食加工有限公司
             }
@@ -144,7 +145,8 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
             //来源地址String sourceUrl = url;
             personObjectMap.put("sourceUrl",sourceUrl);
             // 日期String dateString = "";
-            personObjectMap.put("judgeDate",dateString);
+            personObjectMap.put("objectType","01");
+            personObjectMap.put("judgeDate","");
             personObjectMap.put("publishDate",dateString);
             personObjectMap.put("enterpriseName",commpanyName);
             personObjectMap.put("enterpriseCode1",nnifiedSocialCreditCode);
@@ -159,7 +161,7 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
 
         }
         for(Map<String,String> map : listPersonObjectMap){
-            insertDiscreditBlacklist(map);
+            //insertDiscreditBlacklist(map);
         }
 
     }

@@ -56,7 +56,7 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
         // 资质证号、
         String aptitudeNo = "";
         // 惩罚时间、
-        String punishDate = "2018年3月26日";
+        String punishDate = "";
         // 奖惩部门、
         String executeOrg = "";
         // 惩罚类型、
@@ -97,6 +97,8 @@ public class CreditChinaMainSite0002 extends SiteTaskExtend_CreditChina{
                 personObjectMap.put("personName",personName);
                 // 资质证号、String aptitudeNo = "";
                 personObjectMap.put("aptitudeNo",aptitudeNo);
+                //发布时间
+                personObjectMap.put("publishDate","2018年4月18日");
                 // 惩罚时间、String punishDate = "";
                 personObjectMap.put("judgeDate",punishDate);
                 // 奖惩部门、String executeOrg = "";

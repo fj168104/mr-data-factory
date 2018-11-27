@@ -68,7 +68,7 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
         String punishType = "";
 
         // 日期
-        String dateString = "　2018年4月10日";
+        String dateString = "　2018年4月18日";
         Document document  = Jsoup.parse(getHtmlPage(url,1000));
         Element element = document.getElementsByClass("TRS_Editor").first();
         Element elementA_PDF = element.getElementsByTag("a").first();
@@ -187,7 +187,8 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
             //来源地址String sourceUrl = url;
             personObjectMap.put("sourceUrl",sourceUrl);
             // 日期String dateString = "";
-            personObjectMap.put("judgeDate",dateString);
+            personObjectMap.put("objectType","01");
+            personObjectMap.put("judgeDate","");
             personObjectMap.put("publishDate",dateString);
             personObjectMap.put("enterpriseName",commpanyName);
             personObjectMap.put("administrativeArea",administrativeArea);

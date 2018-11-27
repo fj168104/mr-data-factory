@@ -509,7 +509,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         //url	url
         adminPunish.setUrl(map.get("sourceUrl")==null?"":map.get("sourceUrl"));
         //object_type	主体类型: 01-企业 02-个人
-        adminPunish.setObjectType(map.get("enterpriseName").length()<6?"01": "2");
+        adminPunish.setObjectType(map.get("enterpriseName")==null?"":(map.get("enterpriseName").length()<6?"02": "01"));
         //enterprise_name	企业名称
         adminPunish.setEnterpriseName(map.get("enterpriseName")==null?"": map.get("enterpriseName"));
         //enterprise_code1	统一社会信用代码--cfXdrShxym

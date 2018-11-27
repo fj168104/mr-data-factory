@@ -157,7 +157,7 @@ public class CreditChinaMainSite0001 extends SiteTaskExtend_CreditChina{
                         OrgObjectMap.put("judgeDate",punishDate);
                         // 奖惩部门、String executeOrg = "";
                         executeOrg = resultList[0];
-                        OrgObjectMap.put("judgeAuth",executeOrg.replaceAll("[1-9]+]",""));
+                        OrgObjectMap.put("judgeAuth",executeOrg.replaceAll("[1-9]+",""));
                         //行政处理方式  String punishMethod = "";
                         punishMethod = resultList[2];
                         if(punishMethod.contains("通报")&&!punishMethod.contains("整改")){

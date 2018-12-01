@@ -93,7 +93,7 @@ public class ShangHaiSite_ZDSSWFAJ   extends SiteTaskExtend_CreditChina {
                 }
                 connectFlag = false;
             }catch (IOException e){
-                log.error("IO异常···异常信息为："+e.getMessage());
+                log.warn("IO异常···异常信息为："+e.getMessage());
                 if(listIps.size()<=0){
                     break;
                 }
@@ -129,7 +129,7 @@ public class ShangHaiSite_ZDSSWFAJ   extends SiteTaskExtend_CreditChina {
                 map.put("objectType","01");
                 map.put("enterpriseName",elementsTd.get(0).text());//企业名称
                 map.put("enterpriseCode1",elementsTd.get(1).text());//企业社会统一代码
-                map.put("punishReason",elementsTd.get(2).text());//案件性质 TODO 目前先放在列入原因属性中
+                map.put("discreditAction",elementsTd.get(2).text());//案件性质 TODO 目前先放在列入原因属性中
                 insertDiscreditBlacklist(map);
             }
         }

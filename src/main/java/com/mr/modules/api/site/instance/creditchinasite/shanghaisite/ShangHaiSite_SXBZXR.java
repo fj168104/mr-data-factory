@@ -93,7 +93,7 @@ public class ShangHaiSite_SXBZXR   extends SiteTaskExtend_CreditChina {
                 }
                 connectFlag = false;
             }catch (IOException e){
-                log.error("IO异常···异常信息为："+e.getMessage());
+                log.warn("IO异常···异常信息为："+e.getMessage());
                 if(listIps.size()<=0){
                     break;
                 }

@@ -401,7 +401,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			//通过url先删除，确保不产生多余数据
 			financeMonitorPunishMapper.deleteByUrl(oneFinanceMonitorPunish.getUrl());
 		} catch (Exception e) {
-			log.error(keyWords + ">>>" + e.getMessage());
+			log.warn(keyWords + ">>>" + e.getMessage());
 		}*/
 
 	}
@@ -424,7 +424,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 				return false;
 			}
 		} catch (Exception e) {
-			log.error(keyWords + ">>>" + e.getMessage());
+			log.warn(keyWords + ">>>" + e.getMessage());
 		}
 		return false;
 	}
@@ -555,7 +555,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 			}
 			financeMonitorPunishMapper.insert(filterPlace(financeMonitorPunish));
 		} catch (Exception e) {
-			log.error(keyWords + ">>>" + e.getMessage());
+			log.warn(keyWords + ">>>" + e.getMessage());
 		}*/
 		return financeMonitorPunish;
 	}

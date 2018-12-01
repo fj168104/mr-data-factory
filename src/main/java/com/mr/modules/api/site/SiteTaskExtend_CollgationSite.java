@@ -283,9 +283,9 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
             IOUtils.copy(is, output);
             output.close();
         }catch (FileNotFoundException fe){
-            log.error("保存文件出现文件不能找到异常······请排查！"+fe.getMessage());
+            log.warn("保存文件出现文件不能找到异常······请排查！"+fe.getMessage());
         }catch (IOException e) {
-            log.error("保存文件出现IO异常······请排查！"+e.getMessage());
+            log.warn("保存文件出现IO异常······请排查！"+e.getMessage());
         }
         return file;
     }
@@ -337,7 +337,7 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
      */
     protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
         boolean isFlag = false;
-        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
+        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
         String strDiscreditBlacklist = "url地址："+discreditBlacklist.getUrl()+"\n企业名称："+discreditBlacklist.getEnterpriseName()+"\n+负责人名称："+discreditBlacklist.getPersonName()+"\n处罚文号："+discreditBlacklist.getJudgeNo();
         if (!isForce && adminDiscreditBlacklist.size()>0) {
             log.info(strDiscreditBlacklist+"此记录已经存在···不需要入库");
@@ -347,7 +347,7 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
             log.info(strDiscreditBlacklist+"此记录不存在···需要入库");
         } else if(isForce){
             if(adminDiscreditBlacklist.size()>0){
-                discreditBlacklistMapper.deleteByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
+                discreditBlacklistMapper.deleteByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
                 discreditBlacklistMapper.insert(discreditBlacklist);
             }else{
                 discreditBlacklistMapper.insert(discreditBlacklist);

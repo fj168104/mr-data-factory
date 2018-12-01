@@ -118,7 +118,7 @@ public class ShangHaiSite_XZCF extends SiteTaskExtend_CreditChina {
                 return null;
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
 
         return cfidList;
@@ -155,7 +155,9 @@ public class ShangHaiSite_XZCF extends SiteTaskExtend_CreditChina {
                     detailMap.put("sourceUrl",sourceUrl);
                     detailMap.put("source","信用中国（上海）");
                     detailMap.put("subject","行政处罚");
-                    detailMap.put("enterpriseName",detailMap.remove("xzxdr"));
+                    String enterpriseName =detailMap.remove("xzxdr").toString();
+                    detailMap.put("enterpriseName",enterpriseName.length()>5?enterpriseName:"");
+                    detailMap.put("personName",enterpriseName.length()>5?"":enterpriseName);
                     detailMap.put("punishType",detailMap.remove("cflb"));
                     detailMap.put("punishReason",detailMap.remove("cfsy"));
                     detailMap.put("punishAccording",detailMap.remove("cfyj"));
@@ -170,7 +172,7 @@ public class ShangHaiSite_XZCF extends SiteTaskExtend_CreditChina {
             }
 
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
 
         return detailMap;

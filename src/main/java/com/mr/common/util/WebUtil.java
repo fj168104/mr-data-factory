@@ -46,7 +46,7 @@ public class WebUtil {
             @Cleanup PrintWriter writer = response.getWriter();
             writer.print(JSONUtil.parseObj(obj));
         } catch (IOException e) {
-            log.error("响应json数据失败，失败信息:{}", e);
+            log.warn("响应json数据失败，失败信息:{}", e);
         }
 
     }
@@ -65,7 +65,7 @@ public class WebUtil {
             @Cleanup PrintWriter writer = response.getWriter();
             writer.print(JSONUtil.toJsonStr(obj));
         } catch (IOException e) {
-            log.error("响应text数据失败，失败信息:{}", e);
+            log.warn("响应text数据失败，失败信息:{}", e);
         }
     }
 }

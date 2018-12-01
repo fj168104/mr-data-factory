@@ -338,9 +338,9 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      */
     protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
         //唯一主键
-        discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+discreditBlacklist.getEnterpriseName()+discreditBlacklist.getPersonName()+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()));
+        discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+discreditBlacklist.getEnterpriseName()+discreditBlacklist.getPersonName()+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()+discreditBlacklist.getDiscreditAction()));
         boolean isFlag = false;
-        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
+        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
         String strDiscreditBlacklist = "url地址："+discreditBlacklist.getUrl()+"\n企业名称："+discreditBlacklist.getEnterpriseName()+"\n+负责人名称："+discreditBlacklist.getPersonName()+"\n处罚文号："+discreditBlacklist.getJudgeNo();
         if (!isForce && adminDiscreditBlacklist.size()>0) {
             log.info(strDiscreditBlacklist+"此记录已经存在···不需要入库");
@@ -350,14 +350,14 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
             log.info(strDiscreditBlacklist+"此记录不存在···需要入库");
         } else if(isForce){
             if(adminDiscreditBlacklist.size()>0){
-                discreditBlacklistMapper.deleteByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth());
+                discreditBlacklistMapper.deleteByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
                 discreditBlacklistMapper.insert(discreditBlacklist);
-            }else{
-                discreditBlacklistMapper.insert(discreditBlacklist);
-            }
+    }else{
+        discreditBlacklistMapper.insert(discreditBlacklist);
+    }
             log.info(strDiscreditBlacklist+"此记录入库完成···");
-        }else{
-            log.info(strDiscreditBlacklist+"此记录不满足入库条件···");
+}else{
+        log.info(strDiscreditBlacklist+"此记录不满足入库条件···");
         }
         return isFlag;
     }
@@ -483,7 +483,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
          * 唯一性标识(同一数据来源的同一主题内唯一)
          */
         discreditBlacklist.setUniqueKey(
-                discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()
+                discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()+discreditBlacklist.getDiscreditAction()
         );
         isFlag = saveDisneycreditBlackListOne(discreditBlacklist,false);
 
@@ -509,7 +509,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
         //url	url
         adminPunish.setUrl(map.get("sourceUrl")==null?"":map.get("sourceUrl"));
         //object_type	主体类型: 01-企业 02-个人
-        adminPunish.setObjectType(map.get("enterpriseName")==null?"":(map.get("enterpriseName").length()<6?"02": "01"));
+        adminPunish.setObjectType(map.get("enterpriseName")==null?"":(map.get("enterpriseName").length()<6?"02":"01"));
         //enterprise_name	企业名称
         adminPunish.setEnterpriseName(map.get("enterpriseName")==null?"": map.get("enterpriseName"));
         //enterprise_code1	统一社会信用代码--cfXdrShxym

@@ -300,7 +300,7 @@ public class Site_TaskImpl_TPBOC_List extends SiteTaskExtend {
         try {
             portNr = Integer.parseInt(port);
         } catch (NumberFormatException e) {
-            log.error("Unable to parse the proxy port number");
+            log.warn("Unable to parse the proxy port number");
         }
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         InetSocketAddress address = new InetSocketAddress(host,portNr);

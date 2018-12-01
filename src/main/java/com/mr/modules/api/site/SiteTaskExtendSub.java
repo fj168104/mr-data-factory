@@ -87,7 +87,7 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 			}
 			financeMonitorPunishMapper.insert(filterPlace(financeMonitorPunish));
 		} catch (Exception e) {
-			log.error(keyWords + ">>>" + e.getMessage());
+			log.warn(keyWords + ">>>" + e.getMessage());
 		}
 		return financeMonitorPunish;
 	}

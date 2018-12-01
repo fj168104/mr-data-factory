@@ -77,7 +77,7 @@ public class CreditChinaAnHui_AQSCLYLHCJDX extends SiteTaskExtend_CreditChina {
                 }
             }
         }catch (IOException e){
-            log.error("访问网络有问题，请检查···异常信息如下"+e.getMessage());
+            log.warn("访问网络有问题，请检查···异常信息如下"+e.getMessage());
         }
     }
 

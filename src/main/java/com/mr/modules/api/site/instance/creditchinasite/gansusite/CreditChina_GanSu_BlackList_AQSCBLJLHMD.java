@@ -50,7 +50,7 @@ public class CreditChina_GanSu_BlackList_AQSCBLJLHMD extends SiteTaskExtend_Cred
                 insertDiscreditBlacklist(map);
             }
         } catch (Exception e) {
-            log.error("加载xlsx异常···请检查!"+e.getMessage());
+            log.warn("加载xlsx异常···请检查!"+e.getMessage());
         }
     }
     /**

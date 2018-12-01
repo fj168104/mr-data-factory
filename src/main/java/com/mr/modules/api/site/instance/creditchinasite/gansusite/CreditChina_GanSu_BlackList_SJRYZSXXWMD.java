@@ -54,7 +54,7 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
                 insertDiscreditBlacklist(map);
             }
         } catch (Exception e) {
-            log.error("加载xlsx异常···请检查!"+e.getMessage());
+            log.warn("加载xlsx异常···请检查!"+e.getMessage());
         }
     }
     public void import93512_2(){
@@ -73,7 +73,7 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
                 insertDiscreditBlacklist(map);
             }
         } catch (Exception e) {
-            log.error("加载xlsx异常···请检查!"+e.getMessage());
+            log.warn("加载xlsx异常···请检查!"+e.getMessage());
         }
     }
     public void import93512_3(){
@@ -92,7 +92,7 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
                 insertDiscreditBlacklist(map);
             }
         } catch (Exception e) {
-            log.error("加载xlsx异常···请检查!"+e.getMessage());
+            log.warn("加载xlsx异常···请检查!"+e.getMessage());
         }
     }
     public void import93512_4(){
@@ -111,7 +111,7 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
                 insertDiscreditBlacklist(map);
             }
         } catch (Exception e) {
-            log.error("加载xlsx异常···请检查!"+e.getMessage());
+            log.warn("加载xlsx异常···请检查!"+e.getMessage());
         }
     }
     /**

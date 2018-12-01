@@ -60,7 +60,7 @@ public class CreditChinaGansuBlack91855 extends SiteTaskExtend_CreditChina {
             }
             log.info("共计导入数据{}行", lineNum);
         } catch (Exception e) {
-            log.error("加载xls异常···请检查!", e);
+            log.warn("加载xls异常···请检查!", e);
         }
     }
 }

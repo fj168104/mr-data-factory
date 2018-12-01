@@ -58,7 +58,7 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
         try {
             keyWord = URLEncoder.encode(keyWord, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            log.error("不支持Encodeing编码异常···" + e.getMessage());
+            log.warn("不支持Encodeing编码异常···" + e.getMessage());
         }
         String url = "http://www.nxcredit.gov.cn/lXzcfList.jspx?searchContent=" + keyWord;
         try {
@@ -132,7 +132,7 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
             }
 
         } catch (Throwable throwable) {
-            log.error("网络连接异常···清查看···" + throwable.getMessage());
+            log.warn("网络连接异常···清查看···" + throwable.getMessage());
         }
     }
 }

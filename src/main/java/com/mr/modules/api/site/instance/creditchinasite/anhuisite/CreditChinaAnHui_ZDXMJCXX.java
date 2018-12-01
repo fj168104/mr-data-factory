@@ -50,7 +50,7 @@ public class CreditChinaAnHui_ZDXMJCXX extends SiteTaskExtend_CreditChina {
             Element allPage  = documentInit.getElementsByClass("allPage").get(0);
             int pageSize = Integer.valueOf(allPage.ownText());
             if(pageSize>=1){
-                for(int i = 1;i<pageSize;i++){
+                for(int i = 1;i<=pageSize;i++){
                     String urlResult = url+"index_"+i+".htm";
                     HtmlPage htmlPage1 = webClient.getPage(urlResult);
                     Document document = Jsoup.parse(htmlPage1.asXml());
@@ -78,7 +78,7 @@ public class CreditChinaAnHui_ZDXMJCXX extends SiteTaskExtend_CreditChina {
                 }
             }
         }catch (IOException e){
-            log.error("访问网络有问题，请检查···异常信息如下"+e.getMessage());
+            log.warn("访问网络有问题，请检查···异常信息如下"+e.getMessage());
         }
     }
 }

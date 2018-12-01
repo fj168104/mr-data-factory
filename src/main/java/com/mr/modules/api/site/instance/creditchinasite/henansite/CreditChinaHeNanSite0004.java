@@ -112,7 +112,7 @@ public class CreditChinaHeNanSite0004 extends SiteTaskExtend_CreditChina {
             }
             webClient.close();
         }catch (IOException e){
-            log.error("获取网页异常···"+e.getMessage());
+            log.warn("获取网页异常···"+e.getMessage());
         }
     }
 }

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -55,10 +56,10 @@ public class CreditChinaShanDongBlackSjrsxslqy extends SiteTaskExtend_CreditChin
 			try {
 				extractContent(url);// 抽取内容并入库
 			} catch (Exception e) {
-				log.error("请检查此条url：{}", url, e);
+				log.warn("请检查此条url：{}", url, e);
 				continue;
 			} catch (Throwable e) {
-				log.error("请检查此条url：{}", url, e);
+				log.warn("请检查此条url：{}", url, e);
 				continue;
 			}
 		}
@@ -180,7 +181,7 @@ public class CreditChinaShanDongBlackSjrsxslqy extends SiteTaskExtend_CreditChin
 				blackList.setDiscreditType(value);// 失信类型
 			}
 		}
-		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
+		blackList.setUniqueKey(MD5Util.encode(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth()));
 		discreditBlacklistMapper.insert(blackList);
 		log.debug("==============================");
 	}

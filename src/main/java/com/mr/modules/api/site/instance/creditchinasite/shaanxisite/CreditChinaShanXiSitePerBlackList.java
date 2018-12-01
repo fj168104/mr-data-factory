@@ -95,7 +95,7 @@ public class CreditChinaShanXiSitePerBlackList extends SiteTaskExtend_CreditChin
             }
             wc.close();
         }catch (IOException e){
-            log.error("IO处理异常，请注意查看···"+e.getMessage());
+            log.warn("IO处理异常，请注意查看···"+e.getMessage());
         }
         return jsonResult;
     }
@@ -120,28 +120,41 @@ public class CreditChinaShanXiSitePerBlackList extends SiteTaskExtend_CreditChin
             Map mapJson = om.readValue(jsonList, Map.class);
             List<Map> resultListMap = (List)mapJson.get("list");
             for(Map mapId : resultListMap){
-                id = (String)mapId.get("id");
-                String urlResult = "http://www1.sxcredit.gov.cn/queryItemData.jspx?id="+id+"&lb=black";
-                String jsonResult = webContent(urlResult);
-                Map result = om.readValue(jsonResult,Map.class);
-                Map detailMap = (Map)result.get("dataList");
-                detailMap.put("sourceUrl",urlResult);
-                detailMap.put("source","信用中国（陕西）");
-                detailMap.put("subject","黑名单-自然人");
-                detailMap.put("objectType","02");
-                detailMap.put("personName",detailMap.remove("xy010101"));
-                detailMap.put("personId",detailMap.remove("xy010133"));
-                detailMap.put("punishReason",detailMap.remove("lryy"));
-                detailMap.put("punishResult",detailMap.remove("sxly_label"));
-                detailMap.put("judgeNo",detailMap.remove("lrwh"));
-                detailMap.put("judgeDate",detailMap.remove("lrdate"));
-                detailMap.put("judgeAuth",detailMap.remove("jdjg"));
-                detailMap.put("publishDate",detailMap.remove("create_date"));
-                insertDiscreditBlacklist(detailMap);
+                int count = 0;
+                boolean repeatCount = false;
+                while(count<=30&&repeatCount==false) {
+                    try {
+                        id = (String) mapId.get("id");
+                        String urlResult = "http://www1.sxcredit.gov.cn/queryItemData.jspx?id=" + id + "&lb=black";
+                        String jsonResult = webContent(urlResult);
+                        Map result = om.readValue(jsonResult, Map.class);
+                        Map detailMap = (Map) result.get("dataList");
+                        detailMap.put("sourceUrl", urlResult);
+                        detailMap.put("source", "信用中国（陕西）");
+                        detailMap.put("subject", "黑名单-自然人");
+                        detailMap.put("objectType", "02");
+                        detailMap.put("personName", detailMap.remove("xy010101"));
+                        detailMap.put("personId", detailMap.remove("xy010133"));
+                        detailMap.put("punishReason", detailMap.remove("lryy"));
+                        detailMap.put("punishResult", "");
+                        detailMap.put("judgeNo", detailMap.remove("lrwh"));
+                        detailMap.put("judgeDate", detailMap.remove("lrdate"));
+                        detailMap.put("judgeAuth", detailMap.remove("jdjg"));
+                        detailMap.put("publishDate", detailMap.remove("create_date"));
+                        insertDiscreditBlacklist(detailMap);
+                        repeatCount = true;
+                    } catch (IOException e) {
+                        repeatCount = false;
+                        count++;
+                        Thread.currentThread().sleep(500);
+                        log.warn("rusult方法中IO处理异常，请注意查看···" + e.getMessage());
+                        log.info("从试中···重试次数：" + count);
+                    }
+                }
             }
 
         }catch (IOException e){
-            log.error("IO处理异常，请注意查看···"+e.getMessage());
+            log.warn("rusultIO处理异常，请注意查看···"+e.getMessage());
         }
     }
 

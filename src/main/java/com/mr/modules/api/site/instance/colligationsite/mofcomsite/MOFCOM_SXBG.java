@@ -69,7 +69,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
         try {
             htmlParse(baseUrl,urlNext,proxypoolList);
         } catch (Throwable throwable) {
-            log.error("请查阅错误信息···"+throwable.getMessage());
+            log.warn("请查阅错误信息···"+throwable.getMessage());
         }
         //第2页  到 第351页
         for(int n=2;n<354;n++){//并发处理
@@ -79,7 +79,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
             try {
                 htmlParse(baseUrl,urln,proxypoolList);
             } catch (Throwable throwable) {
-                log.error("请查阅错误信息···"+throwable.getMessage());
+                log.warn("请查阅错误信息···"+throwable.getMessage());
             }
             /*executorConfig.asyncServiceExecutor().execute(new Runnable() {
 
@@ -91,7 +91,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                     try {
                         htmlParse(baseUrl,urln,proxypoolList);
                     } catch (Throwable throwable) {
-                        log.error("请查阅错误信息···"+throwable.getMessage());
+                        log.warn("请查阅错误信息···"+throwable.getMessage());
                     }
                 }
             });*/
@@ -120,7 +120,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                 } catch (Exception e) {
                     repeatFlag =true;
                     repeatTime = repeatTime+1;
-                    log.error("发生IO处理异常，请检查···"+e.getMessage());
+                    log.warn("发生IO处理异常，请检查···"+e.getMessage());
                     log.info("程序重试中···重试次数为5,第{}次···重试",repeatTime);
                     Thread.sleep(10000);
                     if(proxypoolList.size()>0){
@@ -160,7 +160,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                         } catch (Exception e) {
                             repeatFlag =true;
                             repeatTime = repeatTime+1;
-                            log.error("发生IO处理异常，请检查···"+e.getMessage());
+                            log.warn("发生IO处理异常，请检查···"+e.getMessage());
                             log.info("程序重试中···重试次数为5,第{}次···重试",repeatTime);
                             Thread.sleep(10000);
                             if(proxypoolList.size()>0){
@@ -174,7 +174,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                             saveFile(htmlPageDetail,urlTitle+".html",filePath);
                         } catch (Exception e) {
                             repeatFlag =true;
-                            log.error("源文件html下载有异常·····"+e.getMessage());
+                            log.warn("源文件html下载有异常·····"+e.getMessage());
                             continue;
                         }
                         //获取目标HTML 的对应标签模块
@@ -203,7 +203,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                                     saveFile(page,flieName,filePath);
                                 } catch (Exception e) {
                                     repeatFlag =true;
-                                    log.error("图片附件下载有异常·····"+e.getMessage());
+                                    log.warn("图片附件下载有异常·····"+e.getMessage());
                                     continue;
                                 }finally {
                                     webClientDetail.close();
@@ -221,7 +221,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
                                     saveFile(page,flieName,filePath);
                                 } catch (Exception e) {
                                     repeatFlag =true;
-                                    log.error("非图片附件下载有异常·····"+e.getMessage());
+                                    log.warn("非图片附件下载有异常·····"+e.getMessage());
                                     continue;
                                 }finally {
                                     webClientDetail.close();
@@ -242,7 +242,7 @@ public class MOFCOM_SXBG extends SiteTaskExtend_CollgationSite{
             } catch (Exception e) {
                 repeatFlag =true;
                 repeatTime = repeatTime+1;
-                log.error("发生IO处理异常，请检查···"+e.getMessage());
+                log.warn("发生IO处理异常，请检查···"+e.getMessage());
                 log.info("程序重试中···重试次数为5,第{}次···重试",repeatTime);
                 Thread.sleep(10000);
                 repeatFlag =true;

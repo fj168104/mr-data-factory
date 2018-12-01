@@ -93,9 +93,16 @@ public class CreditChinaHeNanSite_XZCF extends SiteTaskExtend_CreditChina {
                     mapResult.put("sourceUrl", baseSelectUrl + (String) mapResult.get("cf_xdr_mc"));
                     mapResult.put("source","信用中国（河南）");
                     mapResult.put("subject","行政处罚");
-                    mapResult.put("enterpriseName",mapResult.remove("cf_xdr_mc"));
-                    mapResult.put("punishReason",mapResult.remove("cf_cfmc"));
+                    String enterpriseName = mapResult.remove("cf_xdr_mc").toString();
+                    if(enterpriseName.length()<6){
+                        mapResult.put("enterpriseName","");
+                    }else {
+                        mapResult.put("enterpriseName",mapResult.remove("cf_xdr_mc"));
+                    }
+
+                    mapResult.put("personName",mapResult.remove("cf_cfmc"));
                     mapResult.put("judgeNo",mapResult.remove("cf_wsh"));
+                    mapResult.put("judgeAuth",mapResult.remove("cf_xzjg"));
                     adminPunishInsert(mapResult);
                 }
                 int totalPage = (int) map.get("totalPage");
@@ -125,10 +132,15 @@ public class CreditChinaHeNanSite_XZCF extends SiteTaskExtend_CreditChina {
                         for (Map mapResult : listMap0) {
                             mapResult.put("sourceUrl", baseSelectUrl + (String) mapResult.get("cf_xdr_mc"));
                             mapResult.put("source","信用中国（河南）");
-                            mapResult.put("subject","行政处罚");
-                            mapResult.put("enterpriseName",mapResult.remove("cf_xdr_mc"));
-                            mapResult.put("punishReason",mapResult.remove("cf_cfmc"));
+                            mapResult.put("subject","行政处罚");String enterpriseName = mapResult.remove("cf_xdr_mc").toString();
+                            if(enterpriseName.length()<6){
+                                mapResult.put("enterpriseName","");
+                            }else {
+                                mapResult.put("enterpriseName",mapResult.remove("cf_xdr_mc"));
+                            }
+                            mapResult.put("personName",mapResult.remove("cf_cfmc"));
                             mapResult.put("judgeNo",mapResult.remove("cf_wsh"));
+                            mapResult.put("judgeAuth",mapResult.remove("cf_xzjg"));
                             adminPunishInsert(mapResult);
                         }
                     }
@@ -136,7 +148,7 @@ public class CreditChinaHeNanSite_XZCF extends SiteTaskExtend_CreditChina {
             }
             webClient.close();
         } catch (IOException e) {
-            log.error("获取网页异常···" + e.getMessage());
+            log.warn("获取网页异常···" + e.getMessage());
         }
     }
 }

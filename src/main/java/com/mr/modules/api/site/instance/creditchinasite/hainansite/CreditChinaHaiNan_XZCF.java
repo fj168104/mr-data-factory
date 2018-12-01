@@ -171,7 +171,7 @@ public class CreditChinaHaiNan_XZCF extends SiteTaskExtend_CreditChina{
                     e.printStackTrace();
                 }
                 log.info("程序...滴"+repeatSize+"次...........从试中............");
-                log.error("网络连接异常···请检查！"+throwable.getMessage());
+                log.warn("网络连接异常···请检查！"+throwable.getMessage());
             }
         }
 

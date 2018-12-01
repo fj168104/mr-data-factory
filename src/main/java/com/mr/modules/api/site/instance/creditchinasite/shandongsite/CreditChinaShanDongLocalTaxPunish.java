@@ -55,10 +55,10 @@ public class CreditChinaShanDongLocalTaxPunish extends SiteTaskExtend_CreditChin
 			try {
 				extractContent(url);// 抽取内容并入库
 			} catch (Exception e) {
-				log.error("请检查此条url：{}", url, e);
+				log.warn("请检查此条url：{}", url, e);
 				continue;
 			} catch (Throwable e) {
-				log.error("请检查此条url：{}", url, e);
+				log.warn("请检查此条url：{}", url, e);
 				continue;
 			}
 		}

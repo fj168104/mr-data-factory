@@ -53,7 +53,7 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
         //来源
         String source = "信用中国";
         //主题
-        String subject = "2017年第一季度国家重点监控企业主要污染物排放严重超标和处罚情况";
+        String subject = "2017年度国家重点监控企业主要污染物排放严重超标和处罚情况";
         //来源地址
         String sourceUrl = url;
         //企业名称、
@@ -121,11 +121,11 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
         pdfString = pdfString.replaceAll("@建设兵团@","建设兵团@");
         pdfString = pdfString.replaceAll("@（","（");
         pdfString = pdfString.replaceAll("@理分公司仁和污水处理厂","理分公司仁和污水处理厂");
-        log.info("换行处理后的文档：\n"+pdfString);
+        //log.info("换行处理后的文档：\n"+pdfString);
 
         //通过空格 数字 空格 来处理
         pdfString = pdfString.replaceAll("(\\r\\n|\\r|\\n|\\n\\r)", "#");
-        log.info("去掉换行处理后的文档：\n"+pdfString);
+        //log.info("去掉换行处理后的文档：\n"+pdfString);
         String[] strPdf = pdfString.split("#");
         for(String str : strPdf){
             String[] resultList = str.trim().split("@");
@@ -178,27 +178,46 @@ public class CreditChinaMainSite0004 extends SiteTaskExtend_CreditChina {
                 //存储对象
             }
             if(resultList.length<4){
+                //湖北省@湖北三峡新型建材股份有限公司@罚款440万元2017年7月23日达标。
+                Map<String,String> personObjectMap  = new HashMap<>();
+                //来源String source = "信用中国";
+                personObjectMap.put("source",source);
+                //来源地址String sourceUrl = url;
+                personObjectMap.put("sourceUrl",sourceUrl);
+                // 日期String dateString = "";
+                personObjectMap.put("objectType","01");
+                personObjectMap.put("judgeDate","");
+                personObjectMap.put("publishDate",dateString);
+                personObjectMap.put("enterpriseName","湖北三峡新型建材股份有限公司");
+                personObjectMap.put("administrativeArea","湖北省");
+                personObjectMap.put("punishResult","罚款440万元");
+                personObjectMap.put("rectifyAndReform","2017年7月23日达标");
+                personObjectMap.put("subject",subject);
+                personObjectMap.put("punishType","罚款");
+                personObjectMap.put("punishReason","污染物排放严重超标");
+                personObjectMap.put("judgeAuth","生态环境部");
+                listPersonObjectMap.add(personObjectMap);
                 log.info("这条记录有异常，请查验···\n"+str);
+            }else{
+                Map<String,String> personObjectMap  = new HashMap<>();
+                //来源String source = "信用中国";
+                personObjectMap.put("source",source);
+                //来源地址String sourceUrl = url;
+                personObjectMap.put("sourceUrl",sourceUrl);
+                // 日期String dateString = "";
+                personObjectMap.put("objectType","01");
+                personObjectMap.put("judgeDate","");
+                personObjectMap.put("publishDate",dateString);
+                personObjectMap.put("enterpriseName",commpanyName);
+                personObjectMap.put("administrativeArea",administrativeArea);
+                personObjectMap.put("punishResult",punishGress);
+                personObjectMap.put("rectifyAndReform",rectifyAndReform);
+                personObjectMap.put("subject",subject);
+                personObjectMap.put("punishType",punishType);
+                personObjectMap.put("punishReason","污染物排放严重超标");
+                personObjectMap.put("judgeAuth","生态环境部");
+                listPersonObjectMap.add(personObjectMap);
             }
-
-            Map<String,String> personObjectMap  = new HashMap<>();
-            //来源String source = "信用中国";
-            personObjectMap.put("source",source);
-            //来源地址String sourceUrl = url;
-            personObjectMap.put("sourceUrl",sourceUrl);
-            // 日期String dateString = "";
-            personObjectMap.put("objectType","01");
-            personObjectMap.put("judgeDate","");
-            personObjectMap.put("publishDate",dateString);
-            personObjectMap.put("enterpriseName",commpanyName);
-            personObjectMap.put("administrativeArea",administrativeArea);
-            personObjectMap.put("punishResult",punishGress);
-            personObjectMap.put("rectifyAndReform",rectifyAndReform);
-            personObjectMap.put("subject",subject);
-            personObjectMap.put("punishType",punishType);
-            personObjectMap.put("punishReason","污染物排放严重超标");
-            personObjectMap.put("judgeAuth","生态环境部");
-            listPersonObjectMap.add(personObjectMap);
         }
         for(Map<String,String> map : listPersonObjectMap){
             adminPunishInsert(map);

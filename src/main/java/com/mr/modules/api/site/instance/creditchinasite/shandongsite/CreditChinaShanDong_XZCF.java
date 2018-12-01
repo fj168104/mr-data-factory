@@ -68,7 +68,7 @@ public class CreditChinaShanDong_XZCF extends SiteTaskExtend_CreditChina{
         try {
             keyWord = URLEncoder.encode(keyWord, "utf-8");
         } catch (UnsupportedEncodingException ue){
-            log.error("不支持代码转换···异常"+ue.getMessage());
+            log.warn("不支持代码转换···异常"+ue.getMessage());
         }
         String urlResult = "http://www.creditsd.gov.cn/creditsearch.punishmentList.phtml?id=&keyword="+keyWord+"&page="+page;
         WebClient webClient = createWebClient(ip,port);
@@ -249,7 +249,7 @@ public class CreditChinaShanDong_XZCF extends SiteTaskExtend_CreditChina{
 
                 connectFlag = false;
             }catch (IOException e){
-                log.error("IO异常···异常信息为："+e.getMessage());
+                log.warn("IO异常···异常信息为："+e.getMessage());
                 if(listIps.size()<=0){
                     break;
                 }

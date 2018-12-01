@@ -49,7 +49,7 @@ public class LogController extends BaseController {
 //            modelMap.put("startTime", startTime);
 //            modelMap.put("endTime", endTime);
         } catch (Exception e) {
-            log.error("分页查询日志列表失败! e = {}", e);
+            log.warn("分页查询日志列表失败! e = {}", e);
         }
         return BASE_PATH + "log-list";
     }
@@ -72,7 +72,7 @@ public class LogController extends BaseController {
 
             return ResponseEntity.ok("已删除!");
         } catch (Exception e) {
-            log.error("删除日志失败! id = {}, e = {}", id, e);
+            log.warn("删除日志失败! id = {}, e = {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -97,7 +97,7 @@ public class LogController extends BaseController {
 
             return ResponseEntity.ok("已删除!");
         } catch (Exception e) {
-            log.error("批量删除日志失败! ids = {}, e = {}", ids, e);
+            log.warn("批量删除日志失败! ids = {}, e = {}", ids, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

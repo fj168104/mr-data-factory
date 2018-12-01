@@ -5,7 +5,9 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -67,40 +69,40 @@ public class Guizhou_11239 extends SiteTaskExtend_CreditChina {
 		int startRow = 5;
 		for (int t = startRow; t < phyRow; t++) {
 			Row row = sheet.getRow(t);
-			AdminPunish adminPunish = createDefaultAdminPunish();
-			adminPunish.setEnterpriseName(row.getCell(1).getStringCellValue());
-			adminPunish.setEnterpriseCode1(row.getCell(3).getStringCellValue());
-			adminPunish.setPersonName(row.getCell(4).getStringCellValue());
-			adminPunish.setPersonId(row.getCell(5).getStringCellValue());
-			adminPunish.setPunishReason(row.getCell(8).getStringCellValue());
-			adminPunish.setJudgeAuth(row.getCell(7).getStringCellValue());
+			DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
+			discreditBlacklist.setEnterpriseName(row.getCell(1).getStringCellValue());
+			discreditBlacklist.setEnterpriseCode1(row.getCell(3).getStringCellValue());
+			discreditBlacklist.setPersonName(row.getCell(4).getStringCellValue());
+			discreditBlacklist.setPersonId(row.getCell(5).getStringCellValue());
+			discreditBlacklist.setPunishReason(row.getCell(8).getStringCellValue());
+			discreditBlacklist.setJudgeAuth(row.getCell(7).getStringCellValue());
 			try {
-				adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-				saveAdminPunishOne(adminPunish, false);
+				discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 			}catch (Exception e){
 				writeBizErrorLog(url, e.getMessage());
 			}
 		}
 	}
 
-	private AdminPunish createDefaultAdminPunish() {
-		AdminPunish adminPunish = new AdminPunish();
+	private DiscreditBlacklist createDefaultDiscreditBlacklist() {
+		DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
 
-		adminPunish.setCreatedAt(new Date());
-		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用中国（贵州）");
-		adminPunish.setUrl(url);
-		adminPunish.setSubject("");
-		adminPunish.setObjectType("01");
-		adminPunish.setEnterpriseCode1("");
-		adminPunish.setEnterpriseCode2("");
-		adminPunish.setEnterpriseCode3("");
-		adminPunish.setEnterpriseName("");
-		adminPunish.setPersonName("");
-		adminPunish.setPersonId("");
-		adminPunish.setJudgeNo("");
-		adminPunish.setJudgeAuth("");
-		return adminPunish;
+		discreditBlacklist.setCreatedAt(new Date());
+		discreditBlacklist.setUpdatedAt(new Date());
+		discreditBlacklist.setSource("信用中国（贵州）");
+		discreditBlacklist.setUrl(url);
+		discreditBlacklist.setSubject("2018年第一批安全生产失信联合惩戒“黑名单”单位及其人员名单");
+		discreditBlacklist.setObjectType("01");
+		discreditBlacklist.setEnterpriseCode1("");
+		discreditBlacklist.setEnterpriseCode2("");
+		discreditBlacklist.setEnterpriseCode3("");
+		discreditBlacklist.setEnterpriseName("");
+		discreditBlacklist.setPersonName("");
+		discreditBlacklist.setPersonId("");
+		discreditBlacklist.setJudgeNo("");
+		discreditBlacklist.setJudgeAuth("");
+		return discreditBlacklist;
 	}
 
 }

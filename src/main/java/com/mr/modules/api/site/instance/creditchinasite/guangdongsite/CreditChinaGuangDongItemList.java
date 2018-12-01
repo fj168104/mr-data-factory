@@ -74,7 +74,7 @@ public class CreditChinaGuangDongItemList extends SiteTaskExtend_CreditChina{
                 }
             }
         }catch (Throwable throwable){
-            log.error("");
+            log.warn("");
         }
     }
     /**

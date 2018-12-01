@@ -166,7 +166,7 @@ public class GuiZhou_XZCF_bak extends SiteTaskExtend_CreditChina{
             }
 
         } catch (Throwable throwable) {
-            log.error("网络连接异常···清查看···"+throwable.getMessage());
+            log.warn("网络连接异常···清查看···"+throwable.getMessage());
         }
         return map;
     }

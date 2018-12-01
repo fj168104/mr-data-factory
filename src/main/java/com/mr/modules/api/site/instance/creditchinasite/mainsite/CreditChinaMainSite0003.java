@@ -161,7 +161,8 @@ public class CreditChinaMainSite0003 extends SiteTaskExtend_CreditChina {
 
         }
         for(Map<String,String> map : listPersonObjectMap){
-            //insertDiscreditBlacklist(map);
+            //System.out.println(map.toString());
+            insertDiscreditBlacklist(map);
         }
 
     }

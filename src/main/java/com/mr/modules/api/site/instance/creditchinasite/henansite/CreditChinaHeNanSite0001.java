@@ -38,6 +38,9 @@ import java.util.Map;
     @Override
     protected String execute() throws Throwable {
         keyWord = siteParams.map.get("keyWord");
+        if(keyWord==null ){
+            keyWord="";
+        }
         webContext(keyWord,ip,port);
         return super.execute();
     }
@@ -79,8 +82,20 @@ import java.util.Map;
                      mapResult.put("sourceUrl",baseUrl+(String)mapResult.get("mc"));
                      mapResult.put("source","信用中国（河南）");
                      mapResult.put("subject","河南省地税局重大税收违法案件");
-                     mapResult.put("enterpriseName",mapResult.remove("mc"));
-                     mapResult.put("enterpriseCode1",mapResult.remove("dm"));
+                     String enterpriseName= mapResult.remove("mc").toString();
+                     if(enterpriseName.length()<6&&enterpriseName.length()>0){
+                         mapResult.put("enterpriseName","");
+                         mapResult.put("personName",enterpriseName);
+                         mapResult.put("objectType","02");
+                         mapResult.put("personId",mapResult.remove("dm"));
+                     }
+                     if(enterpriseName.length()>6){
+                         mapResult.put("enterpriseName",enterpriseName);
+                         mapResult.put("personName","");
+                         mapResult.put("objectType","01");
+                         mapResult.put("enterpriseCode1",mapResult.remove("dm"));
+                     }
+
                      insertDiscreditBlacklist(mapResult);
                  }
                  int totalPage = (int)map.get("totalPage");
@@ -106,8 +121,19 @@ import java.util.Map;
                              mapResult.put("sourceUrl",baseUrl+(String)mapResult.get("mc"));
                              mapResult.put("source","信用中国（河南）");
                              mapResult.put("subject","河南省地税局重大税收违法案件");
-                             mapResult.put("enterpriseName",mapResult.remove("mc"));
-                             mapResult.put("enterpriseCode1",mapResult.remove("dm"));
+                             String enterpriseName= mapResult.remove("mc").toString();
+                             if(enterpriseName.length()<6&&enterpriseName.length()>0){
+                                 mapResult.put("enterpriseName","");
+                                 mapResult.put("personName",enterpriseName);
+                                 mapResult.put("objectType","02");
+                                 mapResult.put("personId",mapResult.remove("dm"));
+                             }
+                             if(enterpriseName.length()>6){
+                                 mapResult.put("enterpriseName",enterpriseName);
+                                 mapResult.put("personName","");
+                                 mapResult.put("objectType","01");
+                                 mapResult.put("enterpriseCode1",mapResult.remove("dm"));
+                             }
                              insertDiscreditBlacklist(mapResult);
                          }
                      }
@@ -115,7 +141,7 @@ import java.util.Map;
              }
              webClient.close();
          }catch (IOException e){
-             log.error("获取网页异常···"+e.getMessage());
+             log.warn("获取网页异常···"+e.getMessage());
          }
      }
 }

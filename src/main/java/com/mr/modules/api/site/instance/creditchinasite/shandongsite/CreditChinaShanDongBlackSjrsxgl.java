@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -55,10 +56,10 @@ public class CreditChinaShanDongBlackSjrsxgl extends SiteTaskExtend_CreditChina 
 			try {
 				extractContent(url);// 抽取内容并入库
 			} catch (Exception e) {
-				log.error("请检查此条url：{}", url, e);
+				log.warn("请检查此条url：{}", url, e);
 				continue;
 			} catch (Throwable e) {
-				log.error("请检查此条url：{}", url, e);
+				log.warn("请检查此条url：{}", url, e);
 				continue;
 			}
 		}
@@ -165,7 +166,7 @@ public class CreditChinaShanDongBlackSjrsxgl extends SiteTaskExtend_CreditChina 
 			String value = td.text();
 			log.debug(name + "===" + value);
 			if (Objects.equals(name, "企业名称")) {
-				blackList.setEnterpriseName(value);// 企业名称
+				blackList.setEnterpriseName(value.replace("[所有信用详情]",""));// 企业名称
 			} else if (Objects.equals(name, "法定代表人")) {
 				blackList.setPersonName(value);// 法定代表人/负责人姓名|负责人姓名
 			} else if (Objects.equals(name, "统一社会信用代码")) {
@@ -180,7 +181,7 @@ public class CreditChinaShanDongBlackSjrsxgl extends SiteTaskExtend_CreditChina 
 				blackList.setDiscreditType(value);// 失信类型
 			}
 		}
-		blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
+		blackList.setUniqueKey(MD5Util.encode(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth()));
 		discreditBlacklistMapper.insert(blackList);
 		log.debug("==============================");
 	}

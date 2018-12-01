@@ -56,7 +56,7 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
      * 获取网页内容
      */
     public void extractContext(String keyWord ) throws Throwable{
-        result(5,keyWord);;
+        result(5,keyWord);
     }
 
 
@@ -104,7 +104,7 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
                 return null;
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
 
         return null;
@@ -120,6 +120,7 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
         List<Map> nameList = new ArrayList<>();
         try {
             //浏览器的中文需要转码  如：URLEncoder.encode("绩溪县汇通汽车运输有限公司", "utf-8");
+            String urlInsert = "https://www.creditchina.gov.cn/api/pub_penalty_name?name="+researchName+"&page=1&pageSize=10";
             String name = URLEncoder.encode(researchName, "utf-8");
             String url = "https://www.creditchina.gov.cn/api/pub_penalty_name?name="+name+"&page=1&pageSize=10";
             WebRequest request = new WebRequest(new URL(url), HttpMethod.GET);
@@ -141,21 +142,31 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
                 List<Map> listResults = (List)listResult.get("results");
                 for(int j =0;j<listResults.size();j++){
                     Map mapResult = listResults.get(j);
-                    //存储数据源地址
-                    mapResult.put("sourceUrl",url);
-                    mapResult.put("source","信用中国");
-                    mapResult.put("subject","全国行政处罚");
-                    mapResult.put("enterpriseName",mapResult.remove("cfXdrMc"));
-                    mapResult.put("personName",mapResult.remove("cfFr"));
-                    mapResult.put("punishType",mapResult.remove("cfCflb1"));
-                    mapResult.put("punishReason",mapResult.remove("cfSy"));
-                    mapResult.put("punishAccording",mapResult.remove("cfYj"));
-                    mapResult.put("punishResult",mapResult.remove("cfJg"));
-                    mapResult.put("judgeNo",mapResult.remove("cfWsh"));
-                    mapResult.put("judgeDate",mapResult.remove("cfJdrq"));
-                    mapResult.put("judgeAuth",mapResult.remove("cfXzjg"));
-                    mapResult.put("publishDate",mapResult.remove("cfSjc"));
-                    nameList.add(mapResult);
+                    if(mapResult.size()>0){
+//存储数据源地址
+                        mapResult.put("sourceUrl",urlInsert);
+                        mapResult.put("source","信用中国");
+                        mapResult.put("subject","全国行政处罚");
+                        String enterpriseName = mapResult.get("cfXdrMc").toString();
+                        if(enterpriseName==null || enterpriseName.equals("null")){
+                            enterpriseName = "";
+                        }
+                        mapResult.put("enterpriseName",enterpriseName.length()>5?enterpriseName:"");
+                        String personName =mapResult.get("cfFr").toString();
+                        if(personName==null || personName.equals("null")){
+                            personName = "";
+                        }
+                        mapResult.put("personName",enterpriseName.length()>5?personName:enterpriseName);
+                        mapResult.put("punishType",mapResult.get("cfCflb1"));
+                        mapResult.put("punishReason",mapResult.get("cfSy"));
+                        mapResult.put("punishAccording",mapResult.get("cfYj"));
+                        mapResult.put("punishResult",mapResult.get("cfJg"));
+                        mapResult.put("judgeNo",mapResult.get("cfWsh"));
+                        mapResult.put("judgeDate",mapResult.get("cfJdrq"));
+                        mapResult.put("judgeAuth",mapResult.get("cfXzjg"));
+                        mapResult.put("publishDate",mapResult.get("cfSjc"));
+                        nameList.add(mapResult);
+                    }
                 }
 
                 return nameList;
@@ -164,7 +175,7 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
             }
 
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
 
         return null;
@@ -193,15 +204,19 @@ public class CreditChinaMainSite0006 extends SiteTaskExtend_CreditChina{
         }
 
         //2.获取处罚的详情
-        //log.info("-----------------------\n"+nameList);
         for(int i=0;i<nameList.size();i++){
-            punishDetail.addAll(pubPenaltyName(nameList.get(i),createWebClient("","")));
+            if(nameList.get(i).toString().length()>0){
+                punishDetail.addAll(pubPenaltyName(nameList.get(i),createWebClient("","")));
+            }
         }
         //入库
-        for(Map map : punishDetail){
-            adminPunishInsert(map);
+        if(punishDetail.size()>0){
+            for(Map map : punishDetail){
+                adminPunishInsert(map);
+            }
+            //log.info("-----------------------\n"+punishDetail);
         }
-        //log.info("-----------------------\n"+punishDetail);
+
 
     }
 

@@ -53,7 +53,7 @@ public class IdempotentOperator<T> {
 			if (ex instanceof RuntimeException) {
 				throw (RuntimeException) ex;
 			} else {
-//				log.error(ex.getMessage());
+//				log.warn(ex.getMessage());
 				throw new RuntimeException("超过重试次数,执行失败");
 			}
 		return result;

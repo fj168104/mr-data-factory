@@ -59,6 +59,9 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 	@Value("${download-dir}")
 	private String downloadDir;
 
+	//可能会变，变得时候再调整吧
+	private static String SID = "uh3jdmu3ndh6kiv15n22sje4d7";
+
 	@Override
 	protected String executeOne() throws Throwable {
 		return super.executeOne();
@@ -107,7 +110,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 							log.info("i = {}, j = {}, k = {}", i, j, k);
 							Map<String, String> params = Maps.newHashMap();
 							params.put("accessKey", "556d8122421340ae8799bae4ad5c03a1");
-							params.put("sid", "bo2jbfvecte32biererdln2533");
+							params.put("sid", SID);
 							params.put("pageNo", String.valueOf(k));
 							params.put("pageSize", "10");
 							params.put("count", "16");

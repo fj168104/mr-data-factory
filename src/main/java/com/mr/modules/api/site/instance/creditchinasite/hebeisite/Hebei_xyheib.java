@@ -61,51 +61,53 @@ public class Hebei_xyheib extends SiteTaskExtend_CreditChina {
 			discreditBlacklist.setUrl(aUrl);
 			for (int j = 0; j < trElements.size(); j++) {
 				Element trElement = trElements.get(j);
-				String keyString = trElement.getElementsByTag("td").get(0).text();
-				String valueString = trElement.getElementsByTag("td").get(1).text().trim();
+				//每排tr有2组td
+				for(int k =0; k < 2; k++){
+					String keyString = trElement.getElementsByTag("td").get(2 * k).text();
+					String valueString = trElement.getElementsByTag("td").get(1 + 2 * k).text().trim();
 
-				if (keyString.contains("企业名称")) {
-					if(StrUtil.isEmpty(valueString)) return;
-					discreditBlacklist.setEnterpriseName(valueString);
-					continue;
+					if (keyString.contains("企业名称")) {
+						if(StrUtil.isEmpty(valueString)) return;
+						discreditBlacklist.setEnterpriseName(valueString);
+						continue;
+					}
+
+
+					if (keyString.contains("统一社会信用代码")) {
+						discreditBlacklist.setEnterpriseCode1(valueString);
+						continue;
+					}
+
+					if (keyString.contains("工商注册号码")) {
+						discreditBlacklist.setEnterpriseCode2(valueString);
+						continue;
+					}
+
+					if (keyString.contains("组织机构代码")) {
+						discreditBlacklist.setEnterpriseCode3(valueString);
+						continue;
+					}
+
+					if (keyString.contains("载入黑名单原因")) {
+						discreditBlacklist.setPunishReason(valueString);
+						continue;
+					}
+
+					if (keyString.contains("当前黑名单状态")) {
+						discreditBlacklist.setStatus(valueString);
+						continue;
+					}
+
+					if (keyString.contains("载入日期")) {
+						discreditBlacklist.setPublishDate(valueString);
+						continue;
+					}
+
+					if (keyString.contains("判定机关")) {
+						discreditBlacklist.setJudgeAuth(valueString);
+						continue;
+					}
 				}
-
-
-				if (keyString.contains("统一社会信用代码")) {
-					discreditBlacklist.setEnterpriseCode1(valueString);
-					continue;
-				}
-
-				if (keyString.contains("工商注册号码")) {
-					discreditBlacklist.setEnterpriseCode2(valueString);
-					continue;
-				}
-
-				if (keyString.contains("组织机构代码")) {
-					discreditBlacklist.setEnterpriseCode3(valueString);
-					continue;
-				}
-
-				if (keyString.contains("载入黑名单原因")) {
-					discreditBlacklist.setPunishReason(valueString);
-					continue;
-				}
-
-				if (keyString.contains("当前黑名单状态")) {
-					discreditBlacklist.setStatus(valueString);
-					continue;
-				}
-
-				if (keyString.contains("载入日期")) {
-					discreditBlacklist.setPublishDate(valueString);
-					continue;
-				}
-
-				if (keyString.contains("判定机关")) {
-					discreditBlacklist.setJudgeAuth(valueString);
-					continue;
-				}
-
 			}
 			saveDisneycreditBlackListOne(discreditBlacklist, false);
 		}

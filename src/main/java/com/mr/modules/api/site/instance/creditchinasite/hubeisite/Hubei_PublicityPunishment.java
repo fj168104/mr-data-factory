@@ -148,6 +148,7 @@ public class Hubei_PublicityPunishment extends SiteTaskExtend_CreditChina {
 				try{
 					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
 					saveAdminPunishOne(adminPunish, false);
+					Thread.sleep(500);
 				}catch (Exception e){
 					writeBizErrorLog(infoUrl, e.getMessage());
 				}

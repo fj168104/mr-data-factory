@@ -7,8 +7,10 @@ import com.mr.framework.json.JSONObject;
 import com.mr.framework.json.JSONUtil;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -73,7 +75,7 @@ public class Shanxi_personblack extends SiteTaskExtend_CreditChina {
 			Document document = Jsoup.parse(getData(detailUrl, 3));
 			Element div = document.getElementsByClass("main_body").first();
 			Elements trElements = div.getElementsByTag("tr");
-			AdminPunish adminPunish = createDefaultAdminPunish();
+			DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
 			for (Element trElement : trElements) {
 
 
@@ -84,53 +86,53 @@ public class Shanxi_personblack extends SiteTaskExtend_CreditChina {
 				if(StrUtil.isEmpty(thString)) continue;
 
 				if (thString.contains("姓名：")) {
-					adminPunish.setPersonName(tdString.trim());
+					discreditBlacklist.setPersonName(tdString.trim());
 					continue;
 				}
 				if (thString.contains("身份证号")) {
-					adminPunish.setPersonId(tdString.trim());
+					discreditBlacklist.setPersonId(tdString.trim());
 					continue;
 				}
 				if (thString.contains("列入原因")) {
-					adminPunish.setPunishReason(tdString.trim());
+					discreditBlacklist.setPunishReason(tdString.trim());
 					continue;
 				}
 				if (thString.contains("决定机关")) {
-					adminPunish.setJudgeAuth(tdString.trim());
+					discreditBlacklist.setJudgeAuth(tdString.trim());
 					continue;
 				}
 				if (thString.contains("最后修改日期")) {
-					adminPunish.setPublishDate(tdString.trim());
+					discreditBlacklist.setPublishDate(tdString.trim());
 					continue;
 				}
 			}
 			try{
-				adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-				saveAdminPunishOne(adminPunish, false);
+				discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 			}catch (Exception e){
 				writeBizErrorLog(detailUrl, e.getMessage());
 			}
 		}
 	}
 
-	private AdminPunish createDefaultAdminPunish() {
-		AdminPunish adminPunish = new AdminPunish();
+	private DiscreditBlacklist createDefaultDiscreditBlacklist() {
+		DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
 
-		adminPunish.setCreatedAt(new Date());
-		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用中国（山西）");
-		adminPunish.setUrl(url);
-		adminPunish.setSubject("");
-		adminPunish.setObjectType("02");
-		adminPunish.setEnterpriseCode1("");
-		adminPunish.setEnterpriseCode2("");
-		adminPunish.setEnterpriseCode3("");
-		adminPunish.setEnterpriseName("");
-		adminPunish.setPersonName("");
-		adminPunish.setPersonId("");
-		adminPunish.setJudgeNo("");
-		adminPunish.setJudgeAuth("");
-		return adminPunish;
+		discreditBlacklist.setCreatedAt(new Date());
+		discreditBlacklist.setUpdatedAt(new Date());
+		discreditBlacklist.setSource("信用中国（山西）");
+		discreditBlacklist.setUrl(url);
+		discreditBlacklist.setSubject("自然人黑名单");
+		discreditBlacklist.setObjectType("02");
+		discreditBlacklist.setEnterpriseCode1("");
+		discreditBlacklist.setEnterpriseCode2("");
+		discreditBlacklist.setEnterpriseCode3("");
+		discreditBlacklist.setEnterpriseName("");
+		discreditBlacklist.setPersonName("");
+		discreditBlacklist.setPersonId("");
+		discreditBlacklist.setJudgeNo("");
+		discreditBlacklist.setJudgeAuth("");
+		return discreditBlacklist;
 	}
 
 }

@@ -44,7 +44,7 @@ public class CreditChina_GanSu_BlackList_AQSCBLJLHMD extends SiteTaskExtend_Cred
             for(Map<String,Object> map : listMaps){
                 map.put("source","信用中国（甘肃）");
                 map.put("sourceUrl","http://www.gscredit.gov.cn/blackList/200257.jhtml");
-                map.put("subject","电安监总局：安全生产不良记录“黑名单”");
+                map.put("subject","安监总局：安全生产不良记录“黑名单”");
                 map.put("objectType","01");
                 map.put("publishDate","2017/09/06");
                 insertDiscreditBlacklist(map);

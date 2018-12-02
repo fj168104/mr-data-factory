@@ -94,7 +94,7 @@ public class CreditChinaGansuBlack97898 extends SiteTaskExtend_CreditChina {
 							continue forMap;
 						}
 						if ("身份证号".equals(key)) {
-							discreditBlacklist.setPersonId(value);
+							discreditBlacklist.setPersonId(value.length()>30?value.substring(0,29):value);
 							continue forMap;
 						}
 						if ("失信行为简况".equals(key)) {
@@ -129,7 +129,7 @@ public class CreditChinaGansuBlack97898 extends SiteTaskExtend_CreditChina {
 		blackList.setCreatedAt(nowDate);// 本条记录创建时间
 		blackList.setUpdatedAt(nowDate);// 本条记录最后更新时间
 		blackList.setSource(CreditChinaSite.GANSU.getSiteName());// 数据来源
-		blackList.setSubject("");// 主题
+		blackList.setSubject("安监总局公告2017年第三批安全生产失信联合惩戒“黑名单”");// 主题
 		blackList.setUrl(url);// url
 		blackList.setObjectType("01");// 主体类型: 01-企业 02-个人。默认为企业
 		blackList.setEnterpriseName("");// 企业名称

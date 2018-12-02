@@ -5,8 +5,10 @@ import com.mr.common.OCRUtil;
 import com.mr.common.util.SpringUtils;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -64,65 +66,65 @@ public class Xizang_fyqy extends SiteTaskExtend_CreditChina {
 		String[] infos = s1.split("法院");
 		for (int i = 0; i < infos.length; i++) {
 			String info = infos[i];
-			AdminPunish adminPunish = createDefaultAdminPunish();
+			DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
 			String sRow = info.replace("\n", "");
-			adminPunish.setEnterpriseCode1(sRow.substring(sRow.indexOf("("), sRow.indexOf("号") + 1));
-			adminPunish.setEnterpriseName(sRow.substring(sRow.indexOf("号") + 1, sRow.indexOf("公司") + 2));
+			discreditBlacklist.setEnterpriseCode1(sRow.substring(sRow.indexOf("("), sRow.indexOf("号") + 1));
+			discreditBlacklist.setEnterpriseName(sRow.substring(sRow.indexOf("号") + 1, sRow.indexOf("公司") + 2));
 			if (i == 1) {
-				adminPunish.setEnterpriseCode2("74191508—0");
-				adminPunish.setPersonName("吴忠和");
-				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
+				discreditBlacklist.setEnterpriseCode2("74191508—0");
+				discreditBlacklist.setPersonName("吴忠和");
+				discreditBlacklist.setJudgeAuth("拉萨市堆龙德庆县人民法院");
 				try{
-					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-					saveAdminPunishOne(adminPunish, false);
+					discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 				}catch (Exception e){
 					writeBizErrorLog(url, e.getMessage());
 				}
 				continue;
 			}
 			if (i == 2) {
-				adminPunish.setEnterpriseCode2("68684241—2");
-				adminPunish.setPersonName("攀维超");
-				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
+				discreditBlacklist.setEnterpriseCode2("68684241—2");
+				discreditBlacklist.setPersonName("攀维超");
+				discreditBlacklist.setJudgeAuth("拉萨市堆龙德庆县人民法院");
 				try{
-					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-					saveAdminPunishOne(adminPunish, false);
+					discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 				}catch (Exception e){
 					writeBizErrorLog(url, e.getMessage());
 				}
 				continue;
 			}
 			if (i == 3) {
-				adminPunish.setEnterpriseCode2("78910651—4");
-				adminPunish.setPersonName("方相胜");
-				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
+				discreditBlacklist.setEnterpriseCode2("78910651—4");
+				discreditBlacklist.setPersonName("方相胜");
+				discreditBlacklist.setJudgeAuth("拉萨市堆龙德庆县人民法院");
 				try{
-					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-					saveAdminPunishOne(adminPunish, false);
+					discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 				}catch (Exception e){
 					writeBizErrorLog(url, e.getMessage());
 				}
 				continue;
 			}
 			if (i == 4) {
-				adminPunish.setEnterpriseCode2("68682020—5");
-				adminPunish.setPersonName("万冬");
-				adminPunish.setJudgeAuth("拉萨市堆龙德庆县人民法院");
+				discreditBlacklist.setEnterpriseCode2("68682020—5");
+				discreditBlacklist.setPersonName("万冬");
+				discreditBlacklist.setJudgeAuth("拉萨市堆龙德庆县人民法院");
 				try{
-					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-					saveAdminPunishOne(adminPunish, false);
+					discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 				}catch (Exception e){
 					writeBizErrorLog(url, e.getMessage());
 				}
 				continue;
 			}
 			if (i == 22) {
-				adminPunish.setEnterpriseCode2("68683480—X");
-				adminPunish.setPersonName("陈林");
-				adminPunish.setJudgeAuth("昌都市中级人民法院");
+				discreditBlacklist.setEnterpriseCode2("68683480—X");
+				discreditBlacklist.setPersonName("陈林");
+				discreditBlacklist.setJudgeAuth("昌都市中级人民法院");
 				try{
-					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-					saveAdminPunishOne(adminPunish, false);
+					discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 				}catch (Exception e){
 					writeBizErrorLog(url, e.getMessage());
 				}
@@ -131,36 +133,36 @@ public class Xizang_fyqy extends SiteTaskExtend_CreditChina {
 
 			String[] sis = sRow.substring(sRow.indexOf("公司") + 2).trim().split("\\s+");
 			if(sis.length < 3)  continue;
-			adminPunish.setEnterpriseCode2(sis[0]);
-			adminPunish.setPersonName(sis[1]);
-			adminPunish.setJudgeAuth(sis[2] + "法院");
+			discreditBlacklist.setEnterpriseCode2(sis[0]);
+			discreditBlacklist.setPersonName(sis[1]);
+			discreditBlacklist.setJudgeAuth(sis[2] + "法院");
 			try{
-				adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-				saveAdminPunishOne(adminPunish, false);
+				discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+				saveDisneycreditBlackListOne(discreditBlacklist, false);
 			}catch (Exception e){
 				writeBizErrorLog(url, e.getMessage());
 			}
 		}
 	}
 
-	private AdminPunish createDefaultAdminPunish() {
-		AdminPunish adminPunish = new AdminPunish();
+	private DiscreditBlacklist createDefaultDiscreditBlacklist() {
+		DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
 
-		adminPunish.setCreatedAt(new Date());
-		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用中国（西藏）");
-		adminPunish.setUrl(url);
-		adminPunish.setSubject("");
-		adminPunish.setObjectType("01");
-		adminPunish.setEnterpriseCode1("");
-		adminPunish.setEnterpriseCode2("");
-		adminPunish.setEnterpriseCode3("");
-		adminPunish.setEnterpriseName("");
-		adminPunish.setPersonName("");
-		adminPunish.setPersonId("");
-		adminPunish.setJudgeNo("");
-		adminPunish.setJudgeAuth("");
-		return adminPunish;
+		discreditBlacklist.setCreatedAt(new Date());
+		discreditBlacklist.setUpdatedAt(new Date());
+		discreditBlacklist.setSource("信用中国（西藏）");
+		discreditBlacklist.setUrl(url);
+		discreditBlacklist.setSubject("西藏自治区法院失信被执行人名单（企业）");
+		discreditBlacklist.setObjectType("01");
+		discreditBlacklist.setEnterpriseCode1("");
+		discreditBlacklist.setEnterpriseCode2("");
+		discreditBlacklist.setEnterpriseCode3("");
+		discreditBlacklist.setEnterpriseName("");
+		discreditBlacklist.setPersonName("");
+		discreditBlacklist.setPersonId("");
+		discreditBlacklist.setJudgeNo("");
+		discreditBlacklist.setJudgeAuth("");
+		return discreditBlacklist;
 	}
 
 }

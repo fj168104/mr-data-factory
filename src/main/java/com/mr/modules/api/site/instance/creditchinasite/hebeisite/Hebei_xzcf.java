@@ -156,7 +156,7 @@ public class Hebei_xzcf extends SiteTaskExtend_CreditChina {
 		adminPunish.setUpdatedAt(new Date());
 		adminPunish.setSource("信用中国（河北）");
 		adminPunish.setUrl(url);
-		adminPunish.setSubject("");
+		adminPunish.setSubject("行政处罚");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");

@@ -89,7 +89,8 @@ public class CreditChinaGansuShiXin95838 extends SiteTaskExtend_CreditChina {
 						blackList.setPersonId(text);
 						break;
 					case 5:// 借款人单位名称
-						blackList.setEnterpriseName(text);
+						//blackList.setEnterpriseName(text);
+						blackList.setEnterpriseName("");
 						break;
 					default:
 						break;

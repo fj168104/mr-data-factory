@@ -192,17 +192,19 @@ public class CreditChinaGansuBlack91744 extends SiteTaskExtend_CreditChina {
 					iCount++;
 					discreditBlacklist = createDefaultDiscreditBlacklist();
 					discreditBlacklist.setSubject(subject);
-					if (text.contains("法人代表：")) {// 企业
+					if (text.contains("法人代表")) {// 企业
 						discreditBlacklist.setObjectType("01");
 						String[] items = text.replace(",", "，").split("，");
 						discreditBlacklist.setEnterpriseName(items[0].substring(items[0].indexOf("、") + 1).trim());// 企业名称
 						discreditBlacklist.setPersonName(items[1].replace("法人代表：", "").trim());
-						discreditBlacklist.setPersonId(items[2].replace("身份证号码：", "").trim());
+						String personId = items[2].replace("身份证号码：", "").trim();
+						discreditBlacklist.setPersonId(personId.length()>18?personId.substring(0,18):personId);
 					} else {// 个人
 						discreditBlacklist.setObjectType("02");
 						String[] items = text.replace(",", "，").split("，");
 						discreditBlacklist.setPersonName(items[0].substring(items[0].indexOf("、") + 1).trim());
-						discreditBlacklist.setPersonId(items[1].replace("身份证号码：", "").trim());
+						String personId = items[1].replace("身份证号码：", "").trim();
+						discreditBlacklist.setPersonId(personId.length()>18?personId.substring(0,18):personId);
 					}
 					discreditBlacklist.setJudgeAuth("甘肃省庆阳市银行业协会");
 					String punishResult = "（一）全市公开曝光。 "//

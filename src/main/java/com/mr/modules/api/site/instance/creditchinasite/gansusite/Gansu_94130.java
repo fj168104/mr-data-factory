@@ -165,6 +165,9 @@ public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 				dcbl = createDefaultDiscreditBlacklist();
 				dcbl.setSubject(subject);
 				dcbl.setEnterpriseName(text.substring(text.indexOf("、") + 1));
+
+
+
 				continue;
 			}
 
@@ -223,6 +226,12 @@ public class Gansu_94130 extends SiteTaskExtend_CreditChina {
 			}
 
 		}
+		dcbl = createDefaultDiscreditBlacklist();
+		dcbl.setSubject("白银区环保局黑榜");
+		dcbl.setPunishReason("未落实环保措施");
+		dcbl.setPunishResult("限期整改");
+		dcbl.setEnterpriseName("白银新大孚科技化工有限公司");
+		saveDisneycreditBlackListOne(dcbl, false);
 
 	}
 

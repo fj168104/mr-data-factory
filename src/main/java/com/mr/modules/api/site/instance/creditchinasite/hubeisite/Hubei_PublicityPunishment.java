@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @auther 1.信用中国（湖北）
+ * @auther
+ * 1.信用中国（湖北）
  * 1、行政处罚信息
  * 2.http://www.hbcredit.gov.cn/credithb/gkgs/list.html
  */
@@ -162,7 +163,7 @@ public class Hubei_PublicityPunishment extends SiteTaskExtend_CreditChina {
 		adminPunish.setUpdatedAt(new Date());
 		adminPunish.setSource("信用中国（湖北）");
 		adminPunish.setUrl(url);
-		adminPunish.setSubject("");
+		adminPunish.setSubject("行政处罚");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");

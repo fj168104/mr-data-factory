@@ -114,7 +114,7 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
                         //处罚结果：
                         map.put("punishResult", htmlElementsTrs.get(4).asText().replaceAll(".*：", ""));
                         //处罚事由：
-                        map.put("publishDate", htmlElementsTrs.get(5).asText().replaceAll(".*：", ""));
+                        map.put("punishReason", htmlElementsTrs.get(5).asText().replaceAll(".*：", ""));
                         //处罚依据：
                         map.put("punishAccording", htmlElementsTrs.get(6).asText().replaceAll(".*：", ""));
                         //处罚机关：
@@ -124,7 +124,7 @@ public class CreditChina_NingXia_XZCF extends SiteTaskExtend_CreditChina {
                         //处罚截止期：
                         map.put("zhxgrq", htmlElementsTrs.get(9).asText().replaceAll(".*：", ""));
                         //数据更新时间
-                        map.put("publishDate", htmlElementsTrs.get(10).asText().replaceAll(".*：", ""));
+                        map.put("publishDate", htmlElementsTrs.get(10).asText().replaceAll(".*：", "").replace("数据更新时间",""));
                         //入库操作
                         adminPunishInsert(map);
                     }

@@ -98,12 +98,14 @@ public class CreditChina_NingXia_BlackList extends SiteTaskExtend_CreditChina{
                         //列入原因：案件号：(2018)宁0181执594号。 案由：其他案由。  失信被执行人具体情况：其他有履行能力而拒不履行生效法律文书确定义务的。
                         String[] insertReason = htmlElementsTrs.get(0).getElementsByTagName("td").get(1).asText().split("。");
                         if(insertReason.length==3){
-                            if(insertReason[0].contains("案件号：")){
-                                map.put("judgeNo",insertReason[0].replaceAll("案件号：",""));
-                            }else if(insertReason[1].contains("案由：")){
-                                map.put("punishReason",insertReason[1].replaceAll("案由：",""));
-                            }else if(insertReason[2].contains("失信被执行人具体情况：")){
+                            if(insertReason[0].contains("案件号：")) {
+                                map.put("judgeNo", insertReason[0].replaceAll("案件号：", ""));
+                            }
+                            if(insertReason[2].contains("失信被执行人具体情况：")){
                                 map.put("punishResult",insertReason[2].replaceAll("失信被执行人具体情况：",""));
+                            }
+                            if(insertReason[1].contains("案由：")) {
+                                map.put("punishReason", insertReason[1].replaceAll("案由：", ""));
                             }else {
                                 map.put("punishReason",htmlElementsTrs.get(0).getElementsByTagName("td").get(1).asText().replaceAll(".*：", ""));
                             }

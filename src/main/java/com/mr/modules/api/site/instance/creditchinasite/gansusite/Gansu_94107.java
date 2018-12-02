@@ -5,6 +5,7 @@ import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.mapper.DiscreditBlacklistMapper;
 import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -87,7 +88,7 @@ public class Gansu_94107 extends SiteTaskExtend_CreditChina {
 				if (text.trim().startsWith("企业名称")) {
 					continue;
 				}
-				String[] blackInfos = text.split("   ");
+				String[] blackInfos = text.replace("   ","  ").split("  ");
 				if (blackInfos.length < 4) {
 					continue;
 				}
@@ -166,38 +167,107 @@ public class Gansu_94107 extends SiteTaskExtend_CreditChina {
 
 			//市建设局建设单位
 			if (subject.equals("市建设局建设单位")) {
+
 				String text = elelementSpans.first().text();
 				//市建设局建设单位 处理结束
 				if (text.contains("发布红黑榜单位投诉举报电话")) {
 					subject = "";
 					break;
 				}
+				//建设单位：兰州高科新元房地产开发有限公司施工单位：重庆荣信建设工程有限公司兰州鑫源通有限公司监理单位：兰州黄河工程监理有限责任公司
+				//上榜原因：现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致4月6日、5月31日，连续发生安全事故，造成2人死亡。惩戒措施：根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。
 
-				if (text.contains("建设单位：")) continue;
-				if (text.contains("施工单位：")) continue;
-				if (text.contains("监理单位：")) continue;
-
-				if (text.contains("上榜原因：")) {
-					dcbl.setPunishReason(text.replace("上榜原因：", ""));
-					continue;
-				}
-				if (text.contains("惩戒措施：")) {
-					dcbl.setPunishReason(text.replace("惩戒措施：", ""));
-					saveDisneycreditBlackListOne(dcbl, false);
-					continue;
-				}
 				dcbl = createDefaultDiscreditBlacklist();
-				dcbl.setSubject(subject);
-				dcbl.setEnterpriseName(text.substring(text.indexOf("：") + 1));
-				continue;
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("兰州高科新元房地产开发有限公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致4月6日、5月31日，连续发生安全事故，造成2人死亡。");
+				dcbl.setPunishResult("根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("兰重庆荣信建设工程有限公司兰州鑫源通有限公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致4月6日、5月31日，连续发生安全事故，造成2人死亡。");
+				dcbl.setPunishResult("根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("兰州黄河工程监理有限责任公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致4月6日、5月31日，连续发生安全事故，造成2人死亡。");
+				dcbl.setPunishResult("根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+
+				//建设单位：兰州国资投资(控投)建设集团有限公司施工单位：中国葛洲坝集团第二工程有限公司,监理单位：甘肃方圆工程监理有限公司
+				//上榜原因：现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月10日发生安全事故，造成1人死亡。惩戒措施：根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("兰州国资投资(控投)建设集团有限公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月10日发生安全事故，造成1人死亡。");
+				dcbl.setPunishResult("根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("中国葛洲坝集团第二工程有限公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月10日发生安全事故，造成1人死亡。");
+				dcbl.setPunishResult("根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("甘肃方圆工程监理有限公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月10日发生安全事故，造成1人死亡。");
+				dcbl.setPunishResult("根据事故调查组的调查结论，分别对建设单位、施工单位、监理单位依据相关法律法规的规定给予行政处罚。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+				//建设单位：安宁区安宁堡街道办事处施工单位：兰州市安宁区第二建筑公司监理单位：甘肃建德工程监理有限公司
+				//上榜原因：现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月24日发生安全事故，造成1人死亡。惩戒措施：正在进行事故调查，调查结束后，依据相关法律法规的规定对事故责任单位、责任人员进行处理。
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("安宁区安宁堡街道办事处");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月24日发生安全事故，造成1人死亡。");
+				dcbl.setPunishResult("正在进行事故调查，调查结束后，依据相关法律法规的规定对事故责任单位、责任人员进行处理。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("兰州市安宁区第二建筑公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月24日发生安全事故，造成1人死亡。");
+				dcbl.setPunishResult("正在进行事故调查，调查结束后，依据相关法律法规的规定对事故责任单位、责任人员进行处理。");
+				saveDisneycreditBlackListOne(dcbl, false);
+
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("甘肃建德工程监理有限公司");
+				dcbl.setPunishReason("现场管理混乱，安全防护措施不到位，安全制度不落实，安全生产体系不健全，导致5月24日发生安全事故，造成1人死亡。");
+				dcbl.setPunishResult("正在进行事故调查，调查结束后，依据相关法律法规的规定对事故责任单位、责任人员进行处理。");
+				saveDisneycreditBlackListOne(dcbl, false);
+				//施工单位：甘肃第四建设集团有限责任公司
+				//上榜原因：在2015年4月组织开展的工程质量治理两年行动及建筑施工安全检查中发现存在问题：中标项目经理杨普荣不在岗，未履行建造师义务。现场项目经理刘占军超出二级注册建筑师执业范围从事执业活动。且在之后的多次现场复查中，问题一直未整改落实到位。
+				//惩戒措施：依据相关法律法规的规定对责任单位、责任人员进行处理。
+				dcbl = createDefaultDiscreditBlacklist();
+				dcbl.setSubject("市建设局建设单位");
+				dcbl.setEnterpriseName("甘肃第四建设集团有限责任公司");
+				dcbl.setPunishReason("在2015年4月组织开展的工程质量治理两年行动及建筑施工安全检查中发现存在问题：中标项目经理杨普荣不在岗，未履行建造师义务。现场项目经理刘占军超出二级注册建筑师执业范围从事执业活动。且在之后的多次现场复查中，问题一直未整改落实到位。");
+				dcbl.setPunishResult("依据相关法律法规的规定对责任单位、责任人员进行处理。");
+				saveDisneycreditBlackListOne(dcbl, false);
 			}
 		}
-
+		//兰州丰泽强生医药连锁有限责任公司健民药店   药品零售   销售假药“瑞立停”等，案件已移交公安。行政处罚
+		dcbl = createDefaultDiscreditBlacklist();
+		dcbl.setSubject("市质监局质量违法企业名单");
+		dcbl.setEnterpriseName("兰州丰泽强生医药连锁有限责任公司健民药店");
+		dcbl.setPunishReason("销售假药“瑞立停”等，案件已移交公安");
+		dcbl.setPunishResult("行政处罚");
+		saveDisneycreditBlackListOne(dcbl, false);
 	}
 
 	protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
 		try{
-			discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
+			discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth()));
 			return super.saveDisneycreditBlackListOne(discreditBlacklist, false);
 		}catch (Exception e){
 			writeBizErrorLog(url, e.getMessage());

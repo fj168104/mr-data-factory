@@ -6,8 +6,10 @@ import com.mr.common.util.SpringUtils;
 import com.mr.framework.core.util.StrUtil;
 import com.mr.modules.api.mapper.AdminPunishMapper;
 import com.mr.modules.api.model.AdminPunish;
+import com.mr.modules.api.model.DiscreditBlacklist;
 import com.mr.modules.api.site.SiteTaskExtend;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
+import com.mr.modules.api.site.instance.colligationsite.util.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -68,37 +70,37 @@ public class Xizang_jck extends SiteTaskExtend_CreditChina {
 		String content = getPdfText(fileName);
 		String s1 = content.substring(content.indexOf("备注") + 2).trim();
 		String[] infos = s1.split("\\s+");
-		AdminPunish adminPunish = null;
+		DiscreditBlacklist discreditBlacklist = null;
 		int i = 1;
 		int j = 0;
 		for (String info : infos) {
 			if (info.trim().equals(String.valueOf(i))) {
-				adminPunish = createDefaultAdminPunish();
+				discreditBlacklist = createDefaultDiscreditBlacklist();
 				i++;
 				j = 1;
 				continue;
 			}
 			if(j == 1){
-				adminPunish.setEnterpriseCode1(info.trim());
+				discreditBlacklist.setEnterpriseCode1(info.trim());
 				j++;
 				continue;
 			}
 
 			if(j == 2){
-				adminPunish.setEnterpriseName(info);
+				discreditBlacklist.setEnterpriseName(info);
 				j++;
 				continue;
 			}
 
 			if(j == 3){
-				adminPunish.setPunishReason(info);
-				if("公司".equals(adminPunish.getPunishReason())){
-					adminPunish.setEnterpriseName(adminPunish.getEnterpriseName() + "公司");
-					adminPunish.setPunishReason("");
+				discreditBlacklist.setPunishReason(info);
+				if("公司".equals(discreditBlacklist.getPunishReason())){
+					discreditBlacklist.setEnterpriseName(discreditBlacklist.getEnterpriseName() + "公司");
+					discreditBlacklist.setPunishReason("");
 				}
 				try{
-					adminPunish.setUniqueKey(adminPunish.getUrl()+"@"+adminPunish.getEnterpriseName()+"@"+adminPunish.getPersonName()+"@"+adminPunish.getJudgeNo()+"@"+adminPunish.getJudgeAuth());
-					saveAdminPunishOne(adminPunish, false);
+					discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+"@"+discreditBlacklist.getEnterpriseName()+"@"+discreditBlacklist.getPersonName()+"@"+discreditBlacklist.getJudgeNo()+"@"+discreditBlacklist.getJudgeAuth()));
+					saveDisneycreditBlackListOne(discreditBlacklist, false);
 				}catch (Exception e){
 					writeBizErrorLog(url, e.getMessage());
 				}
@@ -109,24 +111,24 @@ public class Xizang_jck extends SiteTaskExtend_CreditChina {
 		}
 	}
 
-	private AdminPunish createDefaultAdminPunish() {
-		AdminPunish adminPunish = new AdminPunish();
+	private DiscreditBlacklist createDefaultDiscreditBlacklist() {
+		DiscreditBlacklist discreditBlacklist = new DiscreditBlacklist();
 
-		adminPunish.setCreatedAt(new Date());
-		adminPunish.setUpdatedAt(new Date());
-		adminPunish.setSource("信用中国（西藏）");
-		adminPunish.setUrl(url);
-		adminPunish.setSubject("");
-		adminPunish.setObjectType("01");
-		adminPunish.setEnterpriseCode1("");
-		adminPunish.setEnterpriseCode2("");
-		adminPunish.setEnterpriseCode3("");
-		adminPunish.setEnterpriseName("");
-		adminPunish.setPersonName("");
-		adminPunish.setPersonId("");
-		adminPunish.setJudgeNo("");
-		adminPunish.setJudgeAuth("");
-		return adminPunish;
+		discreditBlacklist.setCreatedAt(new Date());
+		discreditBlacklist.setUpdatedAt(new Date());
+		discreditBlacklist.setSource("信用中国（西藏）");
+		discreditBlacklist.setUrl(url);
+		discreditBlacklist.setSubject("拉萨关区进出口失信企业名单");
+		discreditBlacklist.setObjectType("01");
+		discreditBlacklist.setEnterpriseCode1("");
+		discreditBlacklist.setEnterpriseCode2("");
+		discreditBlacklist.setEnterpriseCode3("");
+		discreditBlacklist.setEnterpriseName("");
+		discreditBlacklist.setPersonName("");
+		discreditBlacklist.setPersonId("");
+		discreditBlacklist.setJudgeNo("");
+		discreditBlacklist.setJudgeAuth("");
+		return discreditBlacklist;
 	}
 
 }

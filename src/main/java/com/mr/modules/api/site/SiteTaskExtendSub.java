@@ -58,7 +58,7 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 		log.debug("primaryKey:" + primaryKey);
 		try {
 			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
-				setICName(financeMonitorPunish);
+//				setICName(financeMonitorPunish);
 				insertOrUpdate(financeMonitorPunish);
 				return true;
 			} else {

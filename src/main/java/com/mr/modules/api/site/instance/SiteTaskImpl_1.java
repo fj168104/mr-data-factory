@@ -79,6 +79,8 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 
 		String url = "http://www.neeq.com.cn/disclosureInfoController/infoResult.do";
 		java.util.Map<String, String> requestParams = Maps.newHashMap();
+		java.util.Map<String, String> headParams = Maps.newHashMap();
+		headParams.put("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36");
 //
 		requestParams.put("disclosureType", "8");
 		requestParams.put("companyCd", "公司名称/拼音/代码");
@@ -96,7 +98,7 @@ public class SiteTaskImpl_1 extends SiteTaskExtend {
 			int waitTime = 0;
 			while (StrUtil.isEmpty(bodyStr) && waitTime++ < 10) {
 				try {
-					bodyStr = postData(url, requestParams, 3)
+					bodyStr = postData(url, requestParams, headParams)
 							.replace(strTime + "([", "");
 				} catch (Exception e) {
 					log.warn("site can not be visited:" + e.getMessage() + " | sleep time:" + waitTime * 10000);

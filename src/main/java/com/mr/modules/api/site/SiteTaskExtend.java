@@ -437,7 +437,7 @@ public abstract class SiteTaskExtend extends SiteTask {
 		try {
 			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByUrl(financeMonitorPunish.getUrl()))) {
 				//获取工商名
-				setICName(financeMonitorPunish);
+//				setICName(financeMonitorPunish);
 				insertOrUpdate(financeMonitorPunish);
 				return true;
 			} else {

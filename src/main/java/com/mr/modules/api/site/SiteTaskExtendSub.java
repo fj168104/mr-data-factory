@@ -59,6 +59,9 @@ public abstract class SiteTaskExtendSub extends SiteTaskExtend {
 		try {
 			if (isForce || Objects.isNull(financeMonitorPunishMapper.selectByBizKey(primaryKey))) {
 //				setICName(financeMonitorPunish);
+				if(StrUtil.isNotEmpty(financeMonitorPunish.getPartyInstitution())){
+					financeMonitorPunish.setCompanyFullName(financeMonitorPunish.getPartyInstitution());
+				}
 				insertOrUpdate(financeMonitorPunish);
 				return true;
 			} else {

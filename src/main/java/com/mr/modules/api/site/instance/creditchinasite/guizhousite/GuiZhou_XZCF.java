@@ -139,11 +139,17 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 								adminPunish.setUrl(dHref);
 								if (pCode.contains("身份证号")) {
 									adminPunish.setPersonName(name);
-									adminPunish.setPersonId(pCode);
+									adminPunish.setPersonId(pCode.replace("身份证号：",""));
 									adminPunish.setObjectType("02");
 								} else {
-									adminPunish.setEnterpriseName(name);
-									adminPunish.setEnterpriseCode1(pCode);
+									if(name.trim().length()<4){
+										adminPunish.setPersonName(name);
+										adminPunish.setPersonId(pCode.replace("身份证号：",""));
+										adminPunish.setObjectType("02");
+									}else {
+										adminPunish.setEnterpriseName(name);
+										adminPunish.setEnterpriseCode1(pCode.replace("统一社会信用代码：",""));
+									}
 								}
 
 								Elements trElements = divElement.getElementById("bot_3").getElementsByTag("tr");
@@ -265,7 +271,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 		adminPunish.setUpdatedAt(new Date());
 		adminPunish.setSource("信用中国（贵州）");
 //		adminPunish.setUrl(url);
-		adminPunish.setSubject("");
+		adminPunish.setSubject("行政处罚");
 		adminPunish.setObjectType("01");
 		adminPunish.setEnterpriseCode1("");
 		adminPunish.setEnterpriseCode2("");

@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @auther 1.信用中国（湖北）
@@ -76,11 +74,20 @@ public class Hubei_Blacklist extends SiteTaskExtend_CreditChina {
 			Document listDoc = Jsoup.parse(postData(url, map, 3));
 			Element div = listDoc.getElementsByClass("right_xkgs").first();
 			Elements aElements = div.getElementsByTag("a");
+			Elements textElement = div.getElementsByTag("td");
+			List<String> listSubject = new ArrayList<>();
+			for (Element element : textElement){
+				if(element.text().contains("涉及事项：")){
+					listSubject.add(element.attr("title"));
+				}
+			}
+
 			for (int i = 0; i < aElements.size(); i++) {
 				String infoUrl = dUrlPrefix + aElements.get(i).attr("href");
 				Document infoDoc = Jsoup.parse(getData(infoUrl));
 				Elements trElements = infoDoc.getElementsByTag("tr");
 				DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
+				discreditBlacklist.setSubject(listSubject.get(i));
 				for (int j = 1; j < trElements.size(); j++) {
 					Element trElement = trElements.get(j);
 					String keyString = trElement.getElementsByTag("td").get(0).text();

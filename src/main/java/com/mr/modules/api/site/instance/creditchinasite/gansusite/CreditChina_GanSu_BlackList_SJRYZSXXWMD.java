@@ -8,11 +8,14 @@ import com.mr.modules.api.xls.importfile.domain.MapResult;
 import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +46,15 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
         String[] culmusList = {"serialNo","province","enterpriseName","enterpriseCode1","enterpriseCode3","judgeNo","judgeAuth","personName"};
 
         try {
-            String xlsFile_93512_1 = ResourceUtils.getFile("classpath:initxls/93512_1.xlsx").getAbsolutePath();
-            listMaps = importFromXls(xlsFile_93512_1,culmusList);
+            //获取class路径下的资源
+            ClassPathResource resource = new ClassPathResource("initxls/93512_1.xlsx");
+            //创建临时目录
+            String tempPath =System.getProperty("java.io.tmpdir") +"93512_1.xlsx";
+            File f = new File(tempPath);
+            IOUtils.copy(resource.getInputStream(),new FileOutputStream(f));
+
+            //String xlsFile_93512_1 = ResourceUtils.getFile("classpath:initxls/93512_1.xlsx").getAbsolutePath();
+            listMaps = importFromXls(tempPath,culmusList);
             for(Map<String,Object> map : listMaps){
                 map.put("source","信用中国（甘肃）");
                 map.put("sourceUrl","http://www.gscredit.gov.cn/blackList/93512.jhtml");
@@ -62,8 +72,15 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
         String[] culmusList = {"serialNo","province","personName","persionId","punishReason","judgeNo","judgeAuth"};
 
         try {
-            String xlsFile_93512_2 = ResourceUtils.getFile("classpath:initxls/93512_2.xlsx").getAbsolutePath();
-            listMaps = importFromXls(xlsFile_93512_2,culmusList);
+            //获取class路径下的资源
+            ClassPathResource resource = new ClassPathResource("initxls/93512_2.xlsx");
+            //创建临时目录
+            String tempPath =System.getProperty("java.io.tmpdir") +"93512_2.xlsx";
+            File f = new File(tempPath);
+            IOUtils.copy(resource.getInputStream(),new FileOutputStream(f));
+
+            //String xlsFile_93512_2 = ResourceUtils.getFile("classpath:initxls/93512_2.xlsx").getAbsolutePath();
+            listMaps = importFromXls(tempPath,culmusList);
             for(Map<String,Object> map : listMaps){
                 map.put("source","信用中国（甘肃）");
                 map.put("sourceUrl","http://www.gscredit.gov.cn/blackList/93512.jhtml");
@@ -81,8 +98,15 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
         String[] culmusList = {"serialNo","province","enterpriseName","enterpriseCode1","enterpriseCode3","punishReason","judgeNo","judgeAuth"};
 
         try {
-            String xlsFile_93512_3 = ResourceUtils.getFile("classpath:initxls/93512_3.xlsx").getAbsolutePath();
-            listMaps = importFromXls(xlsFile_93512_3,culmusList);
+            //获取class路径下的资源
+            ClassPathResource resource = new ClassPathResource("initxls/93512_3.xlsx");
+            //创建临时目录
+            String tempPath =System.getProperty("java.io.tmpdir") +"93512_3.xlsx";
+            File f = new File(tempPath);
+            IOUtils.copy(resource.getInputStream(),new FileOutputStream(f));
+
+            //String xlsFile_93512_3 = ResourceUtils.getFile("classpath:initxls/93512_3.xlsx").getAbsolutePath();
+            listMaps = importFromXls(tempPath,culmusList);
             for(Map<String,Object> map : listMaps){
                 map.put("source","信用中国（甘肃）");
                 map.put("sourceUrl","http://www.gscredit.gov.cn/blackList/93512.jhtml");
@@ -100,8 +124,15 @@ public class CreditChina_GanSu_BlackList_SJRYZSXXWMD extends SiteTaskExtend_Cred
         String[] culmusList = {"serialNo","province","enterpriseName","enterpriseCode1","enterpriseCode3","punishReason","judgeNo","judgeAuth","personName"};
 
         try {
-            String xlsFile_93512_4 = ResourceUtils.getFile("classpath:initxls/93512_4.xlsx").getAbsolutePath();
-            listMaps = importFromXls(xlsFile_93512_4,culmusList);
+            //获取class路径下的资源
+            ClassPathResource resource = new ClassPathResource("initxls/93512_4.xlsx");
+            //创建临时目录
+            String tempPath =System.getProperty("java.io.tmpdir") +"93512_4.xlsx";
+            File f = new File(tempPath);
+            IOUtils.copy(resource.getInputStream(),new FileOutputStream(f));
+
+            //String xlsFile_93512_4 = ResourceUtils.getFile("classpath:initxls/93512_4.xlsx").getAbsolutePath();
+            listMaps = importFromXls(tempPath,culmusList);
             for(Map<String,Object> map : listMaps){
                 map.put("source","信用中国（甘肃）");
                 map.put("sourceUrl","http://www.gscredit.gov.cn/blackList/93512.jhtml");

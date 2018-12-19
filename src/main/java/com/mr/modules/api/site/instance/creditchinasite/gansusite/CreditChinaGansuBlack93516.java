@@ -4,10 +4,14 @@ import com.mr.common.util.ExcelUtil;
 import com.mr.modules.api.site.SiteTaskExtend_CreditChina;
 import com.mr.modules.api.site.instance.creditchinasite.CreditChinaSite;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +46,15 @@ public class CreditChinaGansuBlack93516 extends SiteTaskExtend_CreditChina {
     public void importFromExcel() {
         String[] colNameList = {"serialNo", "enterpriseName", "enterpriseCode2", "enterpriseCode3", "enterpriseCode1", "province"};
         try {
-            String xlsFile_93516 = ResourceUtils.getFile("classpath:initxls/93516.xls").getAbsolutePath();
+            //获取class路径下的资源
+            ClassPathResource resource = new ClassPathResource("initxls/93516.xls");
+            //创建临时目录
+            String tempPath =System.getProperty("java.io.tmpdir") +"93516.xls";
+            File f = new File(tempPath);
+            IOUtils.copy(resource.getInputStream(),new FileOutputStream(f));
+            //String xlsFile_93516 = ResourceUtils.getFile("classpath:initxls/93516.xls").getAbsolutePath();
             int lineNum = 0;
-            List<Map<String, Object>> listMaps = ExcelUtil.importFromXls(xlsFile_93516, colNameList);
+            List<Map<String, Object>> listMaps = ExcelUtil.importFromXls(tempPath, colNameList);
             for (Map<String, Object> map : listMaps) {
                 lineNum++;
                 if (lineNum == 1) {//过滤掉标题行

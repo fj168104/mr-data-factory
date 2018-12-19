@@ -10,11 +10,14 @@ import com.mr.modules.api.xls.importfile.domain.MapResult;
 import com.mr.modules.api.xls.importfile.domain.common.Configuration;
 import com.mr.modules.api.xls.importfile.domain.common.ImportCell;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +50,15 @@ public class CreditChina_GanSu_ZYYPBHGMD extends SiteTaskExtend_CreditChina{
         String[] culmusList = {"drug","productGive","productNo","enterpriseName","validateAccording","punishReason","unregularProject","judgeAuth","note"};
 
         try {
-            String xlsFile_114802 = ResourceUtils.getFile("classpath:initxls/114802.xlsx").getAbsolutePath();
-            listMaps = importFromXls(xlsFile_114802,culmusList);
+            //获取class路径下的资源
+            ClassPathResource resource = new ClassPathResource("114802/114802.xlsx");
+            //创建临时目录
+            String tempPath =System.getProperty("java.io.tmpdir") +"114802.xlsx";
+            File f = new File(tempPath);
+            IOUtils.copy(resource.getInputStream(),new FileOutputStream(f));
+
+            //String xlsFile_114802 = ResourceUtils.getFile("classpath:initxls/114802.xlsx").getAbsolutePath();
+            listMaps = importFromXls(tempPath,culmusList);
             for(Map<String,Object> map : listMaps){
                 map.put("source","信用中国（甘肃）");
                 map.put("sourceUrl","http://www.gscredit.gov.cn/blackList/114802.jhtml");

@@ -308,7 +308,7 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
     protected boolean saveAdminPunishOne(AdminPunish adminPunish, Boolean isForce) {
         //是否存在标识 true:存在 false：不存在
         boolean isFlag = false;
-        List<AdminPunish> adminPunishList = adminPunishMapper.selectByUrl(adminPunish.getUrl(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
+        List<AdminPunish> adminPunishList = adminPunishMapper.selectByUrl(adminPunish.getUrl(),adminPunish.getSubject(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
         String strAdminPunish = "url地址："+adminPunish.getUrl()+"\n企业名称："+adminPunish.getEnterpriseName()+"\n+负责人名称："+adminPunish.getPersonName()+"\n处罚文号："+adminPunish.getJudgeNo();
         if (!isForce && adminPunishList.size()>0) {
             log.info(strAdminPunish+"此记录已经存在···不需要入库");
@@ -318,7 +318,7 @@ public class SiteTaskExtend_CollgationSite extends SiteTaskExtend{
             log.info(strAdminPunish+"此记录不存在···需要入库");
         } else if(isForce){
             if(adminPunishList.size()>0){
-                adminPunishMapper.deleteByUrl(adminPunish.getUrl(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
+                adminPunishMapper.deleteByUrl(adminPunish.getUrl(),adminPunish.getSubject(),adminPunish.getEnterpriseName(),adminPunish.getPersonName(),adminPunish.getJudgeNo(),adminPunish.getJudgeAuth());
                 adminPunishMapper.insert(adminPunish);
             }else{
                 adminPunishMapper.insert(adminPunish);

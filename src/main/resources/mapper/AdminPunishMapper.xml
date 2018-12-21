@@ -37,7 +37,7 @@
 
   <!--通过链接地址删除-->
   <delete id="deleteByUrl" parameterType="java.lang.String">
-    DELETE FROM ADMIN_PUNISH WHERE URL = #{url} AND ENTERPRISE_NAME = #{enterpriseName} AND PERSON_NAME = #{personName} AND JUDGE_NO = #{judgeNo} AND JUDGE_AUTH = #{judgeAuth}
+    DELETE FROM ADMIN_PUNISH WHERE URL = #{url} AND SUBJECT = #{subject} AND ENTERPRISE_NAME = #{enterpriseName} AND PERSON_NAME = #{personName} AND JUDGE_NO = #{judgeNo} AND JUDGE_AUTH = #{judgeAuth}
   </delete>
 
   <!--通过链接地址查找-->
@@ -45,6 +45,9 @@
     SELECT * FROM ADMIN_PUNISH c WHERE 1 =1
     <if test="url != null">
       AND c.URL = #{url}
+    </if>
+    <if test="subject !=null">
+      AND c.SUBJECT = #{subject}
     </if>
     <if test="enterpriseName != null">
       AND c.ENTERPRISE_NAME = #{enterpriseName}

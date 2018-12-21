@@ -18,6 +18,7 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,8 +56,11 @@ public class CreditChina_GanSu_ZYYPBHGMD extends SiteTaskExtend_CreditChina{
             //创建临时目录
             String tempPath =System.getProperty("java.io.tmpdir") +"114802.xlsx";
             File f = new File(tempPath);
-            IOUtils.copy(resource.getInputStream(),new FileOutputStream(f));
-
+            InputStream inputStream = resource.getInputStream();
+            FileOutputStream fileOutputStream = new FileOutputStream(f);
+            IOUtils.copy(inputStream,fileOutputStream);
+            inputStream.close();
+            fileOutputStream.close();
             //String xlsFile_114802 = ResourceUtils.getFile("classpath:initxls/114802.xlsx").getAbsolutePath();
             listMaps = importFromXls(tempPath,culmusList);
             for(Map<String,Object> map : listMaps){
@@ -67,6 +71,7 @@ public class CreditChina_GanSu_ZYYPBHGMD extends SiteTaskExtend_CreditChina{
                 map.put("publishDate","2018/01/05");
                 insertDiscreditBlacklist(map);
             }
+
         } catch (Exception e) {
             log.warn("加载xlsx异常···请检查!"+e.getMessage());
         }

@@ -91,6 +91,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 
 		@Override
 		public Boolean call() throws Exception {
+			SID = getSID();
 			Boolean result = false;
 			try {
 				Elements liElements = listElement.getElementsByTag("li");
@@ -230,6 +231,7 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 		return new IdempotentOperator<Document>(new Callable<Document>() {
 			@Override
 			public Document call() throws Exception {
+				//log.debug("url:{}--requestParams--{}",url,requestParams);
 				String sListStr = postData(url, requestParams);
 				Document listDoc = Jsoup.parse(sListStr);
 				Elements detailElements = listDoc.getElementsByClass("publicitylist").first().getElementsByTag("li");
@@ -283,6 +285,25 @@ public class GuiZhou_XZCF extends SiteTaskExtend_CreditChina {
 		adminPunish.setJudgeAuth("");
 		return adminPunish;
 	}
+	public   String getSID(){
+		String strSID = "";
+		try {
+			WebClient webClient = createWebClient("","");
+			webClient.getOptions().setThrowExceptionOnScriptError(false);
+			webClient.getOptions().setJavaScriptEnabled(true);
+			webClient.getOptions().setCssEnabled(false);
+			HtmlPage htmlPage = webClient.getPage(url);
 
+			//5.1 获取内嵌界面Iframe
+			HtmlElement htmlElementIframe =  (HtmlElement)htmlPage.getByXPath("//body[@class='wrapper']//div[@class='main_body']//div[@id='sgsmain']//iframe[@id='sgsmain']").get(0);
+			log.warn(htmlElementIframe.asXml());
+			strSID = htmlElementIframe.getAttribute("src").split("=")[2];
+		}catch (ScriptException unexpectedPage){
+			log.warn("页面JS解析异常异常···请查看"+unexpectedPage.getMessage());
+		}catch (Throwable e){
+			log.warn("获取SID编号异常···请查看"+e.getMessage());
+		}
+		return strSID;
+	}
 
 }

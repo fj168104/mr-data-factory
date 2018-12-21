@@ -31,7 +31,7 @@ public interface AdminPunishMapper extends BaseMapper<AdminPunish> {
 	 *
 	 * @return
 	 */
-	List<AdminPunish> selectByUrl(@Param("url") String url, @Param("enterpriseName") String enterpriseName, @Param("personName") String personName, @Param("judgeNo") String judgeNo, @Param("judgeAuth") String judgeAuth);
+	List<AdminPunish> selectByUrl(@Param("url") String url,@Param("subject") String subject, @Param("enterpriseName") String enterpriseName, @Param("personName") String personName, @Param("judgeNo") String judgeNo, @Param("judgeAuth") String judgeAuth);
 
 	/**
 	 * 判断记录此url地址是否已经存在
@@ -42,7 +42,7 @@ public interface AdminPunishMapper extends BaseMapper<AdminPunish> {
 	 * @param judgeNo
 	 * @return
 	 */
-	int deleteByUrl(@Param("url") String url, @Param("enterpriseName") String enterpriseName, @Param("personName") String personName, @Param("judgeNo") String judgeNo, @Param("judgeAuth") String judgeAuth);
+	int deleteByUrl(@Param("url") String url,@Param("subject") String subject, @Param("enterpriseName") String enterpriseName, @Param("personName") String personName, @Param("judgeNo") String judgeNo, @Param("judgeAuth") String judgeAuth);
 
 	/**
 	 * 通过判决书编号+企业名称(或个人名称)获得记录数

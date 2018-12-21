@@ -166,7 +166,7 @@ public class CreditChinaShanDongBlackSjrsxslqy extends SiteTaskExtend_CreditChin
 			String value = td.text();
 			log.debug(name + "===" + value);
 			if (Objects.equals(name, "企业名称")) {
-				blackList.setEnterpriseName(value);// 企业名称
+				blackList.setEnterpriseName(value.replace("[所有信用详情]",""));// 企业名称
 			} else if (Objects.equals(name, "法定代表人")) {
 				blackList.setPersonName(value);// 法定代表人/负责人姓名|负责人姓名
 			} else if (Objects.equals(name, "统一社会信用代码")) {

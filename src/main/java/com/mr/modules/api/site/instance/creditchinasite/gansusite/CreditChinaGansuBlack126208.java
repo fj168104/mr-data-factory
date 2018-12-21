@@ -40,7 +40,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -101,7 +101,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setEnterpriseName(text.substring(text.indexOf(".") + 1, text.indexOf(" ")).trim());
 					discreditBlacklist.setPersonName(text.substring(text.indexOf(" ") + 1).trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -114,7 +114,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省兰州市农委");
 					discreditBlacklist.setEnterpriseName(text.substring(text.indexOf(".") + 1).trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -136,7 +136,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 				} else if (text.contains("处罚措施：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishResult(text.replace("处罚措施：", ""));
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -150,7 +150,7 @@ public class CreditChinaGansuBlack126208 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setEnterpriseName(text.substring(text.indexOf(".") + 1).trim());
 					discreditBlacklist.setPersonName(text.substring(text.indexOf("公司") + 2).trim());
                     discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 			}
 		}

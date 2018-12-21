@@ -225,11 +225,7 @@ public class CreditChinaGansuXzcfGR extends SiteTaskExtend_CreditChina {
 				}
 			}
 			adminPunish.setJudgeDate(judgeDate);
-			// 只插入不存在的记录
-			int dbCount = adminPunishMapper.selectCountByJudgeNoAndName(adminPunish.getObjectType(), adminPunish.getJudgeNo(), adminPunish.getEnterpriseName());
-			if (dbCount == 0) {
-				adminPunishMapper.insert(adminPunish);
-			}
+			saveAdminPunishOne(adminPunish,false);
 		}
 		log.debug("==============================");
 	}

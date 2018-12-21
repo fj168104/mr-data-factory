@@ -37,7 +37,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -111,7 +111,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省白银市工商管理局");
 					discreditBlacklist.setEnterpriseName(text.trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -124,7 +124,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省白银市地方税务局");
 					discreditBlacklist.setEnterpriseName(text.trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -137,7 +137,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省白银市国家税务局");
 					discreditBlacklist.setEnterpriseName(text.trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -150,7 +150,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省白银市农牧局");
 					discreditBlacklist.setEnterpriseName(text.trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -163,7 +163,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省白银市食品药品监督管理局");
 					discreditBlacklist.setEnterpriseName(text.trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -176,7 +176,7 @@ public class CreditChinaGansuBlack91754 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setJudgeAuth("甘肃省白银市中级人民法院");
 					discreditBlacklist.setEnterpriseName(text.trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}

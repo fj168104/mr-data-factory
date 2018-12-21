@@ -38,7 +38,7 @@ public class CreditChinaGansuBlack94132 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -77,7 +77,7 @@ public class CreditChinaGansuBlack94132 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setEnterpriseName(text);// 企业名称
 				discreditBlacklist.setPunishResult("列入“黑名单”的企业，从2013年10月14日起执行，相关市州、县（区）、部门要按照《甘肃省安全生产“黑名单”管理制度》第7条规定，采取相应的监管监察措施");
 				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist,false);
 				flag = false;
 			}
 		}

@@ -39,7 +39,7 @@ public class CreditChinaGansuBlack91758 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -116,7 +116,7 @@ public class CreditChinaGansuBlack91758 extends SiteTaskExtend_CreditChina {
 							+ "3.对违反禁令高消费、有能力履行而拒不履行生效裁判的失信被执行人，人民法院将依法对单位处以100万元以下、对个人10万元以下罚款，对法定代表人和实际控制人采取司法拘留强制措施。情节严重构成犯罪的，根据《刑法》第三百一十三条和全国人大关于追究拒不执行法院判决罪立法解释的规定，严肃追究刑事责任。";
 					discreditBlacklist.setPunishResult(punishResult);
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -156,7 +156,7 @@ public class CreditChinaGansuBlack91758 extends SiteTaskExtend_CreditChina {
 				} else if (text.contains("原因：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishReason(text.replace("原因：", ""));
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}

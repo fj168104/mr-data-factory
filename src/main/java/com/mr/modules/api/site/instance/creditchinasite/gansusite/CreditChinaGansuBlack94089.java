@@ -38,7 +38,7 @@ public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -121,7 +121,7 @@ public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishResult(items[2]);
 				}
 				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist,false);
 				discreditBlacklist = null;
 				continue;
 			}
@@ -139,7 +139,7 @@ public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
 				discreditBlacklist.setPunishReason(items[1]);
 				discreditBlacklist.setPunishResult(items[2]);
 				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist,false);
 				discreditBlacklist = null;
 				if (text.contains("兰州陕西宝粤物资有限公司")) {// 处理结束,重新判断itemIndex
 					log.debug("主题：{},数据量：{}", subject, iCount);
@@ -163,7 +163,7 @@ public class CreditChinaGansuBlack94089 extends SiteTaskExtend_CreditChina {
 					punishResult.append("4.继续加大“黑榜”纳税人信息曝光力度，对“黑榜”纳税人日常经营活动重点监控。");
 					discreditBlacklist.setPunishResult(punishResult.toString());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 					discreditBlacklist = null;
 				} else {
 					iCount++;

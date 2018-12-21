@@ -224,11 +224,8 @@ public class CreditChinaGansuSxbzxrQY extends SiteTaskExtend_CreditChina {
 					}
 				}
 				blackList.setPunishReason(punishReason.toString());
-				// 只插入不存在的记录
-				int dbCount = discreditBlacklistMapper.selectCountBySubjectAndJudegNo(blackList.getSubject(), blackList.getObjectType(), blackList.getJudgeNo());
-				if (dbCount == 0) {
-					discreditBlacklistMapper.insert(blackList);
-				}
+				saveDisneycreditBlackListOne(blackList,false);
+
 			}
 		} finally {
 			wc.close();

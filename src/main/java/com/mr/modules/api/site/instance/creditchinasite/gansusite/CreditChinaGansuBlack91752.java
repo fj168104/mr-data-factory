@@ -39,7 +39,7 @@ public class CreditChinaGansuBlack91752 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -114,7 +114,7 @@ public class CreditChinaGansuBlack91752 extends SiteTaskExtend_CreditChina {
 				if (text.contains("事由：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishReason(text.replace("事由：", "").trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				} else {
 					iCount++;
 					discreditBlacklist = createDefaultDiscreditBlacklist();
@@ -139,7 +139,7 @@ public class CreditChinaGansuBlack91752 extends SiteTaskExtend_CreditChina {
 				if (text.contains("事由：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishReason(text.replace("事由：", "").trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				} else {
 					iCount++;
 					discreditBlacklist = createDefaultDiscreditBlacklist();
@@ -175,7 +175,7 @@ public class CreditChinaGansuBlack91752 extends SiteTaskExtend_CreditChina {
 				} else if (text.contains("事由：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishReason(text.replace("事由：", "").trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -202,7 +202,7 @@ public class CreditChinaGansuBlack91752 extends SiteTaskExtend_CreditChina {
 						discreditBlacklist.setPunishResult("依照《企业信息公示暂行条例》第十七条、十八条之规定，对该户“黑榜”企业采取以下惩戒措施：（1）将其列入严重违法企业名单；（2）通过企业信用信息公示系统向社会公示；（3）企业的法定代表人3年内不得担任其他企业的法定代表人或负责人；（4）在政府采购、工程招投标、国有土地出让、授予荣誉称号等工作中，对被列入经营异常名录或者严重违法企业名单的企业依法予以限制或者禁入。");
 					}
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -224,7 +224,7 @@ public class CreditChinaGansuBlack91752 extends SiteTaskExtend_CreditChina {
 				} else if (text.contains("惩戒措施：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishResult(text.replace("惩戒措施：", ""));
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}

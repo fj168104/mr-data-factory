@@ -36,7 +36,7 @@ public class CreditChinaGansuBlack372740 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -120,7 +120,7 @@ public class CreditChinaGansuBlack372740 extends SiteTaskExtend_CreditChina {
 				punishResult.append("（二）被执行人违反限制高消费令进行消费的行为属于拒不履行人民法院已经发生法律效力的判决、裁定的行为，经查证属实的，依照《中华人民共和国民事诉讼法》第一百一十一条的规定，予以拘留、罚款；情节严重，构成犯罪的，追究其刑事责任。");
 				discreditBlacklist.setPunishResult(punishResult.toString());
 				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist,false);
 				discreditBlacklist = null;
 				continue;
 			}
@@ -142,7 +142,7 @@ public class CreditChinaGansuBlack372740 extends SiteTaskExtend_CreditChina {
 							+ "4.责令监理单位在3天时间内按投标承诺的总监履约到场，监理人员满足本工程监理工作需求，建立监理工地实验室，完善监理管理体系。";
 					discreditBlacklist.setPunishResult(punishResult);
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 					discreditBlacklist = null;
 				}
 				if (text.contains("（二）自然人：曹铁军（从业资格证号：6201211980********）")) {
@@ -157,7 +157,7 @@ public class CreditChinaGansuBlack372740 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setDiscreditAction(discreditAction);
 					discreditBlacklist.setPunishResult("在兰州市出租汽车驾驶员信息库中将驾驶员曹铁军记入不良行为“黑名单”，终身禁止驾驶出租汽车；吊销驾驶员曹铁军《从业资格证》。");
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 					discreditBlacklist = null;
 					itemIndex = 0;
 				}
@@ -180,7 +180,7 @@ public class CreditChinaGansuBlack372740 extends SiteTaskExtend_CreditChina {
 				if (text.contains("惩戒措施：") && discreditBlacklist != null) {
 					discreditBlacklist.setPunishResult(text.replace("惩戒措施：", "").trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 					discreditBlacklist = null;
 				}
 				if (iCount == 2) {// 处理结束,重新判断itemIndex
@@ -193,7 +193,7 @@ public class CreditChinaGansuBlack372740 extends SiteTaskExtend_CreditChina {
 				if (text.contains("失信行为：") && discreditBlacklist != null) {
 					discreditBlacklist.setDiscreditAction(text.replace("失信行为：", "").trim());
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 					discreditBlacklist = null;
 				} else {
 					iCount++;

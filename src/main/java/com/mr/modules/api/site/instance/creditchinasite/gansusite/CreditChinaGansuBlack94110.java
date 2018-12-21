@@ -38,7 +38,7 @@ public class CreditChinaGansuBlack94110 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -106,7 +106,7 @@ public class CreditChinaGansuBlack94110 extends SiteTaskExtend_CreditChina {
 					discreditBlacklist.setPunishResult("公安立案");
 				}
 				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist,false);
 			}
 			// 二、市质监局发布2户质量违法企业
 			if (itemIndex == 2) {
@@ -125,7 +125,7 @@ public class CreditChinaGansuBlack94110 extends SiteTaskExtend_CreditChina {
 						+ "4.不受理纳入黑榜名单的企业及其经营管理人员任何评先选优等表彰申请。";
 				discreditBlacklist.setPunishResult(punishResult);
 				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist,false);
 			}
 		}
 		log.debug("==============================");

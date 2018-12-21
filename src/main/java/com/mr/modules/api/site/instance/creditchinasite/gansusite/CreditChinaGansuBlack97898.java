@@ -34,7 +34,7 @@ public class CreditChinaGansuBlack97898 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 
 		String fileName = downLoadFile("http://upload.xh08.cn/2017/1207/1512613488863.xls");
@@ -116,7 +116,7 @@ public class CreditChinaGansuBlack97898 extends SiteTaskExtend_CreditChina {
 			if (discreditBlacklist != null) {
 				iCount++;
 				discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-				discreditBlacklistMapper.insert(discreditBlacklist);
+				saveDisneycreditBlackListOne(discreditBlacklist,false);
 			}
 		}
 		log.info("抓取url={}结束！共插入{}条记录", url, iCount);

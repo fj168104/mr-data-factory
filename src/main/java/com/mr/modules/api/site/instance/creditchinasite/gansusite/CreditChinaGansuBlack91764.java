@@ -40,7 +40,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 	@Override
 	protected String execute() throws Throwable {
 		log.info("抓取“信用中国（甘肃）-白银市举行诚信“红黑榜”第二期发布会 27家单位上“黑榜”信息开始...");
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("url={}", url);
 		extractContent(url);
 		log.info("抓取“信用中国（甘肃）-白银市举行诚信“红黑榜”第二期发布会 27家单位上“黑榜”信息结束！");
@@ -96,7 +96,7 @@ public class CreditChinaGansuBlack91764 extends SiteTaskExtend_CreditChina {
 					} else if (item.contains("惩戒措施：") && blackList != null) {
 						blackList.setPunishResult(item.substring(5));// 处罚结果
 						blackList.setUniqueKey(blackList.getUrl() + "@" + blackList.getEnterpriseName() + "@" + blackList.getPersonName() + "@" + blackList.getJudgeNo() + "@" + blackList.getJudgeAuth());
-						discreditBlacklistMapper.insert(blackList);// 保存记录
+						saveDisneycreditBlackListOne(blackList,false);// 保存记录
 					}
 				}
 			}

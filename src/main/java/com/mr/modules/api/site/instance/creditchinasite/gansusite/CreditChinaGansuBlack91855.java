@@ -33,7 +33,7 @@ public class CreditChinaGansuBlack91855 extends SiteTaskExtend_CreditChina {
      */
     @Override
     protected String execute() throws Throwable {
-        discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+        //discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
         log.info("开始导入url={}的图片数据", url);
         importFromExcel();
         log.info("导入url={}的图片数据结束！", url);

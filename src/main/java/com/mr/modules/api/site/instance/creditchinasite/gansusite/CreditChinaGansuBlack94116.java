@@ -35,7 +35,7 @@ public class CreditChinaGansuBlack94116 extends SiteTaskExtend_CreditChina {
      */
     @Override
     protected String execute() throws Throwable {
-        discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+        //discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
         log.info("开始抓取url={}", url);
         extractContent(url);
         log.info("抓取url={}结束！", url);
@@ -107,7 +107,7 @@ public class CreditChinaGansuBlack94116 extends SiteTaskExtend_CreditChina {
                         + "3.失信被执行人为自然人的，不得担任企业的法定代表人、董事、监事、高级管理人员等。";
                 discreditBlacklist.setPunishResult(punishResult);
                 discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-                discreditBlacklistMapper.insert(discreditBlacklist);
+                saveDisneycreditBlackListOne(discreditBlacklist,false);
                 discreditBlacklist = null;
                 continue;
             }
@@ -128,8 +128,8 @@ public class CreditChinaGansuBlack94116 extends SiteTaskExtend_CreditChina {
                         + "（2）普通发票的领用实行交（验）旧供新，严格限量供应。" //
                         + "（3）将纳税信用评价结果通报相关部门，按照法律法规等有关规定，在经营、投融资、取得政府供应土地、进出口、出入境、注册新公司、工程招投标、政府采购、获得荣誉、安全许可、生产许可、从业任职资格、资质审核等方面予以限制或禁止。";
                 discreditBlacklist.setPunishResult(punishResult);
-                discreditBlacklistMapper.insert(discreditBlacklist);
                 discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
+                saveDisneycreditBlackListOne(discreditBlacklist,false);
                 discreditBlacklist = null;
                 continue;
             }
@@ -151,7 +151,7 @@ public class CreditChinaGansuBlack94116 extends SiteTaskExtend_CreditChina {
                         + "（3）将纳税信用评价结果通报相关部门，按照法律法规等有关规定，在经营、投融资、取得政府供应土地、进出口、出入境、注册新公司、工程招投标、政府采购、获得荣誉、安全许可、生产许可、从业任职资格、资质审核等方面予以限制或禁止。";
                 discreditBlacklist.setPunishResult(punishResult);
                 discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-                discreditBlacklistMapper.insert(discreditBlacklist);
+                saveDisneycreditBlackListOne(discreditBlacklist,false);
                 discreditBlacklist = null;
                 continue;
             }

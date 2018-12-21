@@ -39,7 +39,7 @@ public class CreditChinaGansuBlack91744 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -137,7 +137,7 @@ public class CreditChinaGansuBlack91744 extends SiteTaskExtend_CreditChina {
 							+ "（三）对违反禁令高消费、有能力履行而拒不履行生效裁判的失信被执行人，人民法院将依法对单位处以100万元以下、对个人10万元以下罚款，对法定代表人和实际控制人采取司法拘留强制措施。情节严重构成犯罪的，将依法追究刑事责任。 ";
 					discreditBlacklist.setPunishResult(punishResult);
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -178,7 +178,7 @@ public class CreditChinaGansuBlack91744 extends SiteTaskExtend_CreditChina {
 						discreditBlacklist.setPunishResult(punishResult);
 					}
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -213,7 +213,7 @@ public class CreditChinaGansuBlack91744 extends SiteTaskExtend_CreditChina {
 							+ "（四）对列入“黑榜”名单中的企业和个人，全市银行业金融机构限制其办理开户许可、融资授信、信用卡发卡等业务。";
 					discreditBlacklist.setPunishResult(punishResult);
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}

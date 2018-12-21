@@ -40,7 +40,7 @@ public class CreditChinaGansuBlack137827 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -84,7 +84,7 @@ public class CreditChinaGansuBlack137827 extends SiteTaskExtend_CreditChina {
 			discreditBlacklist.setPunishReason(punishReason);
 			discreditBlacklist.setPunishResult("该企业拟列入物业管理诚信档案“黑名单”");
 			discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-			discreditBlacklistMapper.insert(discreditBlacklist);
+			saveDisneycreditBlackListOne(discreditBlacklist,false);
 			discreditBlacklist = null;
 			continue;
 		}

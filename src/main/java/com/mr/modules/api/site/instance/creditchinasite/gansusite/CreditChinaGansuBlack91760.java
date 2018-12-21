@@ -39,7 +39,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 	 */
 	@Override
 	protected String execute() throws Throwable {
-		discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
+		//discreditBlacklistMapper.deleteAllByUrl(url);// 删除该URL下的全部数据
 		log.info("开始抓取url={}", url);
 		extractContent(url);
 		log.info("抓取url={}结束！", url);
@@ -134,7 +134,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 							+ "（三）对违反禁令高消费、有能力履行而拒不履行生效裁判的失信被执行人，人民法院将依法对单位处以100万元以下、对个人10万元以下罚款，对法定代表人和实际控制人采取司法拘留强制措施。情节严重构成犯罪的，将依法追究刑事责任。";
 					discreditBlacklist.setPunishResult(punishResult);
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -158,7 +158,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 					}
 					discreditBlacklist.setPunishResult("全市通报批评");
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}
@@ -168,7 +168,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 					if (discreditBlacklist != null) {
 						discreditBlacklist.setPunishResult(text.replace("惩戒措施：", ""));
 						discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-						discreditBlacklistMapper.insert(discreditBlacklist);
+						saveDisneycreditBlackListOne(discreditBlacklist,false);
 					}
 					itemIndex = 0;
 				} else {
@@ -196,7 +196,7 @@ public class CreditChinaGansuBlack91760 extends SiteTaskExtend_CreditChina {
 							+ "（二）整改期满，辖区县局及市局相关帮包科室对整改情况进行复查验收，逾期不整改或者整改不合格的，由原许可机关吊销其经营许可。";
 					discreditBlacklist.setPunishResult(punishResult);
 					discreditBlacklist.setUniqueKey(discreditBlacklist.getUrl() + "@" + discreditBlacklist.getEnterpriseName() + "@" + discreditBlacklist.getPersonName() + "@" + discreditBlacklist.getJudgeNo() + "@" + discreditBlacklist.getJudgeAuth());
-					discreditBlacklistMapper.insert(discreditBlacklist);
+					saveDisneycreditBlackListOne(discreditBlacklist,false);
 				}
 				continue;
 			}

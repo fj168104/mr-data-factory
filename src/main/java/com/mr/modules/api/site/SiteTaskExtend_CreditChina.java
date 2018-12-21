@@ -338,9 +338,9 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      */
     protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
         //唯一主键
-        discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getUrl()+discreditBlacklist.getEnterpriseName()+discreditBlacklist.getPersonName()+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()+discreditBlacklist.getDiscreditAction()));
+        discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getSubject()+discreditBlacklist.getUrl()+discreditBlacklist.getEnterpriseName()+discreditBlacklist.getPersonName()+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()+discreditBlacklist.getDiscreditAction()));
         boolean isFlag = false;
-        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
+        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getSubject(),discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
         String strDiscreditBlacklist = "url地址："+discreditBlacklist.getUrl()+"\n企业名称："+discreditBlacklist.getEnterpriseName()+"\n+负责人名称："+discreditBlacklist.getPersonName()+"\n处罚文号："+discreditBlacklist.getJudgeNo();
         if (!isForce && adminDiscreditBlacklist.size()>0) {
             log.info(strDiscreditBlacklist+"此记录已经存在···不需要入库");
@@ -350,7 +350,7 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
             log.info(strDiscreditBlacklist+"此记录不存在···需要入库");
         } else if(isForce){
             if(adminDiscreditBlacklist.size()>0){
-                discreditBlacklistMapper.deleteByUrl(discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
+                discreditBlacklistMapper.deleteByUrl(discreditBlacklist.getSubject(),discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
                 discreditBlacklistMapper.insert(discreditBlacklist);
     }else{
         discreditBlacklistMapper.insert(discreditBlacklist);

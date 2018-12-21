@@ -40,7 +40,7 @@ public interface DiscreditBlacklistMapper extends BaseMapper<DiscreditBlacklist>
      * @param judgeNo        文号
      * @return
      */
-    List<DiscreditBlacklist> selectByUrl(@Param("url") String url , @Param("enterpriseName") String enterpriseName
+    List<DiscreditBlacklist> selectByUrl(@Param("subject") String subject, @Param("url") String url , @Param("enterpriseName") String enterpriseName
             , @Param("personName") String personName
             , @Param("judgeNo") String judgeNo,@Param("judgeAuth")String judgeAuth,@Param("discreditAction")String discreditAction );
 
@@ -52,7 +52,7 @@ public interface DiscreditBlacklistMapper extends BaseMapper<DiscreditBlacklist>
      * @param judgeNo
      * @return
      */
-    int deleteByUrl(@Param("url") String url , @Param("enterpriseName") String enterpriseName
+    int deleteByUrl(@Param("subject") String subject, @Param("url") String url , @Param("enterpriseName") String enterpriseName
             , @Param("personName") String personName
             , @Param("judgeNo") String judgeNo,@Param("judgeAuth")String judgeAuth,@Param("discreditAction")String discreditAction);
 }

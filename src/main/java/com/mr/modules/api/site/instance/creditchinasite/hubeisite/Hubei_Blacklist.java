@@ -87,7 +87,25 @@ public class Hubei_Blacklist extends SiteTaskExtend_CreditChina {
 				Document infoDoc = Jsoup.parse(getData(infoUrl));
 				Elements trElements = infoDoc.getElementsByTag("tr");
 				DiscreditBlacklist discreditBlacklist = createDefaultDiscreditBlacklist();
-				discreditBlacklist.setSubject(listSubject.get(i));
+				//"FY", "DS", "GUOS", "HB", "GongS", "SYJ", "SW"
+				if(className.equals("FY")){
+					discreditBlacklist.setSubject("法院-"+listSubject.get(i));
+				}else if(className.equals("DS")){
+					discreditBlacklist.setSubject("地税-"+listSubject.get(i));
+				}else if(className.equals("GUOS")){
+					discreditBlacklist.setSubject("国税-"+listSubject.get(i));
+				}else if(className.equals("HB")){
+					discreditBlacklist.setSubject("环保-"+listSubject.get(i));
+				}else if(className.equals("GongS")){
+					discreditBlacklist.setSubject("工商-"+listSubject.get(i));
+				}else if(className.equals("SYJ")){
+					discreditBlacklist.setSubject("食药监-"+listSubject.get(i));
+				}else if(className.equals("SW")){
+					discreditBlacklist.setSubject("商务-"+listSubject.get(i));
+				}else {
+					return;
+				}
+
 				for (int j = 1; j < trElements.size(); j++) {
 					Element trElement = trElements.get(j);
 					String keyString = trElement.getElementsByTag("td").get(0).text();
@@ -117,9 +135,9 @@ public class Hubei_Blacklist extends SiteTaskExtend_CreditChina {
 						if (StrUtil.isNotEmpty(valueString) && valueString.trim().startsWith("<")) {
 							Element document = Jsoup.parse("<html>" + valueString + "</html>");
 							String s = document.text();
-							discreditBlacklist.setPunishResult(s);
+							discreditBlacklist.setPunishResult(s.replace("\t","").replace("\n",""));
 						} else {
-							discreditBlacklist.setPunishResult(valueString);
+							discreditBlacklist.setPunishResult(valueString.replace("\t","").replace("\n",""));
 						}
 						continue;
 					}

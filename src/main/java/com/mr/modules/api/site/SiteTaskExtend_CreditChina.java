@@ -338,9 +338,14 @@ public class SiteTaskExtend_CreditChina extends SiteTaskExtend{
      */
     protected boolean saveDisneycreditBlackListOne(DiscreditBlacklist discreditBlacklist, Boolean isForce) {
         //唯一主键
-        discreditBlacklist.setUniqueKey(MD5Util.encode(discreditBlacklist.getSubject()+discreditBlacklist.getUrl()+discreditBlacklist.getEnterpriseName()+discreditBlacklist.getPersonName()+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()+discreditBlacklist.getDiscreditAction()));
+        String uniqueKey = MD5Util.encode(discreditBlacklist.getSubject()+discreditBlacklist.getUrl()+discreditBlacklist.getEnterpriseName()+discreditBlacklist.getPersonName()+discreditBlacklist.getJudgeNo()+discreditBlacklist.getJudgeAuth()+discreditBlacklist.getDiscreditAction());
+        discreditBlacklist.setUniqueKey(uniqueKey);
         boolean isFlag = false;
-        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getSubject(),discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
+        // List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUrl(discreditBlacklist.getSubject(),discreditBlacklist.getUrl(),discreditBlacklist.getEnterpriseName(),discreditBlacklist.getPersonName(),discreditBlacklist.getJudgeNo(),discreditBlacklist.getJudgeAuth(),discreditBlacklist.getDiscreditAction());
+        // 改用uniqueKey查询的原因：
+        // 1. 使用多字段查询时，当有字段值为Null时无法准确查询到数据
+        // 2. 查询更快
+        List<DiscreditBlacklist> adminDiscreditBlacklist = discreditBlacklistMapper.selectByUniqueKey(uniqueKey);
         String strDiscreditBlacklist = "url地址："+discreditBlacklist.getUrl()+"\n企业名称："+discreditBlacklist.getEnterpriseName()+"\n+负责人名称："+discreditBlacklist.getPersonName()+"\n处罚文号："+discreditBlacklist.getJudgeNo();
         if (!isForce && adminDiscreditBlacklist.size()>0) {
             log.info(strDiscreditBlacklist+"此记录已经存在···不需要入库");

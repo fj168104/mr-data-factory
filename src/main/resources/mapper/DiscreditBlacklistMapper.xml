@@ -56,4 +56,9 @@
     SELECT * FROM DISCREDIT_BLACKLIST c WHERE c.SUBJECT = #{subject} AND c.URL = #{url} AND c.ENTERPRISE_NAME = #{enterpriseName} AND c.PERSON_NAME = #{personName} AND c.JUDGE_NO = #{judgeNo} AND JUDGE_AUTH = #{judgeAuth} AND DISCREDIT_ACTION = #{discreditAction} LIMIT 0, 1
   </select>
 
+  <!--通过uniqueKey查找-->
+  <select id="selectByUniqueKey" resultMap="BaseResultMap">
+    SELECT unique_key FROM DISCREDIT_BLACKLIST WHERE unique_key = #{uniqueKey} LIMIT 0, 1
+  </select>
+
 </mapper>

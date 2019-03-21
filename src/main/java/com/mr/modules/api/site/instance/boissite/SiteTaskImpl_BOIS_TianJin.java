@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * @auther zjxu
  * @datetime 201903
- * 获取天津保监局新增处罚信息
+ * 获取天津保监局处罚信息
  */
 
 @Component("bois_tianjin")
